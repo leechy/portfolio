@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
-import { skillsStore, loadSkills, type Skill, type SkillCategory } from './skills';
+import { type Skill, loadSkills, skillsStore } from './skills';
 
 describe('T017 - Skills Data Integration', () => {
 	beforeEach(() => {

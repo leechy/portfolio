@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
-import { loadProjects, projectsStore, type Project, type ProjectStatus } from './projects';
+import { type Project, loadProjects, projectsStore } from './projects';
 
 describe('T018 - Projects Data Integration', () => {
 	beforeEach(() => {

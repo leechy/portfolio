@@ -74,7 +74,19 @@
 							{#each category.skills as skill}
 								<div class="skill-card" data-testid="skill-card">
 									<div class="skill-name" data-testid="skill-name">{skill.name}</div>
-									<div class="skill-proficiency" data-testid="skill-proficiency">
+									<div
+										class="skill-proficiency"
+										data-testid="skill-proficiency"
+										data-level={skill.proficiency === 'Expert'
+											? 5
+											: skill.proficiency === 'Advanced'
+												? 4
+												: skill.proficiency === 'Intermediate'
+													? 3
+													: skill.proficiency === 'Beginner'
+														? 2
+														: 1}
+									>
 										{skill.proficiency}
 									</div>
 									{#if skill.description}
@@ -145,7 +157,7 @@
 	<!-- Contact Section -->
 	<section class="contact-section" data-testid="contact-section">
 		<div class="container">
-			<h2>Get In Touch</h2>
+			<h2>Contact</h2>
 			<div class="contact-content">
 				<div class="contact-info" data-testid="contact-info">
 					<p>Let's work together to build something amazing!</p>
@@ -157,13 +169,15 @@
 					</div>
 				</div>
 				<div class="social-links">
-					<a href="https://github.com/leechy" class="social-link" data-testid="social-link-github">
+					<a href="https://github.com/leechy" class="social-link" data-testid="social-link-github" target="_blank" rel="noopener noreferrer">
 						GitHub
 					</a>
 					<a
 						href="https://linkedin.com/in/leechy"
 						class="social-link"
 						data-testid="social-link-linkedin"
+						target="_blank"
+						rel="noopener noreferrer"
 					>
 						LinkedIn
 					</a>
@@ -171,6 +185,8 @@
 						href="https://twitter.com/leechy"
 						class="social-link"
 						data-testid="social-link-twitter"
+						target="_blank"
+						rel="noopener noreferrer"
 					>
 						Twitter
 					</a>
