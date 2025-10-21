@@ -1,0 +1,311 @@
+// =============================================================================
+// Main Stylesheet for Leechy.dev Portfolio
+// =============================================================================
+
+// SCSS Variables
+// =============================================================================
+
+// Color Palette (Dark Theme)
+$color-primary: #64ffda; // Cyan accent
+$color-secondary: #ff6b6b; // Coral accent
+$color-bg-primary: #0a0a0a; // Deep black background
+$color-bg-secondary: #1a1a1a; // Slightly lighter background
+$color-text-primary: #ffffff; // Primary text
+$color-text-secondary: #a0a0a0; // Secondary text
+$color-text-muted: #666666; // Muted text
+$color-border: #333333; // Border color
+
+// Typography
+$font-family-primary:
+	'Inter',
+	-apple-system,
+	BlinkMacSystemFont,
+	'Segoe UI',
+	Roboto,
+	Oxygen,
+	Ubuntu,
+	Cantarell,
+	sans-serif;
+$font-family-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Monaco, 'Courier New', monospace;
+
+// Font Sizes
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-base: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.25rem; // 20px
+$font-size-2xl: 1.5rem; // 24px
+$font-size-3xl: 1.875rem; // 30px
+$font-size-4xl: 2.25rem; // 36px
+$font-size-5xl: 3rem; // 48px
+
+// Spacing
+$spacing-xs: 0.25rem; // 4px
+$spacing-sm: 0.5rem; // 8px
+$spacing-md: 1rem; // 16px
+$spacing-lg: 1.5rem; // 24px
+$spacing-xl: 2rem; // 32px
+$spacing-2xl: 3rem; // 48px
+$spacing-3xl: 4rem; // 64px
+
+// Breakpoints
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+
+// Animation
+$transition-fast: 0.15s ease;
+$transition-base: 0.25s ease;
+$transition-slow: 0.5s ease;
+
+// Shadows
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+
+// =============================================================================
+// CSS Reset & Base Styles
+// =============================================================================
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 16px;
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: $font-family-primary;
+	background-color: $color-bg-primary;
+	color: $color-text-primary;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+// =============================================================================
+// Typography
+// =============================================================================
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 600;
+	line-height: 1.2;
+	margin-bottom: $spacing-md;
+}
+
+h1 {
+	font-size: $font-size-5xl;
+}
+h2 {
+	font-size: $font-size-4xl;
+}
+h3 {
+	font-size: $font-size-3xl;
+}
+h4 {
+	font-size: $font-size-2xl;
+}
+h5 {
+	font-size: $font-size-xl;
+}
+h6 {
+	font-size: $font-size-lg;
+}
+
+p {
+	margin-bottom: $spacing-md;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+a {
+	color: $color-primary;
+	text-decoration: none;
+	transition: color $transition-fast;
+
+	&:hover {
+		color: lighten($color-primary, 10%);
+	}
+}
+
+code {
+	font-family: $font-family-mono;
+	background-color: $color-bg-secondary;
+	padding: $spacing-xs $spacing-sm;
+	border-radius: 4px;
+	font-size: 0.9em;
+}
+
+// =============================================================================
+// Layout Components
+// =============================================================================
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 $spacing-lg;
+
+	@media (min-width: $breakpoint-lg) {
+		padding: 0 $spacing-xl;
+	}
+}
+
+.section {
+	padding: $spacing-3xl 0;
+
+	@media (min-width: $breakpoint-md) {
+		padding: 4rem 0;
+	}
+}
+
+// =============================================================================
+// Utility Classes
+// =============================================================================
+
+.text-center {
+	text-align: center;
+}
+.text-left {
+	text-align: left;
+}
+.text-right {
+	text-align: right;
+}
+
+.text-primary {
+	color: $color-primary;
+}
+.text-secondary {
+	color: $color-secondary;
+}
+.text-muted {
+	color: $color-text-muted;
+}
+
+.mb-0 {
+	margin-bottom: 0;
+}
+.mb-sm {
+	margin-bottom: $spacing-sm;
+}
+.mb-md {
+	margin-bottom: $spacing-md;
+}
+.mb-lg {
+	margin-bottom: $spacing-lg;
+}
+.mb-xl {
+	margin-bottom: $spacing-xl;
+}
+
+.mt-0 {
+	margin-top: 0;
+}
+.mt-sm {
+	margin-top: $spacing-sm;
+}
+.mt-md {
+	margin-top: $spacing-md;
+}
+.mt-lg {
+	margin-top: $spacing-lg;
+}
+.mt-xl {
+	margin-top: $spacing-xl;
+}
+
+// =============================================================================
+// Component Base Styles
+// =============================================================================
+
+// Cards
+.card {
+	background-color: $color-bg-secondary;
+	border: 1px solid $color-border;
+	border-radius: 8px;
+	padding: $spacing-lg;
+	transition:
+		transform $transition-base,
+		box-shadow $transition-base;
+
+	&:hover {
+		transform: translateY(-2px);
+		box-shadow: $shadow-lg;
+	}
+}
+
+// Buttons
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	padding: $spacing-sm $spacing-lg;
+	border: none;
+	border-radius: 6px;
+	font-family: inherit;
+	font-size: $font-size-base;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all $transition-fast;
+	text-decoration: none;
+
+	&.btn-primary {
+		background-color: $color-primary;
+		color: $color-bg-primary;
+
+		&:hover {
+			background-color: lighten($color-primary, 10%);
+		}
+	}
+
+	&.btn-secondary {
+		background-color: transparent;
+		color: $color-primary;
+		border: 1px solid $color-primary;
+
+		&:hover {
+			background-color: $color-primary;
+			color: $color-bg-primary;
+		}
+	}
+}
+
+// =============================================================================
+// Responsive Design
+// =============================================================================
+
+@media (max-width: $breakpoint-md) {
+	html {
+		font-size: 14px;
+	}
+
+	h1 {
+		font-size: $font-size-4xl;
+	}
+	h2 {
+		font-size: $font-size-3xl;
+	}
+	h3 {
+		font-size: $font-size-2xl;
+	}
+
+	.container {
+		padding: 0 $spacing-md;
+	}
+
+	.section {
+		padding: $spacing-2xl 0;
+	}
+}
