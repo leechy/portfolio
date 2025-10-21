@@ -1,50 +1,65 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+Version change: new → 1.0.0 (initial version)
+Added principles:
+- I. Code Simplicity - Start simple, avoid premature optimization, prefer readable solutions
+- II. In-Code Documentation - Self-documenting code with meaningful names and inline comments
+- III. Testing Coverage (NON-NEGOTIABLE) - Comprehensive test coverage with TDD approach
+- IV. User Experience Consistency - Consistent interfaces, predictable behavior, clear error messages
+- V. Performance Requirements - Define and meet measurable performance standards
+
+Templates requiring updates:
+✅ plan-template.md - Constitution Check section aligned
+✅ spec-template.md - Requirements and success criteria align with principles
+✅ tasks-template.md - Task categorization reflects principle-driven development
+
+Follow-up TODOs: None
+-->
+
+# Leechy.dev Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Code Simplicity
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Code MUST prioritize readability and maintainability over cleverness. Start with the simplest solution that works, avoid premature optimization, and prefer explicit over implicit behavior. Every abstraction MUST be justified by concrete need, not theoretical future requirements. When complexity is unavoidable, it MUST be isolated and well-documented.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: Simple code reduces bugs, accelerates development velocity, and enables team collaboration by making systems comprehensible to all contributors.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. In-Code Documentation
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Code MUST be self-documenting through meaningful names, clear structure, and strategic inline comments. Function names MUST describe intent, variable names MUST reveal purpose, and complex algorithms MUST include explanatory comments. Public APIs MUST have comprehensive documentation with examples.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Code is read far more than it's written. Self-documenting code reduces cognitive load, enables faster onboarding, and prevents knowledge silos.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Testing Coverage (NON-NEGOTIABLE)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+All code MUST have comprehensive test coverage following Test-Driven Development (TDD). Tests MUST be written before implementation, must fail initially, then pass after correct implementation. Minimum 90% code coverage required with focus on critical paths, edge cases, and user workflows. Integration tests MUST validate cross-system behavior.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: Tests serve as executable specifications, enable fearless refactoring, catch regressions early, and provide confidence in system reliability.
+
+### IV. User Experience Consistency
+
+All user interfaces MUST provide consistent interaction patterns, predictable behavior, and clear feedback. Error messages MUST be actionable and user-friendly. Loading states, success confirmations, and failure handling MUST follow established patterns. APIs MUST maintain consistent naming conventions and response formats.
+
+**Rationale**: Consistent UX reduces user cognitive load, builds trust, improves adoption rates, and creates a professional, polished product experience.
+
+### V. Performance Requirements
+
+All features MUST define measurable performance targets and meet them consistently. Response times, throughput, memory usage, and resource consumption MUST be specified and validated. Performance regressions MUST be caught in CI/CD pipeline. Optimization work MUST be data-driven with before/after metrics.
+
+**Rationale**: Performance directly impacts user satisfaction, system scalability, and operational costs. Proactive performance management prevents technical debt accumulation.
+
+## Development Standards
+
+Code reviews MUST verify compliance with all five core principles. New features MUST include performance benchmarks and UX consistency checks. Technical debt MUST be explicitly justified and tracked with remediation timelines.
+
+## Quality Gates
+
+All pull requests MUST pass automated tests, code coverage thresholds, performance benchmarks, and UX consistency validation. Manual testing MUST verify user experience flows before deployment.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices. Amendments require team approval, impact analysis, and migration plan. All development decisions MUST reference relevant constitutional principles for justification.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-10-21 | **Last Amended**: 2025-10-21
