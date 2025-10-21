@@ -1,10 +1,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { skillsStore, loadSkills } from '$lib/stores/skills';
+	import { projectsStore, loadProjects } from '$lib/stores/projects';
 
 	let mounted = $state(false);
 
-	onMount(() => {
+	// Reactive data from stores
+	const skills = $derived($skillsStore);
+	const projects = $derived($projectsStore);
+
+	onMount(async () => {
 		mounted = true;
+
+		// Load data from stores
+		await Promise.all([loadSkills(), loadProjects()]);
 	});
 </script>
 
@@ -42,72 +51,94 @@
 		<div class="container">
 			<h2>Skills & Technologies</h2>
 
-			<!-- Frontend Skills Category -->
-			<div class="skill-category" data-testid="skill-category-frontend">
-				<h3>Frontend Development</h3>
-				<div class="skills-grid">
-					<div class="skill-card" data-testid="skill-card">
-						<div class="skill-name" data-testid="skill-name">TypeScript</div>
-						<div class="skill-proficiency" data-testid="skill-proficiency">Advanced</div>
+			{#if skills.loading}
+				<div class="loading-state">Loading skills...</div>
+			{:else if skills.error}
+				<div class="error-state" data-testid="error-message">Error: {skills.error}</div>
+			{:else}
+				{#each skills.categories as category}
+					<div
+						class="skill-category"
+						data-testid="skill-category"
+						data-category={category.name === 'Frontend Development'
+							? 'frontend'
+							: category.name === 'Backend Development'
+								? 'backend'
+								: 'tool'}
+					>
+						<h3>
+							{#if category.icon}<span class="category-icon">{category.icon}</span>{/if}
+							{category.name}
+						</h3>
+						<div class="skills-grid">
+							{#each category.skills as skill}
+								<div class="skill-card" data-testid="skill-card">
+									<div class="skill-name" data-testid="skill-name">{skill.name}</div>
+									<div class="skill-proficiency" data-testid="skill-proficiency">
+										{skill.proficiency}
+									</div>
+									{#if skill.description}
+										<div class="skill-description">{skill.description}</div>
+									{/if}
+									{#if skill.yearsExperience}
+										<div class="skill-experience">{skill.yearsExperience} years</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
 					</div>
-					<div class="skill-card" data-testid="skill-card">
-						<div class="skill-name" data-testid="skill-name">SvelteKit</div>
-						<div class="skill-proficiency" data-testid="skill-proficiency">Advanced</div>
-					</div>
-					<div class="skill-card" data-testid="skill-card">
-						<div class="skill-name" data-testid="skill-name">React</div>
-						<div class="skill-proficiency" data-testid="skill-proficiency">Intermediate</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Backend Skills Category -->
-			<div class="skill-category" data-testid="skill-category-backend">
-				<h3>Backend Development</h3>
-				<div class="skills-grid">
-					<div class="skill-card" data-testid="skill-card">
-						<div class="skill-name" data-testid="skill-name">Node.js</div>
-						<div class="skill-proficiency" data-testid="skill-proficiency">Advanced</div>
-					</div>
-					<div class="skill-card" data-testid="skill-card">
-						<div class="skill-name" data-testid="skill-name">SQLite</div>
-						<div class="skill-proficiency" data-testid="skill-proficiency">Intermediate</div>
-					</div>
-				</div>
-			</div>
+				{/each}
+			{/if}
 		</div>
 	</section>
-
 	<!-- Featured Projects Section -->
 	<section class="featured-projects" data-testid="featured-projects-section">
 		<div class="container">
 			<h2>Featured Projects</h2>
-			<div class="projects-grid">
-				<div class="project-card" data-testid="project-card">
-					<h3 class="project-title" data-testid="project-title">Portfolio Website</h3>
-					<p class="project-description" data-testid="project-description">
-						A modern portfolio website built with SvelteKit, featuring responsive design and
-						optimized performance.
-					</p>
-					<div class="project-technologies" data-testid="project-technologies">
-						<span class="tech-tag">SvelteKit</span>
-						<span class="tech-tag">TypeScript</span>
-						<span class="tech-tag">Tailwind CSS</span>
-					</div>
+
+			{#if projects.loading}
+				<div class="loading-state">Loading projects...</div>
+			{:else if projects.error}
+				<div class="error-state" data-testid="error-message">Error: {projects.error}</div>
+			{:else}
+				<div class="projects-grid">
+					{#each projects.featured as project}
+						<div class="project-card" data-testid="project-card">
+							<h3 class="project-title" data-testid="project-title">{project.title}</h3>
+							<p class="project-description" data-testid="project-description">
+								{project.description}
+							</p>
+							<div class="project-technologies" data-testid="project-technologies">
+								{#each project.technologies as tech}
+									<span class="tech-tag">{tech}</span>
+								{/each}
+							</div>
+							<div class="project-links">
+								{#if project.demoUrl}
+									<a
+										href={project.demoUrl}
+										class="project-link"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										View Demo
+									</a>
+								{/if}
+								{#if project.githubUrl}
+									<a
+										href={project.githubUrl}
+										class="project-link"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										GitHub
+									</a>
+								{/if}
+							</div>
+						</div>
+					{/each}
 				</div>
-				<div class="project-card" data-testid="project-card">
-					<h3 class="project-title" data-testid="project-title">Task Management App</h3>
-					<p class="project-description" data-testid="project-description">
-						A collaborative task management application with real-time updates and team
-						collaboration features.
-					</p>
-					<div class="project-technologies" data-testid="project-technologies">
-						<span class="tech-tag">Node.js</span>
-						<span class="tech-tag">SQLite</span>
-						<span class="tech-tag">WebSocket</span>
-					</div>
-				</div>
-			</div>
+			{/if}
 		</div>
 	</section>
 
@@ -409,5 +440,71 @@
 	.social-link:hover {
 		background: $color-primary;
 		color: white;
+	}
+
+	/* Loading and Error States */
+	.loading-state,
+	.error-state {
+		text-align: center;
+		padding: $spacing-lg;
+		border-radius: 8px;
+		margin: $spacing-md 0;
+	}
+
+	.loading-state {
+		background: rgba(59, 130, 246, 0.1);
+		color: $color-primary;
+		font-style: italic;
+	}
+
+	.error-state {
+		background: rgba(239, 68, 68, 0.1);
+		color: #dc2626;
+		border: 1px solid rgba(239, 68, 68, 0.3);
+	}
+
+	/* Enhanced Skill Cards */
+	.category-icon {
+		margin-right: $spacing-sm;
+		font-size: 1.2rem;
+	}
+
+	.skill-description {
+		font-size: 0.875rem;
+		color: $color-text-secondary;
+		margin-top: $spacing-xs;
+		line-height: 1.4;
+	}
+
+	.skill-experience {
+		font-size: 0.75rem;
+		color: $color-text-tertiary;
+		margin-top: $spacing-xs;
+		font-style: italic;
+	}
+
+	/* Project Links */
+	.project-links {
+		display: flex;
+		gap: $spacing-sm;
+		margin-top: $spacing-md;
+		flex-wrap: wrap;
+	}
+
+	.project-link {
+		display: inline-block;
+		padding: $spacing-xs $spacing-sm;
+		background: $color-primary;
+		color: white;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 0.875rem;
+		font-weight: 500;
+		transition: all 0.2s ease;
+	}
+
+	.project-link:hover {
+		background: darken($color-primary, 10%);
+		transform: translateY(-1px);
 	}
 </style>
