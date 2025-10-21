@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	
+
 	let mobileMenuOpen = $state(false);
 	let scrolled = $state(false);
 
@@ -11,7 +11,6 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/blog', label: 'Blog' },
-		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	];
 
@@ -41,7 +40,7 @@
 	}
 </script>
 
-<nav class="navigation" class:scrolled>
+<nav class="navigation" class:scrolled aria-label="Main navigation">
 	<div class="container">
 		<div class="nav-content">
 			<!-- Logo/Brand -->
@@ -50,10 +49,10 @@
 			</a>
 
 			<!-- Desktop Navigation -->
-			<ul class="nav-links desktop-only">
+			<ul class="nav-links desktop-only" data-testid="main-nav-links">
 				{#each navItems as item}
 					<li>
-						<a 
+						<a
 							href={item.href}
 							class="nav-link"
 							class:active={isActiveRoute(item.href)}
@@ -66,8 +65,9 @@
 			</ul>
 
 			<!-- Mobile Menu Button -->
-			<button 
+			<button
 				class="mobile-menu-button mobile-only"
+				data-testid="mobile-menu-toggle"
 				onclick={toggleMobileMenu}
 				aria-label="Toggle mobile menu"
 				aria-expanded={mobileMenuOpen}
@@ -80,11 +80,11 @@
 
 		<!-- Mobile Navigation -->
 		{#if mobileMenuOpen}
-			<div class="mobile-nav mobile-only">
+			<div class="mobile-nav mobile-only" data-testid="mobile-navigation">
 				<ul class="mobile-nav-links">
 					{#each navItems as item}
 						<li>
-							<a 
+							<a
 								href={item.href}
 								class="mobile-nav-link"
 								class:active={isActiveRoute(item.href)}
@@ -100,14 +100,14 @@
 	</div>
 </nav>
 
-<style lang="scss">
+<style>
 	.navigation {
-		padding: $spacing-md 0;
-		transition: all $transition-base;
-		
-		&.scrolled {
-			padding: $spacing-sm 0;
-		}
+		padding: 1rem 0;
+		transition: all 0.25s ease-in-out;
+	}
+
+	.navigation.scrolled {
+		padding: 0.5rem 0;
 	}
 
 	.nav-content {
@@ -118,49 +118,47 @@
 
 	.logo {
 		text-decoration: none;
-		color: $color-text-primary;
+		color: #1e293b;
 		font-weight: 600;
-		font-size: $font-size-xl;
-		transition: color $transition-fast;
-
-		&:hover {
-			color: $color-primary;
-		}
+		font-size: 1.25rem;
+		transition: color 0.15s ease-in-out;
 	}
 
-	.logo-text {
-		.logo-accent {
-			color: $color-primary;
-		}
+	.logo:hover {
+		color: #3b82f6;
+	}
+
+	.logo-accent {
+		color: #3b82f6;
 	}
 
 	.nav-links {
 		display: flex;
 		list-style: none;
-		gap: $spacing-xl;
+		gap: 2rem;
 		margin: 0;
 		padding: 0;
 	}
 
 	.nav-link {
-		color: $color-text-secondary;
+		color: #64748b;
 		text-decoration: none;
 		font-weight: 500;
-		font-size: $font-size-base;
-		padding: $spacing-sm $spacing-md;
+		font-size: 1rem;
+		padding: 0.5rem 1rem;
 		border-radius: 6px;
-		transition: all $transition-fast;
+		transition: all 0.15s ease-in-out;
 		position: relative;
+	}
 
-		&:hover {
-			color: $color-primary;
-			background-color: rgba($color-primary, 0.1);
-		}
+	.nav-link:hover {
+		color: #3b82f6;
+		background-color: rgba(59, 130, 246, 0.1);
+	}
 
-		&.active {
-			color: $color-primary;
-			background-color: rgba($color-primary, 0.15);
-		}
+	.nav-link.active {
+		color: #3b82f6;
+		background-color: rgba(59, 130, 246, 0.15);
 	}
 
 	.mobile-menu-button {
@@ -179,21 +177,21 @@
 	.hamburger-line {
 		width: 100%;
 		height: 2px;
-		background-color: $color-text-primary;
-		transition: all $transition-base;
+		background-color: #1e293b;
+		transition: all 0.25s ease-in-out;
 		transform-origin: center;
+	}
 
-		&.active {
-			&:nth-child(1) {
-				transform: rotate(45deg) translate(5px, 5px);
-			}
-			&:nth-child(2) {
-				opacity: 0;
-			}
-			&:nth-child(3) {
-				transform: rotate(-45deg) translate(7px, -6px);
-			}
-		}
+	.hamburger-line.active:nth-child(1) {
+		transform: rotate(45deg) translate(5px, 5px);
+	}
+
+	.hamburger-line.active:nth-child(2) {
+		opacity: 0;
+	}
+
+	.hamburger-line.active:nth-child(3) {
+		transform: rotate(-45deg) translate(7px, -6px);
 	}
 
 	.mobile-nav {
@@ -201,10 +199,10 @@
 		top: 100%;
 		left: 0;
 		right: 0;
-		background-color: rgba($color-bg-primary, 0.98);
+		background-color: rgba(255, 255, 255, 0.98);
 		backdrop-filter: blur(10px);
-		border-bottom: 1px solid $color-border;
-		padding: $spacing-lg 0;
+		border-bottom: 1px solid #e2e8f0;
+		padding: 1.5rem 0;
 		animation: slideDown 0.3s ease-out;
 	}
 
@@ -214,47 +212,49 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		gap: $spacing-sm;
+		gap: 0.5rem;
 	}
 
 	.mobile-nav-link {
 		display: block;
-		color: $color-text-secondary;
+		color: #64748b;
 		text-decoration: none;
 		font-weight: 500;
-		font-size: $font-size-lg;
-		padding: $spacing-md $spacing-lg;
-		margin: 0 $spacing-md;
+		font-size: 1.125rem;
+		padding: 1rem 1.5rem;
+		margin: 0 1rem;
 		border-radius: 8px;
-		transition: all $transition-fast;
-
-		&:hover {
-			color: $color-primary;
-			background-color: rgba($color-primary, 0.1);
-		}
-
-		&.active {
-			color: $color-primary;
-			background-color: rgba($color-primary, 0.15);
-		}
+		transition: all 0.15s ease-in-out;
 	}
 
-	// Responsive utilities
-	.desktop-only {
-		@media (max-width: $breakpoint-md) {
+	.mobile-nav-link:hover {
+		color: #3b82f6;
+		background-color: rgba(59, 130, 246, 0.1);
+	}
+
+	.mobile-nav-link.active {
+		color: #3b82f6;
+		background-color: rgba(59, 130, 246, 0.15);
+	}
+
+	/* Responsive utilities */
+	@media (max-width: 768px) {
+		.desktop-only {
 			display: none;
 		}
 	}
 
 	.mobile-only {
 		display: none;
-		
-		@media (max-width: $breakpoint-md) {
+	}
+
+	@media (max-width: 768px) {
+		.mobile-only {
 			display: flex;
 		}
 	}
 
-	// Animations
+	/* Animations */
 	@keyframes slideDown {
 		from {
 			opacity: 0;

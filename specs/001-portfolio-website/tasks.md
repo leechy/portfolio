@@ -66,7 +66,7 @@ description: 'Task list for Web Developer Portfolio Website implementation'
 
 ### Tests for User Story 1 ⚠️ (Write FIRST, ensure they FAIL)
 
-- [ ] T016 [P] [US1] E2E test for homepage loading in tests/e2e/homepage.spec.ts
+- [x] T016 [P] [US1] E2E test for homepage loading in tests/e2e/homepage.spec.ts
 - [ ] T017 [P] [US1] Integration test for skills data loading in tests/integration/skills.test.ts
 - [ ] T018 [P] [US1] Integration test for featured projects query in tests/integration/projects.test.ts
 - [ ] T019 [P] [US1] Component test for SkillCard in tests/unit/SkillCard.test.ts

@@ -31,17 +31,17 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-		background-color: $color-bg-primary;
-		color: $color-text-primary;
+		background-color: #ffffff;
+		color: #1e293b;
 	}
 
 	.header {
 		position: sticky;
 		top: 0;
-		z-index: $z-sticky;
-		background-color: rgba($color-bg-primary, 0.95);
+		z-index: 1020;
+		background-color: rgba(255, 255, 255, 0.95);
 		backdrop-filter: blur(10px);
-		border-bottom: 1px solid $color-border;
+		border-bottom: 1px solid #e2e8f0;
 	}
 
 	.main {
@@ -50,7 +50,7 @@
 	}
 
 	.footer {
-		border-top: 1px solid $color-border;
-		background-color: $color-bg-secondary;
+		border-top: 1px solid #e2e8f0;
+		background-color: #f8fafc;
 	}
 </style>

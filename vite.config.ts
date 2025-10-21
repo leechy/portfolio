@@ -20,8 +20,7 @@ export default defineConfig({
 			output: {
 				manualChunks: {
 					// Separate vendor chunks for better caching
-					vendor: ['svelte', '@sveltejs/kit'],
-					database: ['better-sqlite3']
+					vendor: ['svelte']
 				}
 			}
 		}
@@ -57,9 +56,7 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
-				additionalData: `
-					@import 'src/lib/styles/variables.scss';
-				`
+				additionalData: `@import '/Users/leechy/Projects/leechy.dev/src/lib/styles/variables.scss';`
 			}
 		}
 	},
