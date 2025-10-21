@@ -21,7 +21,7 @@ describe('T017 - Skills Data Integration', () => {
 
 		expect(state.loading).toBe(false);
 		expect(state.error).toBe(null);
-		expect(state.categories).toHaveLength(2); // Frontend and Backend categories
+		expect(state.categories).toHaveLength(3); // Frontend, Backend, and Tools & Infrastructure categories
 
 		// Verify Frontend category
 		const frontendCategory = state.categories.find(cat => cat.name === 'Frontend Development');

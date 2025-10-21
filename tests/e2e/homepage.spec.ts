@@ -211,6 +211,10 @@ test.describe('Homepage - User Story 1', () => {
 
 		await response;
 
+		// Wait for content to finish loading
+		await page.waitForSelector('[data-testid="skill-card"]', { timeout: 5000 });
+		await page.waitForSelector('[data-testid="project-card"]', { timeout: 5000 });
+
 		// Verify content loaded successfully
 		const finalSkillCount = await page.locator('[data-testid="skill-card"]').count();
 		expect(finalSkillCount).toBeGreaterThanOrEqual(5);

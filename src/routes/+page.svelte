@@ -168,8 +168,14 @@
 						</a>
 					</div>
 				</div>
-				<div class="social-links">
-					<a href="https://github.com/leechy" class="social-link" data-testid="social-link-github" target="_blank" rel="noopener noreferrer">
+				<div class="social-links" data-testid="social-links">
+					<a
+						href="https://github.com/leechy"
+						class="social-link"
+						data-testid="social-link-github"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
 						GitHub
 					</a>
 					<a

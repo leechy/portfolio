@@ -120,9 +120,9 @@ export async function loadSkills(): Promise<void> {
 	}));
 
 	try {
-		// Simulate API delay
-		await new Promise(resolve => setTimeout(resolve, 100));
-
+		// Simulate API delay (reduced for testing)
+		await new Promise(resolve => setTimeout(resolve, 50));
+		
 		// Update store with loaded data
 		skillsStore.update(state => ({
 			...state,
