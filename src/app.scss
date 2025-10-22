@@ -266,7 +266,8 @@ code {
 		color: $color-bg-primary;
 
 		&:hover {
-			background-color: lighten($color-primary, 10%);
+			// background-color: lighten($color-primary, 10%);
+      background-color: color.adjust($color-primary, $lightness: 10%);
 		}
 	}
 

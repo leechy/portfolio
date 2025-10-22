@@ -14,6 +14,12 @@ export interface Project {
 	imageUrl?: string;
 	startDate?: Date;
 	completionDate?: Date;
+	// User Story 2 enhanced fields
+	challenges?: string[];
+	solutions?: string[];
+	skillsDemonstrated?: string[];
+	content?: string; // Rendered HTML or markdown content
+	relatedProjects?: string[]; // IDs of related projects
 }
 
 export interface ProjectsState {
@@ -47,7 +53,46 @@ const mockProjectsData: Project[] = [
 		githubUrl: 'https://github.com/leechy/portfolio',
 		demoUrl: 'https://leechy.dev',
 		startDate: new Date('2024-01-15'),
-		completionDate: new Date('2024-03-01')
+		completionDate: new Date('2024-03-01'),
+		challenges: [
+			'Implementing responsive design that works across all device sizes',
+			'Optimizing performance for fast loading times',
+			'Creating an accessible and SEO-friendly structure',
+			'Balancing modern design with professional appearance'
+		],
+		solutions: [
+			'Used Tailwind CSS utility classes for consistent responsive breakpoints',
+			'Implemented lazy loading and image optimization with SvelteKit',
+			'Added proper semantic HTML and ARIA labels throughout',
+			'Created a clean, minimal design system with professional color palette'
+		],
+		skillsDemonstrated: [
+			'Frontend Development',
+			'Responsive Design',
+			'Performance Optimization',
+			'SEO Implementation',
+			'TypeScript Development'
+		],
+		content: `# Portfolio Website Development
+
+This project showcases modern web development practices using SvelteKit and TypeScript. The website features a responsive design that adapts seamlessly across desktop, tablet, and mobile devices.
+
+## Architecture Decisions
+
+The project uses SvelteKit for its powerful SSR capabilities and TypeScript for type safety. Tailwind CSS provides utility-first styling for consistent design implementation.
+
+## Key Features
+
+- Responsive design system
+- Optimized performance with lazy loading
+- SEO-friendly structure with meta tags
+- Accessible navigation and content
+- Dark/light theme support
+
+## Technical Implementation
+
+The website leverages SvelteKit's file-based routing and component architecture to create a maintainable and scalable codebase.`,
+		relatedProjects: ['task-management-app', 'weather-dashboard']
 	},
 	{
 		id: 'task-management-app',
@@ -59,7 +104,46 @@ const mockProjectsData: Project[] = [
 		featured: true,
 		githubUrl: 'https://github.com/leechy/task-manager',
 		startDate: new Date('2023-09-01'),
-		completionDate: new Date('2023-12-15')
+		completionDate: new Date('2023-12-15'),
+		challenges: [
+			'Implementing real-time collaboration without conflicts',
+			'Handling concurrent task updates from multiple users',
+			'Designing an intuitive task organization system',
+			'Ensuring data consistency across WebSocket connections'
+		],
+		solutions: [
+			'Implemented operational transformation for conflict resolution',
+			'Used optimistic updates with rollback mechanisms',
+			'Created drag-and-drop interface with visual feedback',
+			'Added transaction-based updates with SQLite WAL mode'
+		],
+		skillsDemonstrated: [
+			'Backend Development',
+			'Real-time Systems',
+			'Database Design',
+			'WebSocket Implementation',
+			'API Development'
+		],
+		content: `# Task Management Application
+
+A full-stack collaborative task management system built with Node.js and real-time WebSocket communication.
+
+## Core Features
+
+- Real-time task updates across all connected clients
+- Drag-and-drop task organization
+- Team collaboration with user assignments
+- Project-based task grouping
+- Due date tracking and notifications
+
+## Technical Challenges
+
+The primary challenge was implementing real-time collaboration while maintaining data consistency. This required careful coordination between client and server states.
+
+## Implementation Approach
+
+Used WebSockets for instant updates and SQLite with WAL mode for reliable data persistence. The system handles concurrent edits through operational transformation principles.`,
+		relatedProjects: ['ecommerce-platform', 'portfolio-website']
 	},
 	{
 		id: 'ecommerce-platform',
@@ -70,7 +154,42 @@ const mockProjectsData: Project[] = [
 		status: 'development',
 		featured: false,
 		githubUrl: 'https://github.com/leechy/ecommerce',
-		startDate: new Date('2024-06-01')
+		startDate: new Date('2024-06-01'),
+		challenges: [
+			'Integrating secure payment processing',
+			'Managing complex inventory tracking',
+			'Implementing multi-tenant architecture',
+			'Handling high-volume concurrent transactions'
+		],
+		solutions: [
+			'Stripe integration with PCI compliance',
+			'Real-time inventory updates with PostgreSQL triggers',
+			'Row-level security for tenant isolation',
+			'Connection pooling and caching strategies'
+		],
+		skillsDemonstrated: [
+			'Full-stack Development',
+			'Payment Integration',
+			'Database Architecture',
+			'Security Implementation',
+			'Performance Optimization'
+		],
+		content: `# E-commerce Platform Development
+
+Currently developing a comprehensive e-commerce solution with modern web technologies and secure payment processing.
+
+## Planned Features
+
+- Multi-vendor marketplace support
+- Advanced inventory management
+- Secure payment processing with Stripe
+- Real-time order tracking
+- Analytics dashboard
+
+## Development Progress
+
+The project is in active development with core features being implemented iteratively using agile methodology.`,
+		relatedProjects: ['task-management-app', 'weather-dashboard']
 	},
 	{
 		id: 'weather-dashboard',
@@ -83,7 +202,46 @@ const mockProjectsData: Project[] = [
 		githubUrl: 'https://github.com/leechy/weather-dashboard',
 		demoUrl: 'https://weather.leechy.dev',
 		startDate: new Date('2023-05-01'),
-		completionDate: new Date('2023-07-30')
+		completionDate: new Date('2023-07-30'),
+		challenges: [
+			'Processing large amounts of weather data efficiently',
+			'Creating intuitive data visualizations',
+			'Handling API rate limits and caching',
+			'Implementing responsive charts for mobile devices'
+		],
+		solutions: [
+			'Implemented data aggregation and efficient filtering algorithms',
+			'Used D3.js for custom, interactive visualizations',
+			'Added intelligent caching layer with Redis',
+			'Created responsive SVG charts that adapt to screen sizes'
+		],
+		skillsDemonstrated: [
+			'Data Visualization',
+			'API Integration',
+			'Frontend Development',
+			'Performance Optimization',
+			'Responsive Design'
+		],
+		content: `# Weather Dashboard
+
+An interactive weather visualization platform that transforms complex meteorological data into intuitive, actionable insights.
+
+## Key Features
+
+- Real-time weather data from multiple sources
+- Interactive charts and graphs using D3.js
+- 7-day weather forecasting
+- Historical weather pattern analysis
+- Location-based weather alerts
+
+## Data Processing
+
+The dashboard processes weather data from multiple APIs, aggregates the information, and presents it through custom visualizations optimized for both desktop and mobile viewing.
+
+## Technical Innovation
+
+Custom D3.js visualizations provide interactive exploration of weather patterns, with responsive design ensuring optimal viewing across all devices.`,
+		relatedProjects: ['portfolio-website', 'task-management-app']
 	}
 ];
 
@@ -124,9 +282,12 @@ export function getProjectsByStatus(status: ProjectStatus): Project[] {
 	return mockProjectsData.filter(project => project.status === status);
 }
 
-// Helper function to get projects by technology
+// Helper function to get projects by technology (case-insensitive)
 export function getProjectsByTechnology(technology: string): Project[] {
-	return mockProjectsData.filter(project => project.technologies.includes(technology));
+	const lowerTechnology = technology.toLowerCase();
+	return mockProjectsData.filter(project =>
+		project.technologies.some(tech => tech.toLowerCase() === lowerTechnology)
+	);
 }
 
 // Helper function to get project statistics
@@ -142,4 +303,32 @@ export function getProjectStatistics(): {
 	const featured = mockProjectsData.filter(p => p.featured).length;
 
 	return { total, completed, inDevelopment, featured };
+}
+
+// Helper function to get project by ID (for detail pages)
+export function getProjectById(id: string): Project | undefined {
+	return mockProjectsData.find(project => project.id === id);
+}
+
+// Helper function to get related projects
+export function getRelatedProjects(projectId: string): Project[] {
+	const project = getProjectById(projectId);
+	if (!project || !project.relatedProjects) {
+		return [];
+	}
+
+	return project.relatedProjects
+		.map(id => getProjectById(id))
+		.filter((p): p is Project => p !== undefined);
+}
+
+// Helper function to search projects by text
+export function searchProjects(query: string): Project[] {
+	const lowerQuery = query.toLowerCase();
+	return mockProjectsData.filter(
+		project =>
+			project.title.toLowerCase().includes(lowerQuery) ||
+			project.description.toLowerCase().includes(lowerQuery) ||
+			project.technologies.some(tech => tech.toLowerCase().includes(lowerQuery))
+	);
 }

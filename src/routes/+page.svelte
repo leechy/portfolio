@@ -104,7 +104,7 @@
 		</div>
 	</section>
 	<!-- Featured Projects Section -->
-	<section class="featured-projects" data-testid="featured-projects-section">
+	<section class="featured-projects projects-section" data-testid="projects-section">
 		<div class="container">
 			<h2>Featured Projects</h2>
 
@@ -115,39 +115,54 @@
 			{:else}
 				<div class="projects-grid">
 					{#each projects.featured as project}
-						<div class="project-card" data-testid="project-card">
-							<h3 class="project-title" data-testid="project-title">{project.title}</h3>
-							<p class="project-description" data-testid="project-description">
-								{project.description}
-							</p>
-							<div class="project-technologies" data-testid="project-technologies">
-								{#each project.technologies as tech}
-									<span class="tech-tag">{tech}</span>
-								{/each}
-							</div>
-							<div class="project-links">
-								{#if project.demoUrl}
-									<a
-										href={project.demoUrl}
-										class="project-link"
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										View Demo
+						<article class="project-card" data-testid="project-card">
+							<div
+								class="project-card-content"
+								on:click={() => (window.location.href = `/projects/${project.id}`)}
+								role="button"
+								tabindex="0"
+								on:keydown={e =>
+									e.key === 'Enter' && (window.location.href = `/projects/${project.id}`)}
+								data-testid="project-card-content"
+							>
+								<h3 class="project-title" data-testid="project-title">{project.title}</h3>
+								<p class="project-description" data-testid="project-description">
+									{project.description}
+								</p>
+								<div class="project-technologies" data-testid="project-technologies">
+									{#each project.technologies as tech}
+										<span class="tech-tag">{tech}</span>
+									{/each}
+								</div>
+								<div class="project-links">
+									{#if project.demoUrl}
+										<a
+											href={project.demoUrl}
+											class="project-link"
+											target="_blank"
+											rel="noopener noreferrer"
+											on:click={e => e.stopPropagation()}
+										>
+											View Demo
+										</a>
+									{/if}
+									{#if project.githubUrl}
+										<a
+											href={project.githubUrl}
+											class="project-link"
+											target="_blank"
+											rel="noopener noreferrer"
+											on:click={e => e.stopPropagation()}
+										>
+											GitHub
+										</a>
+									{/if}
+									<a href="/projects/{project.id}" class="project-link project-detail-link">
+										View Details
 									</a>
-								{/if}
-								{#if project.githubUrl}
-									<a
-										href={project.githubUrl}
-										class="project-link"
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										GitHub
-									</a>
-								{/if}
+								</div>
 							</div>
-						</div>
+						</article>
 					{/each}
 				</div>
 			{/if}
@@ -353,16 +368,29 @@
 
 	.project-card {
 		background: white;
-		padding: $spacing-lg;
 		border-radius: 12px;
 		border: 1px solid #e2e8f0;
 		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 		transition: all 0.3s ease;
+		overflow: hidden;
 	}
 
 	.project-card:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+	}
+
+	.project-card-content {
+		padding: $spacing-lg;
+		cursor: pointer;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.project-card-content:focus {
+		outline: 2px solid $color-primary;
+		outline-offset: 2px;
 	}
 
 	.project-title {
@@ -528,5 +556,16 @@
 	.project-link:hover {
 		background: darken($color-primary, 10%);
 		transform: translateY(-1px);
+	}
+
+	.project-detail-link {
+		background: transparent;
+		color: $color-primary;
+		border: 1px solid $color-primary;
+	}
+
+	.project-detail-link:hover {
+		background: $color-primary;
+		color: white;
 	}
 </style>
