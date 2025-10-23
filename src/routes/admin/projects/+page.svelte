@@ -92,13 +92,19 @@
 			<div class="header-actions">
 				<a href="/admin/projects/new" class="btn btn-primary" data-testid="new-project-btn">
 					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 4v16m8-8H4"
+						/>
 					</svg>
 					New Project
 				</a>
 			</div>
 		</div>
-	</header>	<!-- Filters and Search -->
+	</header>
+	<!-- Filters and Search -->
 	<div class="controls">
 		<div class="search-box">
 			<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">

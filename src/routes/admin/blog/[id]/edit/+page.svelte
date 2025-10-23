@@ -49,20 +49,50 @@
 
 	// Available tags for autocomplete
 	const availableTags = [
-		'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Svelte', 'SvelteKit',
-		'Node.js', 'Express', 'NextJS', 'Nuxt', 'Gatsby',
-		'HTML', 'CSS', 'Tailwind CSS', 'SCSS', 'Bootstrap',
-		'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis',
-		'Docker', 'AWS', 'Kubernetes', 'CI/CD', 'GitHub Actions',
-		'Testing', 'Jest', 'Cypress', 'Playwright',
-		'Performance', 'SEO', 'Accessibility', 'UI/UX',
-		'Tutorial', 'Guide', 'Tips', 'Best Practices'
+		'JavaScript',
+		'TypeScript',
+		'React',
+		'Vue.js',
+		'Svelte',
+		'SvelteKit',
+		'Node.js',
+		'Express',
+		'NextJS',
+		'Nuxt',
+		'Gatsby',
+		'HTML',
+		'CSS',
+		'Tailwind CSS',
+		'SCSS',
+		'Bootstrap',
+		'MongoDB',
+		'PostgreSQL',
+		'MySQL',
+		'SQLite',
+		'Redis',
+		'Docker',
+		'AWS',
+		'Kubernetes',
+		'CI/CD',
+		'GitHub Actions',
+		'Testing',
+		'Jest',
+		'Cypress',
+		'Playwright',
+		'Performance',
+		'SEO',
+		'Accessibility',
+		'UI/UX',
+		'Tutorial',
+		'Guide',
+		'Tips',
+		'Best Practices'
 	];
 
 	// Load blog data
 	function loadBlog() {
 		const blog = blogs.find(b => b.id === blogId);
-		
+
 		if (!blog) {
 			blogFound = false;
 			isLoadingBlog = false;
@@ -70,7 +100,7 @@
 		}
 
 		blogFound = true;
-		
+
 		// Populate form with blog data
 		formData = {
 			...blog,
@@ -147,7 +177,7 @@
 	// Handle form submission
 	async function handleSubmit(event) {
 		event.preventDefault();
-		
+
 		if (!validateForm()) {
 			return;
 		}
@@ -178,7 +208,6 @@
 			// Show success message and redirect
 			alert('Blog post updated successfully!');
 			goto('/admin/blog');
-
 		} catch (error) {
 			console.error('Error updating blog post:', error);
 			errors.general = 'Failed to update blog post. Please try again.';
@@ -199,7 +228,6 @@
 
 			alert('Blog post deleted successfully!');
 			goto('/admin/blog');
-
 		} catch (error) {
 			console.error('Error deleting blog post:', error);
 			alert('Failed to delete blog post. Please try again.');
@@ -248,11 +276,16 @@
 		<div class="header-content">
 			<a href="/admin/blog" class="back-link">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 19l-7-7m0 0l7-7m-7 7h18"
+					/>
 				</svg>
 				Back to Blog Posts
 			</a>
-			
+
 			{#if isLoadingBlog}
 				<h1>Loading Blog Post...</h1>
 			{:else if !blogFound}
@@ -287,7 +320,7 @@
 			<!-- Basic Information -->
 			<section class="form-section">
 				<h2>Basic Information</h2>
-				
+
 				<div class="form-row">
 					<div class="form-group">
 						<label for="title">Post Title *</label>
@@ -331,7 +364,8 @@
 					{#if errors.excerpt}
 						<span class="field-error">{errors.excerpt}</span>
 					{/if}
-					<span class="field-help">This will appear in blog listings and social media previews</span>
+					<span class="field-help">This will appear in blog listings and social media previews</span
+					>
 				</div>
 			</section>
 
@@ -342,7 +376,12 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="category">Category *</label>
-						<select id="category" bind:value={formData.category} class:error={errors.category} data-testid="blog-category-select">
+						<select
+							id="category"
+							bind:value={formData.category}
+							class:error={errors.category}
+							data-testid="blog-category-select"
+						>
 							<option value="">Select a category</option>
 							{#each availableCategories as category}
 								<option value={category}>{category}</option>
@@ -419,8 +458,12 @@
 
 				<div class="form-group">
 					<label class="status-label">
-						Publication Status: 
-						<span class="status-badge" class:published={formData.published} class:draft={!formData.published}>
+						Publication Status:
+						<span
+							class="status-badge"
+							class:published={formData.published}
+							class:draft={!formData.published}
+						>
 							{formData.published ? 'Published' : 'Draft'}
 						</span>
 					</label>
@@ -430,7 +473,7 @@
 			<!-- Tags -->
 			<section class="form-section">
 				<h2>Tags *</h2>
-				
+
 				<div class="form-group">
 					<div class="tag-input-container">
 						<input
@@ -438,7 +481,7 @@
 							bind:value={currentTag}
 							placeholder="Add tag (e.g., JavaScript, Tutorial)"
 							list="tag-suggestions"
-							on:keypress={(e) => handleKeyPress(e, addTag)}
+							on:keypress={e => handleKeyPress(e, addTag)}
 							data-testid="tag-input"
 						/>
 						<button type="button" on:click={addTag} class="btn-add">Add</button>
@@ -470,7 +513,7 @@
 			<!-- Content -->
 			<section class="form-section">
 				<h2>Post Content *</h2>
-				
+
 				<div class="form-group">
 					<label for="content">Content</label>
 					<textarea
@@ -486,7 +529,9 @@
 						<span class="field-error">{errors.content}</span>
 					{/if}
 					<div class="content-help">
-						<span class="field-help">Supports Markdown formatting (headings, links, code blocks, etc.)</span>
+						<span class="field-help"
+							>Supports Markdown formatting (headings, links, code blocks, etc.)</span
+						>
 						{#if formData.content.trim()}
 							<span class="word-count">
 								{formData.content.trim().split(/\s+/).length} words
@@ -508,13 +553,13 @@
 						Delete Post
 					</button>
 				</div>
-				
+
 				<div class="center-actions">
 					<button type="button" class="btn btn-secondary" on:click={() => goto('/admin/blog')}>
 						Cancel
 					</button>
 				</div>
-				
+
 				<div class="right-actions">
 					<button
 						type="button"
@@ -525,15 +570,26 @@
 					>
 						{#if isLoading && !formData.published}
 							<svg class="spinner" viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-								<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+								<circle
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="4"
+									fill="none"
+									opacity="0.25"
+								/>
+								<path
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								/>
 							</svg>
 							Saving Draft...
 						{:else}
 							Save as Draft
 						{/if}
 					</button>
-					
+
 					<button
 						type="button"
 						class="btn btn-primary"
@@ -543,8 +599,19 @@
 					>
 						{#if isLoading && formData.published}
 							<svg class="spinner" viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-								<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+								<circle
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="4"
+									fill="none"
+									opacity="0.25"
+								/>
+								<path
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								/>
 							</svg>
 							Updating...
 						{:else}
@@ -728,7 +795,9 @@
 		}
 	}
 
-	input, select, textarea {
+	input,
+	select,
+	textarea {
 		padding: 0.75rem;
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
@@ -879,7 +948,9 @@
 		}
 
 		@media (max-width: 768px) {
-			.left-actions, .center-actions, .right-actions {
+			.left-actions,
+			.center-actions,
+			.right-actions {
 				justify-content: center;
 			}
 		}

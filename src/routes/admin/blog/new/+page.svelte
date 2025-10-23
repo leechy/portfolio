@@ -43,22 +43,54 @@
 
 	// Available tags for autocomplete
 	const availableTags = [
-		'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Svelte', 'SvelteKit',
-		'Node.js', 'Express', 'NextJS', 'Nuxt', 'Gatsby',
-		'HTML', 'CSS', 'Tailwind CSS', 'SCSS', 'Bootstrap',
-		'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis',
-		'Docker', 'AWS', 'Kubernetes', 'CI/CD', 'GitHub Actions',
-		'Testing', 'Jest', 'Cypress', 'Playwright',
-		'Performance', 'SEO', 'Accessibility', 'UI/UX',
-		'Tutorial', 'Guide', 'Tips', 'Best Practices'
+		'JavaScript',
+		'TypeScript',
+		'React',
+		'Vue.js',
+		'Svelte',
+		'SvelteKit',
+		'Node.js',
+		'Express',
+		'NextJS',
+		'Nuxt',
+		'Gatsby',
+		'HTML',
+		'CSS',
+		'Tailwind CSS',
+		'SCSS',
+		'Bootstrap',
+		'MongoDB',
+		'PostgreSQL',
+		'MySQL',
+		'SQLite',
+		'Redis',
+		'Docker',
+		'AWS',
+		'Kubernetes',
+		'CI/CD',
+		'GitHub Actions',
+		'Testing',
+		'Jest',
+		'Cypress',
+		'Playwright',
+		'Performance',
+		'SEO',
+		'Accessibility',
+		'UI/UX',
+		'Tutorial',
+		'Guide',
+		'Tips',
+		'Best Practices'
 	];
 
 	// Generate unique ID for new blog post
 	function generateBlogId() {
-		return formData.title
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-|-$/g, '') || `post-${Date.now()}`;
+		return (
+			formData.title
+				.toLowerCase()
+				.replace(/[^a-z0-9]+/g, '-')
+				.replace(/^-|-$/g, '') || `post-${Date.now()}`
+		);
 	}
 
 	// Calculate estimated read time based on content
@@ -116,7 +148,7 @@
 	// Handle form submission
 	async function handleSubmit(event) {
 		event.preventDefault();
-		
+
 		if (!validateForm()) {
 			return;
 		}
@@ -152,7 +184,6 @@
 			// Show success message and redirect
 			alert('Blog post created successfully!');
 			goto('/admin/blog');
-
 		} catch (error) {
 			console.error('Error creating blog post:', error);
 			errors.general = 'Failed to create blog post. Please try again.';
@@ -210,7 +241,12 @@
 		<div class="header-content">
 			<a href="/admin/blog" class="back-link">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 19l-7-7m0 0l7-7m-7 7h18"
+					/>
 				</svg>
 				Back to Blog Posts
 			</a>
@@ -229,7 +265,7 @@
 		<!-- Basic Information -->
 		<section class="form-section">
 			<h2>Basic Information</h2>
-			
+
 			<div class="form-row">
 				<div class="form-group">
 					<label for="title">Post Title *</label>
@@ -283,7 +319,12 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="category">Category *</label>
-					<select id="category" bind:value={formData.category} class:error={errors.category} data-testid="blog-category-select">
+					<select
+						id="category"
+						bind:value={formData.category}
+						class:error={errors.category}
+						data-testid="blog-category-select"
+					>
 						<option value="">Select a category</option>
 						{#each availableCategories as category}
 							<option value={category}>{category}</option>
@@ -362,7 +403,7 @@
 		<!-- Tags -->
 		<section class="form-section">
 			<h2>Tags *</h2>
-			
+
 			<div class="form-group">
 				<div class="tag-input-container">
 					<input
@@ -370,7 +411,7 @@
 						bind:value={currentTag}
 						placeholder="Add tag (e.g., JavaScript, Tutorial)"
 						list="tag-suggestions"
-						on:keypress={(e) => handleKeyPress(e, addTag)}
+						on:keypress={e => handleKeyPress(e, addTag)}
 						data-testid="tag-input"
 					/>
 					<button type="button" on:click={addTag} class="btn-add">Add</button>
@@ -402,7 +443,7 @@
 		<!-- Content -->
 		<section class="form-section">
 			<h2>Post Content *</h2>
-			
+
 			<div class="form-group">
 				<label for="content">Content</label>
 				<textarea
@@ -418,7 +459,9 @@
 					<span class="field-error">{errors.content}</span>
 				{/if}
 				<div class="content-help">
-					<span class="field-help">Supports Markdown formatting (headings, links, code blocks, etc.)</span>
+					<span class="field-help"
+						>Supports Markdown formatting (headings, links, code blocks, etc.)</span
+					>
 					{#if formData.content.trim()}
 						<span class="word-count">
 							{formData.content.trim().split(/\s+/).length} words
@@ -435,7 +478,7 @@
 					Cancel
 				</button>
 			</div>
-			
+
 			<div class="right-actions">
 				<button
 					type="button"
@@ -446,15 +489,26 @@
 				>
 					{#if isLoading && !formData.published}
 						<svg class="spinner" viewBox="0 0 24 24">
-							<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-							<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+							<circle
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								stroke-width="4"
+								fill="none"
+								opacity="0.25"
+							/>
+							<path
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							/>
 						</svg>
 						Saving Draft...
 					{:else}
 						Save as Draft
 					{/if}
 				</button>
-				
+
 				<button
 					type="button"
 					class="btn btn-primary"
@@ -464,8 +518,19 @@
 				>
 					{#if isLoading && formData.published}
 						<svg class="spinner" viewBox="0 0 24 24">
-							<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-							<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+							<circle
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								stroke-width="4"
+								fill="none"
+								opacity="0.25"
+							/>
+							<path
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							/>
 						</svg>
 						Publishing...
 					{:else}
@@ -579,7 +644,9 @@
 		cursor: pointer;
 	}
 
-	input, select, textarea {
+	input,
+	select,
+	textarea {
 		padding: 0.75rem;
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
@@ -707,7 +774,8 @@
 			gap: 1rem;
 		}
 
-		.left-actions, .right-actions {
+		.left-actions,
+		.right-actions {
 			display: flex;
 			gap: 1rem;
 

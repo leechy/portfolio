@@ -253,7 +253,7 @@ function createProjectsStore() {
 		subscribe,
 		// Initialize with mock data
 		init: () => set([...mockProjectsData]),
-		
+
 		// Create new project
 		create: (projectData: Partial<Project>) => {
 			const newProject: Project = {
@@ -274,23 +274,25 @@ function createProjectsStore() {
 				content: projectData.content || '',
 				relatedProjects: projectData.relatedProjects || []
 			};
-			
+
 			update(projects => [...projects, newProject]);
 			return newProject;
 		},
-		
+
 		// Update existing project
-		updateById: (id: string, projectData: Partial<Project>) => update(projects => {
-			return projects.map(project => 
-				project.id === id ? { ...project, ...projectData } : project
-			);
-		}),
-		
+		updateById: (id: string, projectData: Partial<Project>) =>
+			update(projects => {
+				return projects.map(project =>
+					project.id === id ? { ...project, ...projectData } : project
+				);
+			}),
+
 		// Delete project by ID
-		deleteById: (id: string) => update(projects => {
-			return projects.filter(project => project.id !== id);
-		}),
-		
+		deleteById: (id: string) =>
+			update(projects => {
+				return projects.filter(project => project.id !== id);
+			}),
+
 		// Get project by ID
 		getById: (id: string): Project | undefined => {
 			let foundProject: Project | undefined = undefined;
@@ -300,12 +302,13 @@ function createProjectsStore() {
 			});
 			return foundProject;
 		},
-		
+
 		// Array access methods for backward compatibility
-		push: (projectData: Project) => update(projects => {
-			return [...projects, projectData];
-		}),
-		
+		push: (projectData: Project) =>
+			update(projects => {
+				return [...projects, projectData];
+			}),
+
 		find: (predicate: (project: Project) => boolean): Project | undefined => {
 			let foundProject: Project | undefined = undefined;
 			update(projects => {
@@ -314,7 +317,7 @@ function createProjectsStore() {
 			});
 			return foundProject;
 		},
-		
+
 		findIndex: (predicate: (project: Project) => boolean): number => {
 			let index = -1;
 			update(projects => {
@@ -323,13 +326,14 @@ function createProjectsStore() {
 			});
 			return index;
 		},
-		
-		splice: (start: number, deleteCount: number, ...items: Project[]) => update(projects => {
-			const newArray = [...projects];
-			newArray.splice(start, deleteCount, ...items);
-			return newArray;
-		}),
-		
+
+		splice: (start: number, deleteCount: number, ...items: Project[]) =>
+			update(projects => {
+				const newArray = [...projects];
+				newArray.splice(start, deleteCount, ...items);
+				return newArray;
+			}),
+
 		// Reset to original data
 		reset: () => set([...mockProjectsData])
 	};

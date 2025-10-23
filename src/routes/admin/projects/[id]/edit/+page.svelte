@@ -39,19 +39,48 @@
 
 	// Available technologies for autocomplete
 	const availableTechnologies = [
-		'JavaScript', 'TypeScript', 'React', 'Vue.js', 'Svelte', 'SvelteKit',
-		'Node.js', 'Express', 'FastAPI', 'Django', 'Flask',
-		'HTML', 'CSS', 'Tailwind CSS', 'SCSS', 'Bootstrap',
-		'MongoDB', 'PostgreSQL', 'MySQL', 'SQLite', 'Redis',
-		'Docker', 'AWS', 'Vercel', 'Netlify', 'Firebase',
-		'Git', 'GitHub Actions', 'Jest', 'Cypress', 'Playwright',
-		'Webpack', 'Vite', 'Rollup', 'ESLint', 'Prettier'
+		'JavaScript',
+		'TypeScript',
+		'React',
+		'Vue.js',
+		'Svelte',
+		'SvelteKit',
+		'Node.js',
+		'Express',
+		'FastAPI',
+		'Django',
+		'Flask',
+		'HTML',
+		'CSS',
+		'Tailwind CSS',
+		'SCSS',
+		'Bootstrap',
+		'MongoDB',
+		'PostgreSQL',
+		'MySQL',
+		'SQLite',
+		'Redis',
+		'Docker',
+		'AWS',
+		'Vercel',
+		'Netlify',
+		'Firebase',
+		'Git',
+		'GitHub Actions',
+		'Jest',
+		'Cypress',
+		'Playwright',
+		'Webpack',
+		'Vite',
+		'Rollup',
+		'ESLint',
+		'Prettier'
 	];
 
 	// Load project data
 	function loadProject() {
 		const project = projects.find(p => p.id === projectId);
-		
+
 		if (!project) {
 			projectFound = false;
 			isLoadingProject = false;
@@ -59,7 +88,7 @@
 		}
 
 		projectFound = true;
-		
+
 		// Populate form with project data
 		formData = {
 			...project,
@@ -176,7 +205,7 @@
 	// Handle form submission
 	async function handleSubmit(event) {
 		event.preventDefault();
-		
+
 		if (!validateForm()) {
 			return;
 		}
@@ -197,7 +226,6 @@
 			// Show success message and redirect
 			alert('Project updated successfully!');
 			goto('/admin/projects');
-
 		} catch (error) {
 			console.error('Error updating project:', error);
 			errors.general = 'Failed to update project. Please try again.';
@@ -218,7 +246,6 @@
 
 			alert('Project deleted successfully!');
 			goto('/admin/projects');
-
 		} catch (error) {
 			console.error('Error deleting project:', error);
 			alert('Failed to delete project. Please try again.');
@@ -247,11 +274,16 @@
 		<div class="header-content">
 			<a href="/admin/projects" class="back-link">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 19l-7-7m0 0l7-7m-7 7h18"
+					/>
 				</svg>
 				Back to Projects
 			</a>
-			
+
 			{#if isLoadingProject}
 				<h1>Loading Project...</h1>
 			{:else if !projectFound}
@@ -286,7 +318,7 @@
 			<!-- Basic Information -->
 			<section class="form-section">
 				<h2>Basic Information</h2>
-				
+
 				<div class="form-row">
 					<div class="form-group">
 						<label for="title">Project Title *</label>
@@ -430,7 +462,7 @@
 			<!-- Technologies -->
 			<section class="form-section">
 				<h2>Technologies *</h2>
-				
+
 				<div class="form-group">
 					<div class="tech-input-container">
 						<input
@@ -438,7 +470,7 @@
 							bind:value={currentTech}
 							placeholder="Add technology (e.g., React, Node.js)"
 							list="tech-suggestions"
-							on:keypress={(e) => handleKeyPress(e, addTechnology)}
+							on:keypress={e => handleKeyPress(e, addTechnology)}
 							data-testid="tech-input"
 						/>
 						<button type="button" on:click={addTechnology} class="btn-add">Add</button>
@@ -470,7 +502,7 @@
 			<!-- Challenges -->
 			<section class="form-section">
 				<h2>Challenges & Solutions</h2>
-				
+
 				<div class="form-group">
 					<label>Challenges Faced</label>
 					<div class="list-input-container">
@@ -478,7 +510,7 @@
 							type="text"
 							bind:value={currentChallenge}
 							placeholder="Describe a challenge you faced"
-							on:keypress={(e) => handleKeyPress(e, addChallenge)}
+							on:keypress={e => handleKeyPress(e, addChallenge)}
 							data-testid="challenge-input"
 						/>
 						<button type="button" on:click={addChallenge} class="btn-add">Add</button>
@@ -503,7 +535,7 @@
 							type="text"
 							bind:value={currentSolution}
 							placeholder="Describe how you solved a challenge"
-							on:keypress={(e) => handleKeyPress(e, addSolution)}
+							on:keypress={e => handleKeyPress(e, addSolution)}
 							data-testid="solution-input"
 						/>
 						<button type="button" on:click={addSolution} class="btn-add">Add</button>
@@ -525,14 +557,14 @@
 			<!-- Skills -->
 			<section class="form-section">
 				<h2>Skills Demonstrated</h2>
-				
+
 				<div class="form-group">
 					<div class="list-input-container">
 						<input
 							type="text"
 							bind:value={currentSkill}
 							placeholder="Add a skill you demonstrated"
-							on:keypress={(e) => handleKeyPress(e, addSkill)}
+							on:keypress={e => handleKeyPress(e, addSkill)}
 							data-testid="skill-input"
 						/>
 						<button type="button" on:click={addSkill} class="btn-add">Add</button>
@@ -554,7 +586,7 @@
 			<!-- Content -->
 			<section class="form-section">
 				<h2>Project Content</h2>
-				
+
 				<div class="form-group">
 					<label for="content">Detailed Description</label>
 					<textarea
@@ -580,7 +612,7 @@
 						Delete Project
 					</button>
 				</div>
-				
+
 				<div class="right-actions">
 					<button type="button" class="btn btn-secondary" on:click={() => goto('/admin/projects')}>
 						Cancel
@@ -593,8 +625,19 @@
 					>
 						{#if isLoading}
 							<svg class="spinner" viewBox="0 0 24 24">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-								<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+								<circle
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="4"
+									fill="none"
+									opacity="0.25"
+								/>
+								<path
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								/>
 							</svg>
 							Updating Project...
 						{:else}
@@ -754,7 +797,9 @@
 		cursor: pointer;
 	}
 
-	input, select, textarea {
+	input,
+	select,
+	textarea {
 		padding: 0.75rem;
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
@@ -942,7 +987,8 @@
 			gap: 1rem;
 		}
 
-		.left-actions, .right-actions {
+		.left-actions,
+		.right-actions {
 			display: flex;
 			gap: 1rem;
 

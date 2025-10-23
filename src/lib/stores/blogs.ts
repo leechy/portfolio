@@ -916,13 +916,19 @@ function createBlogsStore() {
 		subscribe,
 		// Initialize with mock data
 		init: () => set([...mockBlogData]),
-		
+
 		// Create new blog post
 		create: (blogData: Partial<BlogPost>) => {
 			const newBlog: BlogPost = {
 				id: blogData.id || `blog-${Date.now()}`,
 				title: blogData.title || '',
-				slug: blogData.slug || blogData.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || '',
+				slug:
+					blogData.slug ||
+					blogData.title
+						?.toLowerCase()
+						.replace(/[^a-z0-9]+/g, '-')
+						.replace(/^-|-$/g, '') ||
+					'',
 				excerpt: blogData.excerpt || '',
 				content: blogData.content || '',
 				publishedAt: blogData.publishedAt || new Date(),
@@ -932,23 +938,23 @@ function createBlogsStore() {
 				coverImageUrl: blogData.coverImageUrl,
 				featured: blogData.featured || false
 			};
-			
+
 			update(blogs => [...blogs, newBlog]);
 			return newBlog;
 		},
-		
+
 		// Update existing blog post
-		updateById: (id: string, blogData: Partial<BlogPost>) => update(blogs => {
-			return blogs.map(blog => 
-				blog.id === id ? { ...blog, ...blogData } : blog
-			);
-		}),
-		
+		updateById: (id: string, blogData: Partial<BlogPost>) =>
+			update(blogs => {
+				return blogs.map(blog => (blog.id === id ? { ...blog, ...blogData } : blog));
+			}),
+
 		// Delete blog post by ID
-		deleteById: (id: string) => update(blogs => {
-			return blogs.filter(blog => blog.id !== id);
-		}),
-		
+		deleteById: (id: string) =>
+			update(blogs => {
+				return blogs.filter(blog => blog.id !== id);
+			}),
+
 		// Get blog post by ID
 		getById: (id: string): BlogPost | undefined => {
 			let foundBlog: BlogPost | undefined = undefined;
@@ -958,10 +964,10 @@ function createBlogsStore() {
 			});
 			return foundBlog;
 		},
-		
+
 		// Array access methods for backward compatibility
 		push: (blogData: BlogPost) => update(blogs => [...blogs, blogData]),
-		
+
 		find: (predicate: (blog: BlogPost) => boolean): BlogPost | undefined => {
 			let foundBlog: BlogPost | undefined = undefined;
 			update(blogs => {
@@ -970,7 +976,7 @@ function createBlogsStore() {
 			});
 			return foundBlog;
 		},
-		
+
 		findIndex: (predicate: (blog: BlogPost) => boolean): number => {
 			let index = -1;
 			update(blogs => {
@@ -979,13 +985,14 @@ function createBlogsStore() {
 			});
 			return index;
 		},
-		
-		splice: (start: number, deleteCount: number, ...items: BlogPost[]) => update(blogs => {
-			const newArray = [...blogs];
-			newArray.splice(start, deleteCount, ...items);
-			return newArray;
-		}),
-		
+
+		splice: (start: number, deleteCount: number, ...items: BlogPost[]) =>
+			update(blogs => {
+				const newArray = [...blogs];
+				newArray.splice(start, deleteCount, ...items);
+				return newArray;
+			}),
+
 		// Reset to original data
 		reset: () => set([...mockBlogData])
 	};
