@@ -90,16 +90,16 @@
 </script>
 
 <svelte:head>
-	<title>Manage Blog Posts - Admin</title>
+	<title>Admin - Blog</title>
 </svelte:head>
 
-<div class="blog-admin">
+<div class="blog-admin" data-testid="admin-blog">
 	<header class="page-header">
 		<div class="header-content">
 			<h1>Manage Blog Posts</h1>
 			<p>Create, edit, and organize your blog content</p>
 		</div>
-		<a href="/admin/blog/new" class="btn btn-primary" data-testid="new-post-btn">
+		<a href="/admin/blog/new" class="btn btn-primary" data-testid="add-blog-post-btn">
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 			</svg>
@@ -144,7 +144,7 @@
 	</div>
 
 	<!-- Blog Posts List -->
-	<div class="posts-list" data-testid="posts-list">
+	<div class="posts-list" data-testid="blog-posts-list">
 		{#if filteredPosts.length === 0}
 			<div class="empty-state">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@
 			</div>
 		{:else}
 			{#each filteredPosts as post (post.id)}
-				<div class="post-card" data-testid="post-item">
+				<div class="post-card" data-testid="blog-post-item">
 					<div class="post-image">
 						{#if post.coverImageUrl}
 							<img src={post.coverImageUrl} alt={post.title} />
@@ -225,7 +225,7 @@
 							<a
 								href="/admin/blog/{post.slug}/edit"
 								class="btn btn-secondary"
-								data-testid="edit-post-btn"
+								data-testid="edit-blog-post-btn"
 							>
 								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
@@ -240,7 +240,7 @@
 							<button
 								class="btn btn-danger"
 								on:click={() => deletePost(post.id)}
-								data-testid="delete-post-btn"
+								data-testid="delete-blog-post-btn"
 							>
 								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path

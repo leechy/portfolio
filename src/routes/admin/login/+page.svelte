@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { authStore, login, initAuth } from '$lib/auth/auth';
 
 	let loginForm = {
 		email: '',
@@ -11,12 +12,17 @@
 	let isLoading = false;
 
 	onMount(() => {
+		// Initialize auth system
+		initAuth();
+
 		// If already authenticated, redirect to dashboard
-		// This is a placeholder - in real implementation, check JWT/session
-		const isAuthenticated = false; // localStorage.getItem('auth_token');
-		if (isAuthenticated) {
-			goto('/admin/dashboard');
-		}
+		const unsubscribe = authStore.subscribe(auth => {
+			if (!auth.loading && auth.isAuthenticated) {
+				goto('/admin/dashboard');
+			}
+		});
+
+		return unsubscribe;
 	});
 
 	async function handleLogin(event) {
@@ -38,21 +44,16 @@
 		}
 
 		try {
-			// Simulate API call - replace with real authentication
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			const result = await login(loginForm.email, loginForm.password);
 
-			// For demo purposes, accept any email/password
-			// In real implementation, validate against backend
-			if (loginForm.email && loginForm.password) {
-				// Store auth token (placeholder)
-				// localStorage.setItem('auth_token', 'demo_token');
-
-				// Redirect to dashboard
+			if (result.success) {
+				// Authentication successful, redirect to dashboard
 				goto('/admin/dashboard');
 			} else {
-				errors.general = 'Invalid credentials';
+				errors.general = result.error || 'Authentication failed';
 			}
 		} catch (error) {
+			console.error('Login error:', error);
 			errors.general = 'Login failed. Please try again.';
 		} finally {
 			isLoading = false;
@@ -83,6 +84,7 @@
 				<label for="email">Email</label>
 				<input
 					id="email"
+					name="email"
 					type="email"
 					bind:value={loginForm.email}
 					class:error={errors.email}
@@ -98,6 +100,7 @@
 				<label for="password">Password</label>
 				<input
 					id="password"
+					name="password"
 					type="password"
 					bind:value={loginForm.password}
 					class:error={errors.password}

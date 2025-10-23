@@ -42,15 +42,15 @@
 	<title>Admin Dashboard - Leechy Dev</title>
 </svelte:head>
 
-<div class="dashboard">
+<div class="dashboard" data-testid="admin-dashboard">
 	<header class="dashboard-header">
 		<h1>Dashboard</h1>
 		<p class="dashboard-subtitle">Welcome back! Here's what's happening with your portfolio.</p>
 	</header>
 
 	<!-- Stats Grid -->
-	<div class="stats-grid" data-testid="admin-stats">
-		<div class="stat-card">
+	<div class="stats-grid" data-testid="stats-overview">
+		<div class="stat-card" data-testid="total-projects">
 			<div class="stat-icon projects">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
@@ -68,7 +68,7 @@
 			</div>
 		</div>
 
-		<div class="stat-card">
+		<div class="stat-card" data-testid="total-blog-posts">
 			<div class="stat-icon blog">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
@@ -86,7 +86,7 @@
 			</div>
 		</div>
 
-		<div class="stat-card">
+		<div class="stat-card" data-testid="recent-views">
 			<div class="stat-icon views">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path
@@ -210,7 +210,7 @@
 	</div>
 
 	<!-- Recent Activity -->
-	<div class="recent-activity">
+	<div class="recent-activity" data-testid="recent-activity">
 		<h2>Recent Activity</h2>
 		<div class="activity-list">
 			{#each recentActivity as activity}

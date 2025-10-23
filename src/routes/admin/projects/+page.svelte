@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { projects } from '$lib/stores/projects.js';
+	import { projects, projectsData } from '$lib/stores/projects.js';
 
 	let projectList = [];
 	let filteredProjects = [];
@@ -9,7 +9,7 @@
 	let sortBy = 'date';
 
 	onMount(() => {
-		projectList = [...projects];
+		projectList = [...projectsData];
 		filterAndSortProjects();
 	});
 
@@ -79,10 +79,10 @@
 </script>
 
 <svelte:head>
-	<title>Manage Projects - Admin</title>
+	<title>Admin - Projects</title>
 </svelte:head>
 
-<div class="projects-admin">
+<div class="projects-admin" data-testid="admin-projects">
 	<header class="admin-header">
 		<div class="header-content">
 			<div class="header-text">
@@ -90,7 +90,7 @@
 				<p>Manage your portfolio projects and showcase your work</p>
 			</div>
 			<div class="header-actions">
-				<a href="/admin/projects/new" class="btn btn-primary" data-testid="new-project-btn">
+				<a href="/admin/projects/new" class="btn btn-primary" data-testid="add-project-btn">
 					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
 						<path
 							stroke-linecap="round"

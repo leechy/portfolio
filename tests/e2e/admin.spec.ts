@@ -74,11 +74,13 @@ test.describe('Admin Interface - Authentication & Dashboard', () => {
 		// Verify admin navigation exists
 		await expect(page.locator('[data-testid="admin-nav"]')).toBeVisible();
 
-		// Verify navigation links
-		await expect(page.locator('a[href="/admin/dashboard"]')).toBeVisible();
-		await expect(page.locator('a[href="/admin/projects"]')).toBeVisible();
-		await expect(page.locator('a[href="/admin/blog"]')).toBeVisible();
-		await expect(page.locator('a[href="/admin/media"]')).toBeVisible();
+		// Verify navigation links using more specific selectors to avoid strict mode violations
+		await expect(
+			page.locator('[data-testid="admin-nav"] a[href="/admin/dashboard"]')
+		).toBeVisible();
+		await expect(page.locator('[data-testid="admin-nav"] a[href="/admin/projects"]')).toBeVisible();
+		await expect(page.locator('[data-testid="admin-nav"] a[href="/admin/blog"]')).toBeVisible();
+		await expect(page.locator('[data-testid="admin-nav"] a[href="/admin/media"]')).toBeVisible();
 	});
 
 	test('should show admin dashboard overview', async ({ page }) => {

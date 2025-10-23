@@ -2,23 +2,16 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { authStore, logout, initAuth } from '$lib/auth/auth';
 
-	// Check if user is authenticated (we'll implement proper auth later)
-	let isAuthenticated = false;
-	let currentUser = null;
-
+	// Initialize auth on mount
 	onMount(() => {
-		// For now, skip authentication check in development
-		// Later we'll check session/JWT token
-		isAuthenticated = true;
-		currentUser = { name: 'Admin User', email: 'admin@leechy.dev' };
+		initAuth();
 	});
 
 	function handleLogout() {
-		// Clear authentication and redirect to home
-		isAuthenticated = false;
-		currentUser = null;
-		goto('/');
+		logout();
+		goto('/admin/login');
 	}
 
 	// Get current page for active navigation styling
@@ -30,15 +23,37 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if isAuthenticated}
+{#if $authStore.loading}
+	<div class="auth-loading">
+		<div class="loading-spinner">
+			<svg class="spinner" viewBox="0 0 24 24">
+				<circle
+					cx="12"
+					cy="12"
+					r="10"
+					stroke="currentColor"
+					stroke-width="4"
+					fill="none"
+					opacity="0.25"
+				/>
+				<path
+					fill="currentColor"
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				/>
+			</svg>
+		</div>
+		<p>Loading...</p>
+	</div>
+{:else if $authStore.isAuthenticated}
 	<div class="admin-layout">
 		<!-- Admin Navigation Sidebar -->
 		<nav class="admin-sidebar" data-testid="admin-nav">
 			<div class="admin-header">
 				<h1>Admin Panel</h1>
 				<div class="user-info">
-					<span class="user-name">{currentUser?.name}</span>
-					<button class="logout-btn" on:click={handleLogout}>Logout</button>
+					<span class="user-name">{$authStore.user?.name}</span>
+					<button class="logout-btn" on:click={handleLogout} data-testid="logout-btn">Logout</button
+					>
 				</div>
 			</div>
 
@@ -131,10 +146,8 @@
 		</main>
 	</div>
 {:else}
-	<!-- Show loading or redirect to login -->
-	<div class="auth-loading">
-		<p>Checking authentication...</p>
-	</div>
+	<!-- Not authenticated - slot will handle login page -->
+	<slot />
 {/if}
 
 <style lang="scss">
@@ -246,11 +259,33 @@
 
 	.auth-loading {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		min-height: 100vh;
 		font-size: 1.125rem;
 		color: #64748b;
+		gap: 1rem;
+
+		.loading-spinner {
+			.spinner {
+				width: 2rem;
+				height: 2rem;
+				animation: spin 1s linear infinite;
+				color: #3b82f6;
+			}
+		}
+
+		p {
+			margin: 0;
+			font-weight: 500;
+		}
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	@media (max-width: 768px) {
