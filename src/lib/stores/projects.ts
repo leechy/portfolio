@@ -245,8 +245,101 @@ Custom D3.js visualizations provide interactive exploration of weather patterns,
 	}
 ];
 
-// Export the mock data for admin interface compatibility
-export const projects = mockProjectsData;
+// Create reactive writable store with CRUD operations for admin interface
+function createProjectsStore() {
+	const { subscribe, set, update } = writable([...mockProjectsData]);
+
+	return {
+		subscribe,
+		// Initialize with mock data
+		init: () => set([...mockProjectsData]),
+		
+		// Create new project
+		create: (projectData: Partial<Project>) => {
+			const newProject: Project = {
+				id: projectData.id || `project-${Date.now()}`,
+				title: projectData.title || '',
+				description: projectData.description || '',
+				technologies: projectData.technologies || [],
+				status: projectData.status || 'planning',
+				featured: projectData.featured || false,
+				githubUrl: projectData.githubUrl,
+				demoUrl: projectData.demoUrl,
+				imageUrl: projectData.imageUrl,
+				startDate: projectData.startDate,
+				completionDate: projectData.completionDate,
+				challenges: projectData.challenges || [],
+				solutions: projectData.solutions || [],
+				skillsDemonstrated: projectData.skillsDemonstrated || [],
+				content: projectData.content || '',
+				relatedProjects: projectData.relatedProjects || []
+			};
+			
+			update(projects => [...projects, newProject]);
+			return newProject;
+		},
+		
+		// Update existing project
+		updateById: (id: string, projectData: Partial<Project>) => update(projects => {
+			return projects.map(project => 
+				project.id === id ? { ...project, ...projectData } : project
+			);
+		}),
+		
+		// Delete project by ID
+		deleteById: (id: string) => update(projects => {
+			return projects.filter(project => project.id !== id);
+		}),
+		
+		// Get project by ID
+		getById: (id: string): Project | undefined => {
+			let foundProject: Project | undefined = undefined;
+			update(projects => {
+				foundProject = projects.find(project => project.id === id);
+				return projects;
+			});
+			return foundProject;
+		},
+		
+		// Array access methods for backward compatibility
+		push: (projectData: Project) => update(projects => {
+			return [...projects, projectData];
+		}),
+		
+		find: (predicate: (project: Project) => boolean): Project | undefined => {
+			let foundProject: Project | undefined = undefined;
+			update(projects => {
+				foundProject = projects.find(predicate);
+				return projects;
+			});
+			return foundProject;
+		},
+		
+		findIndex: (predicate: (project: Project) => boolean): number => {
+			let index = -1;
+			update(projects => {
+				index = projects.findIndex(predicate);
+				return projects;
+			});
+			return index;
+		},
+		
+		splice: (start: number, deleteCount: number, ...items: Project[]) => update(projects => {
+			const newArray = [...projects];
+			newArray.splice(start, deleteCount, ...items);
+			return newArray;
+		}),
+		
+		// Reset to original data
+		reset: () => set([...mockProjectsData])
+	};
+}
+
+// Export the reactive projects store for admin interface
+export const projects = createProjectsStore();
+
+// Export the mock data for other components compatibility
+export const projectsData = mockProjectsData;
 
 // Load projects data (async to simulate API calls)
 export async function loadProjects(): Promise<void> {

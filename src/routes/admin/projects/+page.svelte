@@ -83,20 +83,22 @@
 </svelte:head>
 
 <div class="projects-admin">
-	<header class="page-header">
+	<header class="admin-header">
 		<div class="header-content">
-			<h1>Manage Projects</h1>
-			<p>Add, edit, and organize your portfolio projects</p>
+			<div class="header-text">
+				<h1>Project Management</h1>
+				<p>Manage your portfolio projects and showcase your work</p>
+			</div>
+			<div class="header-actions">
+				<a href="/admin/projects/new" class="btn btn-primary" data-testid="new-project-btn">
+					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+					</svg>
+					New Project
+				</a>
+			</div>
 		</div>
-		<a href="/admin/projects/new" class="btn btn-primary" data-testid="new-project-btn">
-			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-			</svg>
-			New Project
-		</a>
-	</header>
-
-	<!-- Filters and Search -->
+	</header>	<!-- Filters and Search -->
 	<div class="controls">
 		<div class="search-box">
 			<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,6 +265,10 @@
 		margin-bottom: 2rem;
 		gap: 1rem;
 
+		@media (max-width: 768px) {
+			flex-direction: column;
+		}
+
 		.header-content {
 			h1 {
 				font-size: 2rem;
@@ -274,6 +280,16 @@
 			p {
 				color: #64748b;
 				margin: 0;
+			}
+		}
+
+		.header-actions {
+			display: flex;
+			gap: 0.75rem;
+
+			@media (max-width: 768px) {
+				width: 100%;
+				justify-content: center;
 			}
 		}
 	}

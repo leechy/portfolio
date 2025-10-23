@@ -908,7 +908,93 @@ By following these principles and practices, you'll create web applications that
 	}
 ];
 
-// Export the mock data for admin interface compatibility
+// Create reactive writable store with CRUD operations for admin interface
+function createBlogsStore() {
+	const { subscribe, set, update } = writable([...mockBlogData]);
+
+	return {
+		subscribe,
+		// Initialize with mock data
+		init: () => set([...mockBlogData]),
+		
+		// Create new blog post
+		create: (blogData: Partial<BlogPost>) => {
+			const newBlog: BlogPost = {
+				id: blogData.id || `blog-${Date.now()}`,
+				title: blogData.title || '',
+				slug: blogData.slug || blogData.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || '',
+				excerpt: blogData.excerpt || '',
+				content: blogData.content || '',
+				publishedAt: blogData.publishedAt || new Date(),
+				tags: blogData.tags || [],
+				author: blogData.author || 'Leechy',
+				readTimeMinutes: blogData.readTimeMinutes || 1,
+				coverImageUrl: blogData.coverImageUrl,
+				featured: blogData.featured || false
+			};
+			
+			update(blogs => [...blogs, newBlog]);
+			return newBlog;
+		},
+		
+		// Update existing blog post
+		updateById: (id: string, blogData: Partial<BlogPost>) => update(blogs => {
+			return blogs.map(blog => 
+				blog.id === id ? { ...blog, ...blogData } : blog
+			);
+		}),
+		
+		// Delete blog post by ID
+		deleteById: (id: string) => update(blogs => {
+			return blogs.filter(blog => blog.id !== id);
+		}),
+		
+		// Get blog post by ID
+		getById: (id: string): BlogPost | undefined => {
+			let foundBlog: BlogPost | undefined = undefined;
+			update(blogs => {
+				foundBlog = blogs.find(blog => blog.id === id);
+				return blogs;
+			});
+			return foundBlog;
+		},
+		
+		// Array access methods for backward compatibility
+		push: (blogData: BlogPost) => update(blogs => [...blogs, blogData]),
+		
+		find: (predicate: (blog: BlogPost) => boolean): BlogPost | undefined => {
+			let foundBlog: BlogPost | undefined = undefined;
+			update(blogs => {
+				foundBlog = blogs.find(predicate);
+				return blogs;
+			});
+			return foundBlog;
+		},
+		
+		findIndex: (predicate: (blog: BlogPost) => boolean): number => {
+			let index = -1;
+			update(blogs => {
+				index = blogs.findIndex(predicate);
+				return blogs;
+			});
+			return index;
+		},
+		
+		splice: (start: number, deleteCount: number, ...items: BlogPost[]) => update(blogs => {
+			const newArray = [...blogs];
+			newArray.splice(start, deleteCount, ...items);
+			return newArray;
+		}),
+		
+		// Reset to original data
+		reset: () => set([...mockBlogData])
+	};
+}
+
+// Export the reactive blogs store for admin interface
+export const blogs = createBlogsStore();
+
+// Export the mock data for other components compatibility
 export const blogPosts = mockBlogData;
 export async function loadBlogs(): Promise<void> {
 	blogStore.update(state => ({ ...state, loading: true, error: null }));
