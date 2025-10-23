@@ -245,6 +245,9 @@ Custom D3.js visualizations provide interactive exploration of weather patterns,
 	}
 ];
 
+// Export the mock data for admin interface compatibility
+export const projects = mockProjectsData;
+
 // Load projects data (async to simulate API calls)
 export async function loadProjects(): Promise<void> {
 	projectsStore.update(state => ({

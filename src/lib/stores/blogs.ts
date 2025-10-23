@@ -908,7 +908,8 @@ By following these principles and practices, you'll create web applications that
 	}
 ];
 
-// Store management functions
+// Export the mock data for admin interface compatibility
+export const blogPosts = mockBlogData;
 export async function loadBlogs(): Promise<void> {
 	blogStore.update(state => ({ ...state, loading: true, error: null }));
 
