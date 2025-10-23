@@ -40,13 +40,13 @@
 		try {
 			// Simulate API call - replace with real authentication
 			await new Promise(resolve => setTimeout(resolve, 1000));
-			
+
 			// For demo purposes, accept any email/password
 			// In real implementation, validate against backend
 			if (loginForm.email && loginForm.password) {
 				// Store auth token (placeholder)
 				// localStorage.setItem('auth_token', 'demo_token');
-				
+
 				// Redirect to dashboard
 				goto('/admin/dashboard');
 			} else {
@@ -109,16 +109,22 @@
 				{/if}
 			</div>
 
-			<button 
-				type="submit" 
-				class="login-button"
-				disabled={isLoading}
-				data-testid="login-submit"
-			>
+			<button type="submit" class="login-button" disabled={isLoading} data-testid="login-submit">
 				{#if isLoading}
 					<svg class="spinner" viewBox="0 0 24 24">
-						<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-						<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							stroke-width="4"
+							fill="none"
+							opacity="0.25"
+						/>
+						<path
+							fill="currentColor"
+							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+						/>
 					</svg>
 					Signing in...
 				{:else}
@@ -130,7 +136,12 @@
 		<div class="login-footer">
 			<a href="/" class="back-link">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 19l-7-7m0 0l7-7m-7 7h18"
+					/>
 				</svg>
 				Back to site
 			</a>
@@ -156,7 +167,9 @@
 	.login-card {
 		background: white;
 		border-radius: 1rem;
-		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+		box-shadow:
+			0 20px 25px -5px rgba(0, 0, 0, 0.1),
+			0 10px 10px -5px rgba(0, 0, 0, 0.04);
 		width: 100%;
 		max-width: 400px;
 		padding: 2rem;

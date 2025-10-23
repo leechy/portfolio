@@ -19,10 +19,11 @@
 
 		// Apply search filter
 		if (searchTerm) {
-			filtered = filtered.filter(post => 
-				post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+			filtered = filtered.filter(
+				post =>
+					post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
 			);
 		}
 
@@ -64,12 +65,12 @@
 
 	function getCategoryColor(tag) {
 		const colors = {
-			'SvelteKit': 'bg-blue-100 text-blue-800',
-			'CSS': 'bg-green-100 text-green-800',
-			'TypeScript': 'bg-purple-100 text-purple-800',
-			'React': 'bg-pink-100 text-pink-800',
-			'Performance': 'bg-orange-100 text-orange-800',
-			'Accessibility': 'bg-indigo-100 text-indigo-800'
+			SvelteKit: 'bg-blue-100 text-blue-800',
+			CSS: 'bg-green-100 text-green-800',
+			TypeScript: 'bg-purple-100 text-purple-800',
+			React: 'bg-pink-100 text-pink-800',
+			Performance: 'bg-orange-100 text-orange-800',
+			Accessibility: 'bg-indigo-100 text-indigo-800'
 		};
 		return colors[tag] || 'bg-gray-100 text-gray-800';
 	}
@@ -78,7 +79,12 @@
 	$: tags = [...new Set(postList.flatMap(post => post.tags))];
 
 	// Reactive statements
-	$: if (searchTerm !== undefined || statusFilter !== undefined || tagFilter !== undefined || sortBy !== undefined) {
+	$: if (
+		searchTerm !== undefined ||
+		statusFilter !== undefined ||
+		tagFilter !== undefined ||
+		sortBy !== undefined
+	) {
 		filterAndSortPosts();
 	}
 </script>
@@ -95,7 +101,7 @@
 		</div>
 		<a href="/admin/blog/new" class="btn btn-primary" data-testid="new-post-btn">
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 			</svg>
 			New Post
 		</a>
@@ -105,7 +111,12 @@
 	<div class="controls">
 		<div class="search-box">
 			<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+				/>
 			</svg>
 			<input
 				type="text"
@@ -137,7 +148,12 @@
 		{#if filteredPosts.length === 0}
 			<div class="empty-state">
 				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+					/>
 				</svg>
 				<h3>No blog posts found</h3>
 				<p>Try adjusting your search or filters, or create a new post.</p>
@@ -152,7 +168,12 @@
 						{:else}
 							<div class="placeholder-image">
 								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+									/>
 								</svg>
 							</div>
 						{/if}
@@ -186,24 +207,48 @@
 						<div class="post-actions">
 							<a href="/blog/{post.slug}" class="btn btn-secondary" target="_blank">
 								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+									/>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+									/>
 								</svg>
 								View
 							</a>
-							<a href="/admin/blog/{post.slug}/edit" class="btn btn-secondary" data-testid="edit-post-btn">
+							<a
+								href="/admin/blog/{post.slug}/edit"
+								class="btn btn-secondary"
+								data-testid="edit-post-btn"
+							>
 								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+									/>
 								</svg>
 								Edit
 							</a>
-							<button 
-								class="btn btn-danger" 
+							<button
+								class="btn btn-danger"
 								on:click={() => deletePost(post.id)}
 								data-testid="delete-post-btn"
 							>
 								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+									/>
 								</svg>
 								Delete
 							</button>
@@ -378,20 +423,48 @@
 	}
 
 	// Category colors using Tailwind-style classes
-	:global(.bg-blue-100) { background-color: #dbeafe; }
-	:global(.text-blue-800) { color: #1e40af; }
-	:global(.bg-green-100) { background-color: #dcfce7; }
-	:global(.text-green-800) { color: #166534; }
-	:global(.bg-purple-100) { background-color: #f3e8ff; }
-	:global(.text-purple-800) { color: #5b21b6; }
-	:global(.bg-pink-100) { background-color: #fce7f3; }
-	:global(.text-pink-800) { color: #9d174d; }
-	:global(.bg-orange-100) { background-color: #fed7aa; }
-	:global(.text-orange-800) { color: #9a3412; }
-	:global(.bg-indigo-100) { background-color: #e0e7ff; }
-	:global(.text-indigo-800) { color: #3730a3; }
-	:global(.bg-gray-100) { background-color: #f3f4f6; }
-	:global(.text-gray-800) { color: #1f2937; }
+	:global(.bg-blue-100) {
+		background-color: #dbeafe;
+	}
+	:global(.text-blue-800) {
+		color: #1e40af;
+	}
+	:global(.bg-green-100) {
+		background-color: #dcfce7;
+	}
+	:global(.text-green-800) {
+		color: #166534;
+	}
+	:global(.bg-purple-100) {
+		background-color: #f3e8ff;
+	}
+	:global(.text-purple-800) {
+		color: #5b21b6;
+	}
+	:global(.bg-pink-100) {
+		background-color: #fce7f3;
+	}
+	:global(.text-pink-800) {
+		color: #9d174d;
+	}
+	:global(.bg-orange-100) {
+		background-color: #fed7aa;
+	}
+	:global(.text-orange-800) {
+		color: #9a3412;
+	}
+	:global(.bg-indigo-100) {
+		background-color: #e0e7ff;
+	}
+	:global(.text-indigo-800) {
+		color: #3730a3;
+	}
+	:global(.bg-gray-100) {
+		background-color: #f3f4f6;
+	}
+	:global(.text-gray-800) {
+		color: #1f2937;
+	}
 
 	.post-excerpt {
 		color: #64748b;
@@ -440,7 +513,7 @@
 	}
 
 	.read-time::before {
-		content: "📖 ";
+		content: '📖 ';
 	}
 
 	.post-actions {
