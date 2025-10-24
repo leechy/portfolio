@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.scss';
+
 	import favicon from '$lib/assets/favicon.svg';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -27,21 +28,23 @@
 </div>
 
 <style lang="scss">
+	@import '../app.scss';
+
 	.app {
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-		background-color: #ffffff;
-		color: #1e293b;
+		background-color: var(--color-bg-primary);
+		color: var(--color-text-primary);
 	}
 
 	.header {
 		position: sticky;
 		top: 0;
 		z-index: 1020;
-		background-color: rgba(255, 255, 255, 0.95);
+		background-color: color-mix(in srgb, var(--color-bg-primary), transparent 70%);
 		backdrop-filter: blur(10px);
-		border-bottom: 1px solid #e2e8f0;
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	.main {
@@ -50,7 +53,7 @@
 	}
 
 	.footer {
-		border-top: 1px solid #e2e8f0;
-		background-color: #f8fafc;
+		border-top: 1px solid $color-border;
+		background-color: $color-bg-secondary;
 	}
 </style>

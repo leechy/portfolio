@@ -8,9 +8,10 @@
 
 	// Navigation items
 	const navItems = [
-		{ href: '/', label: 'Home' },
+		// { href: '/', label: 'Home' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/blog', label: 'Blog' },
+		{ href: '/about', label: 'About' },
 		{ href: '/contact', label: 'Contact' }
 	];
 
@@ -44,9 +45,15 @@
 	<div class="container">
 		<div class="nav-content">
 			<!-- Logo/Brand -->
-			<a href="/" class="logo" onclick={() => handleNavigation('/')}>
-				<span class="logo-text">Leechy<span class="logo-accent">.dev</span></span>
-			</a>
+			{#if $page.url.pathname === '/'}
+				<span class="logo logo-active">
+					<span class="logo-text">Index of /</span>
+				</span>
+			{:else}
+				<a href="/" class="logo" onclick={() => handleNavigation('/')}>
+					<span class="logo-text">Index of /</span>
+				</a>
+			{/if}
 
 			<!-- Desktop Navigation -->
 			<ul class="nav-links desktop-only" data-testid="main-nav-links">
@@ -101,6 +108,8 @@
 </nav>
 
 <style>
+	@import '../../app.scss';
+
 	.navigation {
 		padding: 1rem 0;
 		transition: all 0.25s ease-in-out;
@@ -118,18 +127,20 @@
 
 	.logo {
 		text-decoration: none;
-		color: #1e293b;
+		color: var(--color-primary);
 		font-weight: 600;
 		font-size: 1.25rem;
 		transition: color 0.15s ease-in-out;
+		opacity: 0.6;
 	}
 
-	.logo:hover {
-		color: #3b82f6;
+	.logo:hover,
+	.logo-active {
+		opacity: 1;
 	}
 
-	.logo-accent {
-		color: #3b82f6;
+	.logo-active {
+		color: var(--color-text-primary);
 	}
 
 	.nav-links {
@@ -141,7 +152,7 @@
 	}
 
 	.nav-link {
-		color: #64748b;
+		color: var(--color-primary-soft);
 		text-decoration: none;
 		font-weight: 500;
 		font-size: 1rem;
@@ -151,14 +162,10 @@
 		position: relative;
 	}
 
-	.nav-link:hover {
-		color: #3b82f6;
-		background-color: rgba(59, 130, 246, 0.1);
-	}
-
+	.nav-link:hover,
 	.nav-link.active {
-		color: #3b82f6;
-		background-color: rgba(59, 130, 246, 0.15);
+		color: var(--color-primary);
+		background-color: color-mix(in srgb, var(--color-primary), transparent 80%);
 	}
 
 	.mobile-menu-button {
@@ -177,13 +184,13 @@
 	.hamburger-line {
 		width: 100%;
 		height: 2px;
-		background-color: #1e293b;
+		background-color: var(--color-primary-soft);
 		transition: all 0.25s ease-in-out;
 		transform-origin: center;
 	}
 
 	.hamburger-line.active:nth-child(1) {
-		transform: rotate(45deg) translate(5px, 5px);
+		transform: rotate(45deg) translate(3px, 3px);
 	}
 
 	.hamburger-line.active:nth-child(2) {
@@ -191,22 +198,18 @@
 	}
 
 	.hamburger-line.active:nth-child(3) {
-		transform: rotate(-45deg) translate(7px, -6px);
+		transform: rotate(-45deg) translate(5px, -6px);
 	}
 
 	.mobile-nav {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		right: 0;
-		background-color: rgba(255, 255, 255, 0.98);
-		backdrop-filter: blur(10px);
-		border-bottom: 1px solid #e2e8f0;
+		margin: 1rem -1rem -1rem -1rem;
+		border-top: 1px solid var(--color-border);
 		padding: 1.5rem 0;
 		animation: slideDown 0.3s ease-out;
 	}
 
 	.mobile-nav-links {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		list-style: none;

@@ -235,8 +235,6 @@
 {/if}
 
 <style lang="scss">
-	@import '$lib/styles/variables.scss';
-
 	.loading-section {
 		min-height: 50vh;
 		display: flex;

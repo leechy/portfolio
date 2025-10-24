@@ -222,7 +222,7 @@
 </div>
 
 <style lang="scss">
-	@import '$lib/styles/variables.scss';
+	@import '../../app.scss';
 
 	.projects-overview {
 		min-height: 100vh;

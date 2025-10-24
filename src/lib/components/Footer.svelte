@@ -1,6 +1,6 @@
 <script lang="ts">
 	const currentYear = new Date().getFullYear();
-	
+
 	const socialLinks = [
 		{
 			name: 'GitHub',
@@ -48,17 +48,17 @@
 			<!-- Brand and Description -->
 			<div class="footer-brand">
 				<h3 class="footer-logo">
-					<span class="logo-text">Leechy<span class="logo-accent">.dev</span></span>
+					<span class="logo-text">Andrey Lechev</span>
 				</h3>
 				<p class="footer-description">
-					Passionate developer creating innovative web solutions with modern technologies.
-					Always learning, always building.
+					Passionate developer creating innovative web solutions with modern technologies. Always
+					learning, always building.
 				</p>
-				
+
 				<!-- Social Links -->
 				<div class="social-links">
 					{#each socialLinks as social}
-						<a 
+						<a
 							href={social.url}
 							class="social-link"
 							target="_blank"
@@ -106,6 +106,8 @@
 </div>
 
 <style lang="scss">
+	@import '../../app.scss';
+
 	.footer {
 		padding: $spacing-3xl 0 $spacing-xl;
 	}
@@ -170,14 +172,14 @@
 			justify-content: center;
 
 			// Simple icon placeholders - replace with actual icons later
-			&[data-icon="github"]::before {
-				content: "⚡";
+			&[data-icon='github']::before {
+				content: '⚡';
 			}
-			&[data-icon="linkedin"]::before {
-				content: "💼";
+			&[data-icon='linkedin']::before {
+				content: '💼';
 			}
-			&[data-icon="twitter"]::before {
-				content: "🐦";
+			&[data-icon='twitter']::before {
+				content: '🐦';
 			}
 		}
 

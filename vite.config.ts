@@ -56,7 +56,7 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
-				additionalData: `@use 'sass:color';@import '/Users/leechy/Projects/leechy.dev/src/lib/styles/variables.scss';`
+				additionalData: `@use 'sass:color';`
 			}
 		}
 	},

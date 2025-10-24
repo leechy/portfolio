@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Leechy.dev - Portfolio & Blog</title>
+	<title>Andrey Lechev • Leechy</title>
 	<meta
 		name="description"
 		content="Portfolio of a passionate developer building innovative web solutions with modern technologies."
