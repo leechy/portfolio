@@ -256,9 +256,9 @@ export const config = {
   socialLinks: {
     github: 'https://github.com/yourusername',
     linkedin: 'https://linkedin.com/in/yourprofile',
-    twitter: 'https://twitter.com/yourhandle',
+    twitter: 'https://twitter.com/yourhandle'
   },
-  contactEmail: 'your-email@example.com',
+  contactEmail: 'your-email@example.com'
 };
 ```
 
