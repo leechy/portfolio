@@ -108,8 +108,6 @@
 </nav>
 
 <style>
-	@import '../../app.scss';
-
 	.navigation {
 		padding: 1rem 0;
 		transition: all 0.25s ease-in-out;

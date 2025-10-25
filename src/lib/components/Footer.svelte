@@ -13,8 +13,8 @@
 			icon: 'linkedin'
 		},
 		{
-			name: 'Twitter',
-			url: 'https://twitter.com/leechy',
+			name: 'Twitter (X)',
+			url: 'https://x.com/andreykalechev',
 			icon: 'twitter'
 		}
 	];
@@ -51,8 +51,8 @@
 					<span class="logo-text">Andrey Lechev</span>
 				</h3>
 				<p class="footer-description">
-					Passionate developer creating innovative web solutions with modern technologies. Always
-					learning, always building.
+					Full-stack developer specializing in creating beautiful, high-quality, and user-friendly
+					web and mobile applications.
 				</p>
 
 				<!-- Social Links -->
@@ -65,7 +65,7 @@
 							rel="noopener noreferrer"
 							aria-label={social.name}
 						>
-							<span class="social-icon" data-icon={social.icon}></span>
+							<img src="/images/{social.icon}.svg" alt={social.name} class="social-icon" />
 							<span class="social-name">{social.name}</span>
 						</a>
 					{/each}
@@ -93,7 +93,7 @@
 		<div class="footer-bottom">
 			<div class="footer-bottom-content">
 				<p class="copyright">
-					© {currentYear} Leechy.dev. All rights reserved.
+					© {currentYear} Leechy. All rights reserved.
 				</p>
 				<div class="footer-bottom-links">
 					<a href="/privacy" class="bottom-link">Privacy Policy</a>
@@ -109,82 +109,72 @@
 	@import '../../app.scss';
 
 	.footer {
-		padding: $spacing-3xl 0 $spacing-xl;
+		padding: var(--spacing-3xl) 0 var(--spacing-xl);
 	}
 
 	.footer-content {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: $spacing-2xl;
+		gap: var(--spacing-2xl);
 
 		@media (min-width: $breakpoint-md) {
 			grid-template-columns: 1.5fr 1fr;
-			gap: $spacing-3xl;
+			gap: var(--spacing-3xl);
 		}
 	}
 
 	.footer-brand {
 		.footer-logo {
-			font-size: $font-size-2xl;
+			font-size: var(--font-size-2xl);
 			font-weight: 600;
-			margin-bottom: $spacing-md;
-			color: $color-text-primary;
+			margin-bottom: var(--spacing-md);
+			color: var(--color-text-primary);
 
 			.logo-accent {
-				color: $color-primary;
+				color: var(--color-primary);
 			}
 		}
 
 		.footer-description {
-			color: $color-text-secondary;
+			color: var(--color-text-secondary);
 			line-height: 1.6;
-			margin-bottom: $spacing-xl;
+			margin-bottom: var(--spacing-xl);
 			max-width: 400px;
 		}
 	}
 
 	.social-links {
 		display: flex;
-		gap: $spacing-lg;
+		gap: var(--spacing-lg);
 		flex-wrap: wrap;
 	}
 
 	.social-link {
 		display: flex;
 		align-items: center;
-		gap: $spacing-sm;
-		color: $color-text-secondary;
+		gap: var(--spacing-sm);
+		color: var(--color-text-secondary);
 		text-decoration: none;
-		padding: $spacing-sm;
+		padding: var(--spacing-sm);
 		border-radius: 6px;
-		transition: all $transition-fast;
+		transition: all var(--transition-fast);
 
 		&:hover {
-			color: $color-primary;
-			background-color: rgba($color-primary, 0.1);
+			color: var(--color-primary);
+			background-color: color-mix(in srgb, var(--color-primary), transparent 80%);
 		}
 
 		.social-icon {
-			width: 20px;
-			height: 20px;
+			width: 24px;
+			height: 24px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-
-			// Simple icon placeholders - replace with actual icons later
-			&[data-icon='github']::before {
-				content: '⚡';
-			}
-			&[data-icon='linkedin']::before {
-				content: '💼';
-			}
-			&[data-icon='twitter']::before {
-				content: '🐦';
-			}
+			fill: var(--color-text-secondary);
 		}
 
 		.social-name {
-			font-size: $font-size-sm;
+			font-size: var(--font-size-sm);
 			font-weight: 500;
 		}
 	}
@@ -192,7 +182,7 @@
 	.footer-nav {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: $spacing-xl;
+		gap: var(--spacing-xl);
 
 		@media (min-width: $breakpoint-sm) {
 			grid-template-columns: repeat(2, 1fr);
@@ -201,10 +191,10 @@
 
 	.nav-section {
 		.nav-title {
-			color: $color-text-primary;
-			font-size: $font-size-lg;
+			color: var(--color-text-primary);
+			font-size: var(--font-size-lg);
 			font-weight: 600;
-			margin-bottom: $spacing-md;
+			margin-bottom: var(--spacing-md);
 		}
 
 		.nav-list {
@@ -215,28 +205,28 @@
 
 		.nav-link {
 			display: inline-block;
-			color: $color-text-secondary;
+			color: var(--color-text-secondary);
 			text-decoration: none;
-			padding: $spacing-xs 0;
-			font-size: $font-size-sm;
-			transition: color $transition-fast;
+			padding: var(--spacing-xs) 0;
+			font-size: var(--font-size-sm);
+			transition: color var(--transition-fast);
 
 			&:hover {
-				color: $color-primary;
+				color: var(--color-primary);
 			}
 		}
 	}
 
 	.footer-bottom {
-		margin-top: $spacing-2xl;
-		padding-top: $spacing-xl;
-		border-top: 1px solid $color-border;
+		margin-top: var(--spacing-2xl);
+		padding-top: var(--spacing-xl);
+		border-top: 1px solid var(--color-border);
 	}
 
 	.footer-bottom-content {
 		display: flex;
 		flex-direction: column;
-		gap: $spacing-md;
+		gap: var(--spacing-md);
 		align-items: center;
 		text-align: center;
 
@@ -248,14 +238,14 @@
 	}
 
 	.copyright {
-		color: $color-text-muted;
-		font-size: $font-size-sm;
+		color: var(--color-text-muted);
+		font-size: var(--font-size-sm);
 		margin: 0;
 	}
 
 	.footer-bottom-links {
 		display: flex;
-		gap: $spacing-lg;
+		gap: var(--spacing-lg);
 		flex-wrap: wrap;
 		justify-content: center;
 
@@ -265,13 +255,13 @@
 	}
 
 	.bottom-link {
-		color: $color-text-muted;
+		color: var(--color-text-muted);
 		text-decoration: none;
-		font-size: $font-size-sm;
-		transition: color $transition-fast;
+		font-size: var(--font-size-sm);
+		transition: color var(--transition-fast);
 
 		&:hover {
-			color: $color-primary;
+			color: var(--color-primary);
 		}
 	}
 </style>

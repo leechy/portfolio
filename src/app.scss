@@ -52,6 +52,18 @@ $font-size-3xl: 1.875rem; // 30px
 $font-size-4xl: 2.25rem; // 36px
 $font-size-5xl: 3rem; // 48px
 
+:root {
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-base: #{$font-size-base};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-2xl: #{$font-size-2xl};
+  --font-size-3xl: #{$font-size-3xl};
+  --font-size-4xl: #{$font-size-4xl};
+  --font-size-5xl: #{$font-size-5xl};
+}
+
 // Spacing
 $spacing-xs: 0.25rem; // 4px
 $spacing-sm: 0.5rem; // 8px
@@ -82,10 +94,22 @@ $transition-fast: 0.15s ease;
 $transition-base: 0.25s ease;
 $transition-slow: 0.5s ease;
 
+:root {
+  --transition-fast: #{$transition-fast};
+  --transition-base: #{$transition-base};
+  --transition-slow: #{$transition-slow};
+}
+
 // Shadows
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+
+:root {
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+}
 
 // =============================================================================
 // CSS Reset & Base Styles
