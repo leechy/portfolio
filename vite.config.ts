@@ -1,8 +1,16 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
+import path from 'path';
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			// Set the '@' alias to point to the 'src' directory
+			'@': path.resolve(__dirname, './src')
+		}
+	},
+
 	plugins: [
 		sveltekit(),
 		paraglideVitePlugin({
@@ -56,7 +64,7 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
-				additionalData: `@use 'sass:color';`
+				additionalData: `@use 'sass:color';@use '@/lib/styles/variables.scss';`
 			}
 		}
 	},
