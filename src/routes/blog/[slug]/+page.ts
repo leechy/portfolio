@@ -1,28 +1,39 @@
 import { error } from '@sveltejs/kit';
-import { get } from 'svelte/store';
-import { blogStore, getBlogById, getRelatedBlogs, loadBlogs } from '$lib/stores/blogs';
+import type { PageLoad } from './$types';
+import type { BlogPost } from '$lib/server/database.js';
 
-export const load = async ({ params }: { params: { slug: string } }) => {
-	const { slug } = params;
+export const load: PageLoad = async ({ params, fetch: eventFetch }) => {
+	try {
+		const { slug } = params;
 
-	// Ensure blogs are loaded
-	const currentState = get(blogStore);
-	if (currentState.blogs.length === 0) {
-		await loadBlogs();
+		if (!slug) {
+			throw error(404, 'Blog post not found');
+		}
+
+		// Fetch the blog post
+		const blogResponse = await eventFetch(`/api/blogs/slug/${slug}`);
+		if (!blogResponse.ok) {
+			throw error(blogResponse.status, 'Blog post not found');
+		}
+
+		const blog = await blogResponse.json();
+
+		// Fetch related blog posts
+		let relatedBlogs: BlogPost[] = [];
+		try {
+			const relatedResponse = await eventFetch(`/api/blogs/slug/${slug}/related?limit=3`);
+			if (relatedResponse.ok) {
+				relatedBlogs = await relatedResponse.json();
+			}
+		} catch {
+			// If related posts fail, just continue with empty array
+		}
+
+		return {
+			blog,
+			relatedBlogs
+		};
+	} catch {
+		throw error(500, 'Failed to load blog post');
 	}
-
-	// Find the blog post
-	const blog = getBlogById(slug);
-
-	if (!blog) {
-		throw error(404, `Blog post not found: ${slug}`);
-	}
-
-	// Get related blog posts
-	const relatedBlogs = getRelatedBlogs(blog.id, 3);
-
-	return {
-		blog,
-		relatedBlogs
-	};
 };

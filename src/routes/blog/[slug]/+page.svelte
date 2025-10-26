@@ -15,7 +15,7 @@
 	<meta property="og:title" content={blog.title} />
 	<meta property="og:description" content={blog.excerpt} />
 	<meta property="og:type" content="article" />
-	<meta property="article:published_time" content={blog.publishedAt.toISOString()} />
+	<meta property="article:published_time" content={blog.publishedAt?.toISOString?.()} />
 	<meta property="article:author" content={blog.author} />
 	{#if blog.coverImageUrl}
 		<meta property="og:image" content={blog.coverImageUrl} />
@@ -60,8 +60,8 @@
 			class="flex flex-wrap items-center gap-4 text-gray-600 mb-6"
 			data-testid="blog-post-metadata"
 		>
-			<time datetime={blog.publishedAt.toISOString()} class="text-sm" data-testid="blog-date">
-				{formatBlogDate(blog.publishedAt)}
+			<time datetime={blog?.published_at?.toISOString?.()} class="text-sm" data-testid="blog-date">
+				{formatBlogDate(blog.published_at)}
 			</time>
 			<span class="text-gray-400">•</span>
 			<span class="text-sm" data-testid="blog-author">by {blog.author}</span>
@@ -200,8 +200,8 @@
 								{relatedBlog.excerpt}
 							</p>
 							<div class="flex items-center text-xs text-gray-500 gap-2">
-								<time datetime={relatedBlog.publishedAt.toISOString()}>
-									{formatBlogDate(relatedBlog.publishedAt)}
+								<time datetime={relatedBlog.published_at?.toISOString?.()}>
+									{formatBlogDate(relatedBlog.published_at)}
 								</time>
 								<span>•</span>
 								<span>{formatReadTime(relatedBlog.readTimeMinutes)}</span>
@@ -212,30 +212,6 @@
 			</div>
 		</section>
 	{/if}
-
-	<!-- Newsletter Signup -->
-	<section class="bg-gray-50 rounded-lg p-8 mt-16 text-center">
-		<h2 class="text-2xl font-bold mb-4">Stay Updated</h2>
-		<p class="text-gray-600 mb-6 max-w-2xl mx-auto">
-			Get notified when new articles are published. No spam, unsubscribe at any time.
-		</p>
-		<form class="max-w-md mx-auto flex gap-2" data-testid="newsletter-form">
-			<input
-				type="email"
-				placeholder="Enter your email"
-				required
-				class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-				data-testid="newsletter-email"
-			/>
-			<button
-				type="submit"
-				class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 font-medium"
-				data-testid="newsletter-submit"
-			>
-				Subscribe
-			</button>
-		</form>
-	</section>
 </main>
 
 <style>
