@@ -156,7 +156,7 @@
 						} else {
 							try {
 								await navigator.clipboard.writeText(window.location.href);
-								alert('Link copied to clipboard!');
+								console.log('Link copied to clipboard!');
 							} catch (err) {
 								console.error('Failed to copy link');
 							}

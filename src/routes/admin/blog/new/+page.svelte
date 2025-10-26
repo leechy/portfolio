@@ -5,18 +5,14 @@
 
 	// Form state
 	let formData = {
-		id: '',
 		title: '',
+		slug: '',
 		excerpt: '',
 		content: '',
 		tags: [],
-		category: '',
-		featured: false,
-		published: false,
-		publishedAt: '',
-		readTime: '',
-		author: 'Leechy',
-		authorAvatar: '/images/avatar.jpg'
+		featured_image: '',
+		status: 'draft',
+		published_at: ''
 	};
 
 	// UI state
@@ -83,22 +79,16 @@
 		'Best Practices'
 	];
 
-	// Generate unique ID for new blog post
-	function generateBlogId() {
+	// Generate slug from title
+	function generateSlugFromTitle(title) {
 		return (
-			formData.title
+			title
 				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-|-$/g, '') || `post-${Date.now()}`
+				.replace(/[^a-z0-9\s-]/g, '')
+				.replace(/\s+/g, '-')
+				.replace(/-+/g, '-')
+				.replace(/^-+|-+$/g, '') || `post-${Date.now()}`
 		);
-	}
-
-	// Calculate estimated read time based on content
-	function calculateReadTime() {
-		const wordsPerMinute = 200;
-		const wordCount = formData.content.trim().split(/\s+/).length;
-		const readTimeMinutes = Math.ceil(wordCount / wordsPerMinute);
-		formData.readTime = `${readTimeMinutes} min read`;
 	}
 
 	// Add tag to the list
@@ -156,33 +146,41 @@
 		isLoading = true;
 
 		try {
-			// Generate ID from title if not set
-			if (!formData.id) {
-				formData.id = generateBlogId();
-			}
-
-			// Calculate read time if not set
-			if (!formData.readTime) {
-				calculateReadTime();
+			// Generate slug if not set
+			if (!formData.slug) {
+				formData.slug = generateSlugFromTitle(formData.title);
 			}
 
 			// Set published date to now if publishing and no date set
-			if (formData.published && !formData.publishedAt) {
-				formData.publishedAt = new Date().toISOString().split('T')[0];
+			if (formData.status === 'published' && !formData.published_at) {
+				formData.published_at = new Date().toISOString().split('T')[0];
 			}
 
-			// Convert date string to Date object
+			// Prepare data for API (matching database schema)
 			const blogData = {
-				...formData,
-				publishedAt: formData.publishedAt ? new Date(formData.publishedAt) : undefined,
-				readTimeMinutes: parseInt(formData.readTime.replace(/\D/g, '')) || 1
+				title: formData.title,
+				slug: formData.slug,
+				content: formData.content,
+				excerpt: formData.excerpt || undefined,
+				featured_image: formData.featured_image || undefined,
+				tags: formData.tags || [],
+				status: formData.status,
+				published_at: formData.published_at || undefined
 			};
 
-			// Add to blogs store (simulating database update)
-			blogs.create(blogData);
+			// Create via API
+			const response = await fetch('/api/blogs', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(blogData)
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to create blog post');
+			}
 
 			// Show success message and redirect
-			alert('Blog post created successfully!');
+			console.log('Blog post created successfully!');
 			goto('/admin/blog');
 		} catch (error) {
 			console.error('Error creating blog post:', error);
@@ -190,11 +188,6 @@
 		} finally {
 			isLoading = false;
 		}
-	}
-
-	// Handle content change to auto-calculate read time
-	function handleContentChange() {
-		calculateReadTime();
 	}
 
 	// Handle Enter key in input fields
@@ -207,15 +200,15 @@
 
 	// Handle save as draft
 	function saveAsDraft() {
-		formData.published = false;
+		formData.status = 'draft';
 		handleSubmit(new Event('submit'));
 	}
 
 	// Handle publish
 	function publishPost() {
-		formData.published = true;
-		if (!formData.publishedAt) {
-			formData.publishedAt = new Date().toISOString().split('T')[0];
+		formData.status = 'published';
+		if (!formData.published_at) {
+			formData.published_at = new Date().toISOString().split('T')[0];
 		}
 		handleSubmit(new Event('submit'));
 	}
@@ -284,14 +277,14 @@
 				</div>
 
 				<div class="form-group">
-					<label for="blog-id">Post ID</label>
+					<label for="blog-slug">Post Slug</label>
 					<input
-						id="blog-id"
+						id="blog-slug"
 						name="slug"
 						type="text"
-						bind:value={formData.id}
+						bind:value={formData.slug}
 						placeholder="Auto-generated from title"
-						data-testid="blog-id-input"
+						data-testid="blog-slug-input"
 					/>
 					<span class="field-help">Used in URLs. Auto-generated from title if empty.</span>
 				</div>
@@ -340,56 +333,33 @@
 				</div>
 
 				<div class="form-group">
-					<label for="read-time">Read Time</label>
+					<label for="featured-image">Featured Image URL</label>
 					<input
-						id="read-time"
-						name="readTime"
-						type="text"
-						bind:value={formData.readTime}
-						placeholder="Auto-calculated from content"
-						data-testid="blog-read-time-input"
-					/>
-					<span class="field-help">Auto-calculated based on content length</span>
-				</div>
-			</div>
-
-			<div class="form-row">
-				<div class="form-group">
-					<label for="author">Author</label>
-					<input
-						id="author"
-						name="author"
-						type="text"
-						bind:value={formData.author}
-						data-testid="blog-author-input"
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="author-avatar">Author Avatar URL</label>
-					<input
-						id="author-avatar"
-						name="authorAvatar"
+						id="featured-image"
+						name="featured_image"
 						type="url"
-						bind:value={formData.authorAvatar}
-						placeholder="https://..."
-						data-testid="blog-author-avatar-input"
+						bind:value={formData.featured_image}
+						placeholder="https://example.com/image.jpg"
+						data-testid="blog-featured-image-input"
 					/>
+					<span class="field-help">URL to the cover image for this blog post</span>
 				</div>
 			</div>
 
 			<div class="form-row">
 				<div class="form-group">
-					<label class="checkbox-label">
-						<input
-							type="checkbox"
-							name="featured"
-							bind:checked={formData.featured}
-							data-testid="blog-featured-checkbox"
-						/>
-						Featured Post
-					</label>
-					<span class="field-help">Featured posts appear prominently on the homepage</span>
+					<label for="status">Post Status</label>
+					<select
+						id="status"
+						name="status"
+						bind:value={formData.status}
+						data-testid="blog-status-select"
+					>
+						<option value="draft">Draft</option>
+						<option value="published">Published</option>
+						<option value="archived">Archived</option>
+					</select>
+					<span class="field-help">Draft posts are not visible to the public</span>
 				</div>
 
 				<div class="form-group">
@@ -398,13 +368,14 @@
 						id="published-date"
 						name="publishedDate"
 						type="date"
-						bind:value={formData.publishedAt}
-						class:error={errors.publishedAt}
+						bind:value={formData.published_at}
+						class:error={errors.published_at}
 						data-testid="blog-published-date-input"
 					/>
-					{#if errors.publishedAt}
-						<span class="field-error">{errors.publishedAt}</span>
+					{#if errors.published_at}
+						<span class="field-error">{errors.published_at}</span>
 					{/if}
+					<span class="field-help">Leave empty for posts that haven't been published yet</span>
 				</div>
 			</div>
 		</section>
@@ -474,7 +445,6 @@
 					class:error={errors.content}
 					placeholder="Write your blog post content here. You can use Markdown formatting."
 					rows="20"
-					on:input={handleContentChange}
 					data-testid="blog-content-input"
 				></textarea>
 				{#if errors.content}
@@ -509,7 +479,7 @@
 					disabled={isLoading}
 					data-testid="save-draft-blog"
 				>
-					{#if isLoading && !formData.published}
+					{#if isLoading && formData.status !== 'published'}
 						<svg class="spinner" viewBox="0 0 24 24">
 							<circle
 								cx="12"
@@ -538,7 +508,7 @@
 					disabled={isLoading}
 					data-testid="publish-blog"
 				>
-					{#if isLoading && formData.published}
+					{#if isLoading && formData.status === 'published'}
 						<svg class="spinner" viewBox="0 0 24 24">
 							<circle
 								cx="12"

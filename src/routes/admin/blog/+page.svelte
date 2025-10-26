@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	import { blogPosts } from '$lib/stores/blogs.js';
+
+	export let data;
 
 	let postList = [];
 	let filteredPosts = [];
@@ -9,8 +10,18 @@
 	let tagFilter = 'all';
 	let sortBy = 'date';
 
+	// Calculate reading time from content (rough estimate: 200 words per minute)
+	function calculateReadingTime(content) {
+		const wordsPerMinute = 200;
+		const wordCount = content.split(/\s+/).length;
+		return Math.ceil(wordCount / wordsPerMinute);
+	}
+
 	onMount(() => {
-		postList = [...blogPosts];
+		postList = data.posts.map(post => ({
+			...post,
+			readTimeMinutes: calculateReadingTime(post.content)
+		}));
 		filterAndSortPosts();
 	});
 
@@ -52,13 +63,22 @@
 		filteredPosts = filtered;
 	}
 
-	function deletePost(postId) {
+	async function deletePost(postId) {
 		if (confirm('Are you sure you want to delete this blog post?')) {
-			const index = postList.findIndex(p => p.id === postId);
-			if (index !== -1) {
-				postList.splice(index, 1);
-				postList = [...postList];
+			try {
+				const response = await fetch(`/api/blogs/${postId}`, {
+					method: 'DELETE'
+				});
+
+				if (!response.ok) {
+					throw new Error('Failed to delete blog post');
+				}
+
+				// Remove from local list on successful deletion
+				postList = postList.filter(p => p.id !== postId);
 				filterAndSortPosts();
+			} catch (error) {
+				console.error('Error deleting blog post: ' + error.message);
 			}
 		}
 	}
@@ -200,7 +220,9 @@
 							</div>
 							<div class="meta-info">
 								<span class="read-time">{post.readTimeMinutes} min read</span>
-								<span class="post-date">{new Date(post.publishedAt).toLocaleDateString()}</span>
+								<span class="post-date"
+									>{new Date(post.published_at || post.created_at).toLocaleDateString()}</span
+								>
 							</div>
 						</div>
 
@@ -223,7 +245,7 @@
 								View
 							</a>
 							<a
-								href="/admin/blog/{post.slug}/edit"
+								href="/admin/blog/{post.id}/edit"
 								class="btn btn-secondary"
 								data-testid="edit-blog-post-btn"
 							>

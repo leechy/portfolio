@@ -69,7 +69,7 @@
 					throw new Error('Failed to delete project');
 				}
 			} catch (error) {
-				alert('Failed to delete project. Please try again.');
+				console.error('Failed to delete project. Please try again.');
 			}
 		}
 	}

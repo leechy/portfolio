@@ -214,7 +214,7 @@
 			}
 
 			// Show success message and redirect
-			alert('Project updated successfully!');
+			console.log('Project updated successfully!');
 			goto('/admin/projects');
 		} catch (error) {
 			console.error('Error updating project:', error);
@@ -244,11 +244,11 @@
 				throw new Error(errorData.error || 'Failed to delete project');
 			}
 
-			alert('Project deleted successfully!');
+			console.log('Project deleted successfully!');
 			goto('/admin/projects');
 		} catch (error) {
 			console.error('Error deleting project:', error);
-			alert('Failed to delete project. Please try again.');
+			console.error('Failed to delete project. Please try again.');
 		}
 	}
 </script>

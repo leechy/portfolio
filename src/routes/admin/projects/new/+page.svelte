@@ -148,7 +148,7 @@
 			}
 
 			// Show success message and redirect
-			alert('Project created successfully!');
+			console.log('Project created successfully!');
 			goto('/admin/projects');
 		} catch (error) {
 			console.error('Error creating project:', error);

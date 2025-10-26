@@ -1,11 +1,12 @@
 <script>
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { blogs } from '$lib/stores/blogs.js';
 	import { onMount } from 'svelte';
 
-	// Get blog ID from URL params
-	$: blogId = $page.params.id;
+	export let data;
+
+	// Get blog from server-loaded data
+	$: blog = data.post;
+	$: blogId = blog.id;
 
 	// Form state
 	let formData = {
@@ -89,10 +90,8 @@
 		'Best Practices'
 	];
 
-	// Load blog data
+	// Load blog data from server-loaded data
 	function loadBlog() {
-		const blog = blogs.find(b => b.id === blogId);
-
 		if (!blog) {
 			blogFound = false;
 			isLoadingBlog = false;
@@ -105,14 +104,22 @@
 		formData = {
 			...blog,
 			// Convert Date object to string format for input
-			publishedAt: blog.publishedAt ? formatDateForInput(blog.publishedAt) : '',
+			publishedAt: blog.published_at ? formatDateForInput(blog.published_at) : '',
 			// Ensure arrays exist
 			tags: blog.tags || [],
-			// Handle readTime format
-			readTime: blog.readTime || `${blog.readTimeMinutes || 1} min read`
+			// Handle readTime format - calculate from content
+			readTime: calculateReadTimeFromContent(blog.content)
 		};
 
 		isLoadingBlog = false;
+	}
+
+	// Calculate reading time from content
+	function calculateReadTimeFromContent(content) {
+		const wordsPerMinute = 200;
+		const wordCount = content.split(/\s+/).length;
+		const readTimeMinutes = Math.ceil(wordCount / wordsPerMinute);
+		return `${readTimeMinutes} min read`;
 	}
 
 	// Format Date object for date input
@@ -206,7 +213,7 @@
 			blogs.updateById(blogId, blogData);
 
 			// Show success message and redirect
-			alert('Blog post updated successfully!');
+			console.log('Blog post updated successfully!');
 			goto('/admin/blog');
 		} catch (error) {
 			console.error('Error updating blog post:', error);
@@ -226,11 +233,11 @@
 			// Remove from blogs store (simulating database delete)
 			blogs.deleteById(blogId);
 
-			alert('Blog post deleted successfully!');
+			console.log('Blog post deleted successfully!');
 			goto('/admin/blog');
 		} catch (error) {
 			console.error('Error deleting blog post:', error);
-			alert('Failed to delete blog post. Please try again.');
+			console.error('Failed to delete blog post. Please try again.');
 		}
 	}
 
