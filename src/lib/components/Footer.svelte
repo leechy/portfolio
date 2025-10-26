@@ -51,8 +51,8 @@
 					<span class="logo-text">Andrey Lechev</span>
 				</h3>
 				<p class="footer-description">
-					Full-stack developer specializing in creating beautiful, high-quality, and user-friendly
-					web and mobile applications.
+					Full-stack developer who loves building beautiful, high-quality, and user-friendly web and
+					mobile (and desktop?) applications.
 				</p>
 
 				<!-- Social Links -->

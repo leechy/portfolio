@@ -8,9 +8,10 @@
 // Color Palette (Dark Theme)
 $color-primary: #3b82f6 !default; // Cyan accent
 $color-primary-soft: #64748b !default; // Soft gray accent
-$color-secondary: #ff6b6b !default; // Coral accent
-$color-bg-primary: #0a0a0a !default; // Deep black background
-$color-bg-secondary: #1a1a1a !default; // Slightly lighter background
+$color-secondary: #f06d39 !default; // Coral accent
+$color-tertiary: #6366f1 !default; // Purple accent
+$color-bg-primary: #070b12 !default; // Deep black background
+$color-bg-secondary: #050f1e !default; // Slightly lighter background
 $color-text-primary: #ffffff !default; // Primary text
 $color-text-secondary: #a0a0a0 !default; // Secondary text
 $color-text-muted: #666666 !default; // Muted text
@@ -20,6 +21,7 @@ $color-border: #333333 !default; // Border color
   --color-primary: #{$color-primary};
   --color-primary-soft: #{$color-primary-soft};
   --color-secondary: #{$color-secondary};
+  --color-tertiary: #{$color-tertiary};
   --color-bg-primary: #{$color-bg-primary};
   --color-bg-secondary: #{$color-bg-secondary};
   --color-text-primary: #{$color-text-primary};

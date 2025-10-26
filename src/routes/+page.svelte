@@ -31,12 +31,21 @@
 		<div class="container">
 			<div class="hero-content" class:animate={mounted}>
 				<h1 class="hero-title">
-					Hi, I'm <span class="name-highlight">Leechy</span>
+					<span class="name-highlight">Leechy</span>
+
+					<!--
+          will update the shape of your buttons for free.
+          can create for you a cohesive design system.
+          creates a mobile MVP in record time.
+          -->
 				</h1>
-				<p class="hero-subtitle">A passionate developer building innovative web solutions</p>
+				<p class="hero-subtitle">
+					For more than 25 years, I've been crafting experiences that bring joy and solve users'
+					problems.
+				</p>
 				<p class="hero-description">
-					I create modern, responsive web applications using cutting-edge technologies. From concept
-					to deployment, I focus on clean code, great user experience, and performance.
+					And I've tried many times to start writing about the stuff I do. This time, I have no
+					other option but to just start writing.
 				</p>
 				<div class="hero-actions">
 					<a href="/projects" class="btn btn-primary">View My Work</a>
@@ -168,68 +177,21 @@
 			{/if}
 		</div>
 	</section>
-
-	<!-- Contact Section -->
-	<section class="contact-section" data-testid="contact-section">
-		<div class="container">
-			<h2>Contact</h2>
-			<div class="contact-content">
-				<div class="contact-info" data-testid="contact-info">
-					<p>Let's work together to build something amazing!</p>
-					<div class="contact-methods">
-						<a href="mailto:hello@leechy.dev" class="contact-method">
-							<span class="method-label">Email:</span>
-							<span class="method-value">hello@leechy.dev</span>
-						</a>
-					</div>
-				</div>
-				<div class="social-links" data-testid="social-links">
-					<a
-						href="https://github.com/leechy"
-						class="social-link"
-						data-testid="social-link-github"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						GitHub
-					</a>
-					<a
-						href="https://linkedin.com/in/leechy"
-						class="social-link"
-						data-testid="social-link-linkedin"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						LinkedIn
-					</a>
-					<a
-						href="https://twitter.com/leechy"
-						class="social-link"
-						data-testid="social-link-twitter"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Twitter
-					</a>
-				</div>
-			</div>
-		</div>
-	</section>
 </div>
 
 <style>
 	.homepage {
 		min-height: 80vh;
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--color-primary), transparent 70%) 0%,
+			transparent 50%,
+			color-mix(in srgb, var(--color-tertiary), transparent 90%) 100%
+		);
 	}
 
 	.hero {
-		padding: 4rem 0;
-		background: linear-gradient(
-			135deg,
-			rgba(59, 130, 246, 0.1) 0%,
-			transparent 50%,
-			rgba(99, 102, 241, 0.05) 100%
-		);
+		padding: var(--spacing-3xl) 0;
 	}
 
 	.hero-content {
@@ -252,31 +214,20 @@
 	}
 
 	.name-highlight {
-		color: #3b82f6;
+		color: var(--color-secondary);
 		position: relative;
-	}
-
-	.name-highlight::after {
-		content: '';
-		position: absolute;
-		bottom: -4px;
-		left: 0;
-		width: 100%;
-		height: 3px;
-		background: linear-gradient(90deg, #3b82f6, #6366f1);
-		border-radius: 2px;
 	}
 
 	.hero-subtitle {
 		font-size: 1.25rem;
-		color: #64748b;
+		color: var(--color-primary-soft);
 		margin-bottom: 1rem;
 		font-weight: 500;
 	}
 
 	.hero-description {
 		font-size: 1.125rem;
-		color: #64748b;
+		color: var(--color-primary-soft);
 		line-height: 1.6;
 		margin-bottom: 3rem;
 	}
@@ -289,99 +240,99 @@
 
 	/* Skills Section */
 	.skills-section {
-		padding: $spacing-xl 0;
-		background: #f8fafc;
+		padding: var(--spacing-xl) 0;
 	}
 
 	.skills-section h2 {
 		text-align: center;
-		margin-bottom: $spacing-lg;
-		color: $color-text-primary;
+		margin-bottom: var(--spacing-lg);
+		color: var(--color-text-primary);
 		font-size: 2rem;
 	}
 
 	.skill-category {
-		margin-bottom: $spacing-lg;
+		margin-bottom: var(--spacing-lg);
 	}
 
 	.skill-category h3 {
-		color: $color-primary;
+		color: var(--color-primary);
 		font-size: 1.5rem;
-		margin-bottom: $spacing-md;
+		margin-bottom: var(--spacing-md);
 	}
 
 	.skills-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: $spacing-md;
-		margin-bottom: $spacing-lg;
+		gap: var(--spacing-md);
+		margin-bottom: var(--spacing-lg);
 	}
 
 	.skill-card {
-		background: white;
-		padding: $spacing-md;
+		background: var(--color-bg-secondary);
+		padding: var(--spacing-md);
 		border-radius: 8px;
-		border: 1px solid #e2e8f0;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		border: 1px solid var(--color-border);
+		box-shadow: 0 2px 8px color-mix(in srgb, var(--color-secondary), transparent 90%);
 		transition:
-			transform 0.2s ease,
-			box-shadow 0.2s ease;
+			transform 0.4s ease,
+			box-shadow 0.8s ease;
 	}
 
 	.skill-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		transform: translateY(-8px);
+		box-shadow: 0 2px 16px color-mix(in srgb, var(--color-secondary), transparent 60%);
 	}
 
 	.skill-name {
 		font-weight: 600;
-		color: $color-text-primary;
-		margin-bottom: $spacing-sm;
+		color: var(--color-text-primary);
+		margin-bottom: var(--spacing-sm);
 	}
 
 	.skill-proficiency {
 		font-size: 0.875rem;
-		color: $color-text-secondary;
-		background: rgba(59, 130, 246, 0.1);
-		padding: 0.25rem 0.5rem;
+		color: var(--color-text-secondary);
+		background: color-mix(in srgb, var(--color-primary), transparent 80%);
+		padding: var(--spacing-xs) var(--spacing-sm);
 		border-radius: 4px;
 		display: inline-block;
+		margin: 0 0.5rem var(--spacing-sm) calc(var(--spacing-sm) * -1);
 	}
 
 	/* Featured Projects Section */
 	.featured-projects {
-		padding: $spacing-xl 0;
+		padding: var(--spacing-xl) 0;
 	}
 
 	.featured-projects h2 {
 		text-align: center;
-		margin-bottom: $spacing-lg;
-		color: $color-text-primary;
+		margin-bottom: var(--spacing-lg);
+		color: var(--color-text-primary);
 		font-size: 2rem;
 	}
 
 	.projects-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-		gap: $spacing-lg;
+		gap: var(--spacing-lg);
 	}
 
 	.project-card {
-		background: white;
+		background: var(--color-bg-secondary);
 		border-radius: 12px;
-		border: 1px solid #e2e8f0;
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+		border: 1px solid var(--color-border);
+		box-shadow: 0 4px 8px -1px color-mix(in srgb, var(--color-secondary), transparent 90%);
 		transition: all 0.3s ease;
 		overflow: hidden;
 	}
 
 	.project-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 16px color-mix(in srgb, var(--color-secondary), transparent 60%);
 	}
 
 	.project-card-content {
-		padding: $spacing-lg;
+		padding: var(--spacing-lg);
 		cursor: pointer;
 		height: 100%;
 		display: flex;
@@ -389,21 +340,21 @@
 	}
 
 	.project-card-content:focus {
-		outline: 2px solid $color-primary;
+		outline: 2px solid var(--color-primary);
 		outline-offset: 2px;
 	}
 
 	.project-title {
-		color: $color-primary;
+		color: var(--color-primary);
 		font-size: 1.25rem;
-		margin-bottom: $spacing-sm;
+		margin-bottom: var(--spacing-sm);
 		font-weight: 600;
 	}
 
 	.project-description {
-		color: $color-text-secondary;
+		color: var(--color-text-secondary);
 		line-height: 1.6;
-		margin-bottom: $spacing-md;
+		margin-bottom: var(--spacing-md);
 	}
 
 	.project-technologies {

@@ -28,8 +28,6 @@
 </div>
 
 <style lang="scss">
-	@import '../app.scss';
-
 	.app {
 		display: flex;
 		flex-direction: column;
@@ -53,7 +51,7 @@
 	}
 
 	.footer {
-		border-top: 1px solid $color-border;
-		background-color: $color-bg-secondary;
+		border-top: 1px solid var(--color-border);
+		background-color: var(--color-bg-secondary);
 	}
 </style>
