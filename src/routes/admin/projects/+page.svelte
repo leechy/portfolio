@@ -1,17 +1,18 @@
 <script>
-	import { onMount } from 'svelte';
-	import { projects, projectsData } from '$lib/stores/projects.js';
+	export let data;
 
-	let projectList = [];
 	let filteredProjects = [];
 	let searchTerm = '';
 	let statusFilter = 'all';
 	let sortBy = 'date';
 
-	onMount(() => {
-		projectList = [...projectsData];
+	// Use server-side data
+	$: projectList = data.projects || [];
+
+	// Initialize filtered projects when data loads
+	$: if (projectList.length > 0) {
 		filterAndSortProjects();
-	});
+	}
 
 	function filterAndSortProjects() {
 		let filtered = projectList;
@@ -41,20 +42,34 @@
 				break;
 			case 'date':
 			default:
-				filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+				filtered.sort(
+					(a, b) => new Date(b.created_at || b.updated_at) - new Date(a.created_at || a.updated_at)
+				);
 				break;
 		}
 
 		filteredProjects = filtered;
 	}
 
-	function deleteProject(projectId) {
+	async function deleteProject(projectId) {
 		if (confirm('Are you sure you want to delete this project?')) {
-			const index = projectList.findIndex(p => p.id === projectId);
-			if (index !== -1) {
-				projectList.splice(index, 1);
-				projectList = [...projectList];
-				filterAndSortProjects();
+			try {
+				const response = await fetch(`/api/projects/${projectId}`, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+
+				if (response.ok) {
+					// Remove from local list to update UI immediately
+					projectList = projectList.filter(p => p.id !== projectId);
+					filterAndSortProjects();
+				} else {
+					throw new Error('Failed to delete project');
+				}
+			} catch (error) {
+				alert('Failed to delete project. Please try again.');
 			}
 		}
 	}
@@ -83,25 +98,23 @@
 </svelte:head>
 
 <div class="projects-admin" data-testid="admin-projects">
-	<header class="admin-header">
+	<header class="page-header">
 		<div class="header-content">
-			<div class="header-text">
-				<h1>Project Management</h1>
-				<p>Manage your portfolio projects and showcase your work</p>
-			</div>
-			<div class="header-actions">
-				<a href="/admin/projects/new" class="btn btn-primary" data-testid="add-project-btn">
-					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 4v16m8-8H4"
-						/>
-					</svg>
-					New Project
-				</a>
-			</div>
+			<h1>Project Management</h1>
+			<p>Manage your portfolio projects and showcase your work</p>
+		</div>
+		<div class="header-actions">
+			<a href="/admin/projects/new" class="btn btn-primary" data-testid="add-project-btn">
+				<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 4v16m8-8H4"
+					/>
+				</svg>
+				New Project
+			</a>
 		</div>
 	</header>
 	<!-- Filters and Search -->
@@ -194,7 +207,9 @@
 									<span class="tech-tag more">+{project.technologies.length - 3} more</span>
 								{/if}
 							</div>
-							<span class="project-date">{new Date(project.date).toLocaleDateString()}</span>
+							<span class="project-date"
+								>{new Date(project.created_at || project.updated_at).toLocaleDateString()}</span
+							>
 						</div>
 
 						<div class="project-actions">

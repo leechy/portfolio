@@ -1,11 +1,8 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { projects } from '$lib/stores/projects.js';
-	import { onMount } from 'svelte';
 
 	// Form state
 	let formData = {
-		id: '',
 		title: '',
 		description: '',
 		technologies: [],
@@ -14,22 +11,13 @@
 		githubUrl: '',
 		demoUrl: '',
 		imageUrl: '',
-		startDate: '',
-		completionDate: '',
-		challenges: [],
-		solutions: [],
-		skillsDemonstrated: [],
-		content: '',
-		relatedProjects: []
+		content: ''
 	};
 
 	// UI state
 	let isLoading = false;
 	let errors = {};
 	let currentTech = '';
-	let currentChallenge = '';
-	let currentSolution = '';
-	let currentSkill = '';
 
 	// Available technologies for autocomplete
 	const availableTechnologies = [
@@ -71,16 +59,6 @@
 		'Prettier'
 	];
 
-	// Generate unique ID for new project
-	function generateProjectId() {
-		return (
-			formData.title
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-|-$/g, '') || `project-${Date.now()}`
-		);
-	}
-
 	// Add technology to the list
 	function addTechnology() {
 		if (currentTech.trim() && !formData.technologies.includes(currentTech.trim())) {
@@ -92,45 +70,6 @@
 	// Remove technology from the list
 	function removeTechnology(tech) {
 		formData.technologies = formData.technologies.filter(t => t !== tech);
-	}
-
-	// Add challenge
-	function addChallenge() {
-		if (currentChallenge.trim()) {
-			formData.challenges = [...formData.challenges, currentChallenge.trim()];
-			currentChallenge = '';
-		}
-	}
-
-	// Remove challenge
-	function removeChallenge(index) {
-		formData.challenges = formData.challenges.filter((_, i) => i !== index);
-	}
-
-	// Add solution
-	function addSolution() {
-		if (currentSolution.trim()) {
-			formData.solutions = [...formData.solutions, currentSolution.trim()];
-			currentSolution = '';
-		}
-	}
-
-	// Remove solution
-	function removeSolution(index) {
-		formData.solutions = formData.solutions.filter((_, i) => i !== index);
-	}
-
-	// Add skill
-	function addSkill() {
-		if (currentSkill.trim()) {
-			formData.skillsDemonstrated = [...formData.skillsDemonstrated, currentSkill.trim()];
-			currentSkill = '';
-		}
-	}
-
-	// Remove skill
-	function removeSkill(index) {
-		formData.skillsDemonstrated = formData.skillsDemonstrated.filter((_, i) => i !== index);
 	}
 
 	// Form validation
@@ -181,50 +120,51 @@
 		isLoading = true;
 
 		try {
-			// Generate ID from title if not set
-			if (!formData.id) {
-				formData.id = generateProjectId();
-			}
-
-			// Convert date strings to Date objects
+			// Prepare project data for database (map form fields to database schema)
 			const projectData = {
-				...formData,
-				startDate: formData.startDate ? new Date(formData.startDate) : undefined,
-				completionDate: formData.completionDate ? new Date(formData.completionDate) : undefined
+				title: formData.title,
+				description: formData.description,
+				content: formData.content || null,
+				image: formData.imageUrl || null,
+				technologies: formData.technologies,
+				github_url: formData.githubUrl || null,
+				live_url: formData.demoUrl || null,
+				status: formData.status,
+				featured: formData.featured
 			};
 
-			// Add to projects store (simulating database update)
-			projects.create(projectData);
+			// Create project via API
+			const response = await fetch('/api/projects', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(projectData)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to create project');
+			}
 
 			// Show success message and redirect
 			alert('Project created successfully!');
 			goto('/admin/projects');
 		} catch (error) {
 			console.error('Error creating project:', error);
-			errors.general = 'Failed to create project. Please try again.';
+			errors.general = error.message || 'Failed to create project. Please try again.';
 		} finally {
 			isLoading = false;
 		}
 	}
 
 	// Handle Enter key in input fields
-	function handleKeyPress(event, action) {
+	function handleKeyPress(event) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
-			action();
+			addTechnology();
 		}
 	}
-
-	onMount(() => {
-		// Auto-generate ID when title changes
-		const unsubscribe = setInterval(() => {
-			if (formData.title && !formData.id) {
-				formData.id = generateProjectId();
-			}
-		}, 500);
-
-		return () => clearInterval(unsubscribe);
-	});
 </script>
 
 <svelte:head>
@@ -261,35 +201,20 @@
 		<section class="form-section">
 			<h2>Basic Information</h2>
 
-			<div class="form-row">
-				<div class="form-group">
-					<label for="title">Project Title *</label>
-					<input
-						id="title"
-						name="title"
-						type="text"
-						bind:value={formData.title}
-						class:error={errors.title}
-						placeholder="Enter project title"
-						data-testid="project-title-input"
-					/>
-					{#if errors.title}
-						<span class="field-error">{errors.title}</span>
-					{/if}
-				</div>
-
-				<div class="form-group">
-					<label for="project-id">Project ID</label>
-					<input
-						id="project-id"
-						name="id"
-						type="text"
-						bind:value={formData.id}
-						placeholder="Auto-generated from title"
-						data-testid="project-id-input"
-					/>
-					<span class="field-help">Used in URLs. Auto-generated from title if empty.</span>
-				</div>
+			<div class="form-group">
+				<label for="title">Project Title *</label>
+				<input
+					id="title"
+					name="title"
+					type="text"
+					bind:value={formData.title}
+					class:error={errors.title}
+					placeholder="Enter project title"
+					data-testid="project-title-input"
+				/>
+				{#if errors.title}
+					<span class="field-error">{errors.title}</span>
+				{/if}
 			</div>
 
 			<div class="form-group">
@@ -316,11 +241,16 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="status">Status</label>
-					<select id="status" name="status" bind:value={formData.status} data-testid="project-status-select">
+					<select
+						id="status"
+						name="status"
+						bind:value={formData.status}
+						data-testid="project-status-select"
+					>
 						<option value="planning">Planning</option>
-						<option value="development">In Development</option>
+						<option value="in-progress">In Progress</option>
 						<option value="completed">Completed</option>
-						<option value="maintenance">Maintenance</option>
+						<option value="on-hold">On Hold</option>
 					</select>
 				</div>
 
@@ -335,30 +265,6 @@
 						Featured Project
 					</label>
 					<span class="field-help">Featured projects appear prominently on the homepage</span>
-				</div>
-			</div>
-
-			<div class="form-row">
-				<div class="form-group">
-					<label for="start-date">Start Date</label>
-					<input
-						id="start-date"
-						name="startDate"
-						type="date"
-						bind:value={formData.startDate}
-						data-testid="project-start-date-input"
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="completion-date">Completion Date</label>
-					<input
-						id="completion-date"
-						name="completionDate"
-						type="date"
-						bind:value={formData.completionDate}
-						data-testid="project-completion-date-input"
-					/>
 				</div>
 			</div>
 
@@ -432,7 +338,7 @@
 						bind:value={currentTech}
 						placeholder="Add technology (e.g., React, Node.js)"
 						list="tech-suggestions"
-						on:keypress={e => handleKeyPress(e, addTechnology)}
+						on:keypress={handleKeyPress}
 						data-testid="tech-input"
 					/>
 					<button type="button" on:click={addTechnology} class="btn-add">Add</button>
@@ -457,90 +363,6 @@
 
 				{#if errors.technologies}
 					<span class="field-error">{errors.technologies}</span>
-				{/if}
-			</div>
-		</section>
-
-		<!-- Challenges -->
-		<section class="form-section">
-			<h2>Challenges & Solutions</h2>
-
-			<div class="form-group">
-				<label>Challenges Faced</label>
-				<div class="list-input-container">
-					<input
-						type="text"
-						bind:value={currentChallenge}
-						placeholder="Describe a challenge you faced"
-						on:keypress={e => handleKeyPress(e, addChallenge)}
-						data-testid="challenge-input"
-					/>
-					<button type="button" on:click={addChallenge} class="btn-add">Add</button>
-				</div>
-
-				{#if formData.challenges.length > 0}
-					<div class="list-items">
-						{#each formData.challenges as challenge, index}
-							<div class="list-item">
-								<span>{challenge}</span>
-								<button type="button" on:click={() => removeChallenge(index)}>×</button>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<div class="form-group">
-				<label>Solutions Implemented</label>
-				<div class="list-input-container">
-					<input
-						type="text"
-						bind:value={currentSolution}
-						placeholder="Describe how you solved a challenge"
-						on:keypress={e => handleKeyPress(e, addSolution)}
-						data-testid="solution-input"
-					/>
-					<button type="button" on:click={addSolution} class="btn-add">Add</button>
-				</div>
-
-				{#if formData.solutions.length > 0}
-					<div class="list-items">
-						{#each formData.solutions as solution, index}
-							<div class="list-item">
-								<span>{solution}</span>
-								<button type="button" on:click={() => removeSolution(index)}>×</button>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</section>
-
-		<!-- Skills -->
-		<section class="form-section">
-			<h2>Skills Demonstrated</h2>
-
-			<div class="form-group">
-				<div class="list-input-container">
-					<input
-						type="text"
-						bind:value={currentSkill}
-						placeholder="Add a skill you demonstrated"
-						on:keypress={e => handleKeyPress(e, addSkill)}
-						data-testid="skill-input"
-					/>
-					<button type="button" on:click={addSkill} class="btn-add">Add</button>
-				</div>
-
-				{#if formData.skillsDemonstrated.length > 0}
-					<div class="skill-list">
-						{#each formData.skillsDemonstrated as skill, index}
-							<span class="skill-tag">
-								{skill}
-								<button type="button" on:click={() => removeSkill(index)}>×</button>
-							</span>
-						{/each}
-					</div>
 				{/if}
 			</div>
 		</section>

@@ -1,15 +1,15 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { projects } from '$lib/stores/projects.js';
-	import { onMount } from 'svelte';
+
+	export let data;
 
 	// Get project ID from URL params
 	$: projectId = $page.params.id;
+	$: project = data.project;
 
-	// Form state
+	// Form state - initialize with server data
 	let formData = {
-		id: '',
 		title: '',
 		description: '',
 		technologies: [],
@@ -18,24 +18,28 @@
 		githubUrl: '',
 		demoUrl: '',
 		imageUrl: '',
-		startDate: '',
-		completionDate: '',
-		challenges: [],
-		solutions: [],
-		skillsDemonstrated: [],
-		content: '',
-		relatedProjects: []
+		content: ''
 	};
 
 	// UI state
 	let isLoading = false;
-	let isLoadingProject = true;
 	let errors = {};
 	let currentTech = '';
-	let currentChallenge = '';
-	let currentSolution = '';
-	let currentSkill = '';
-	let projectFound = false;
+
+	// Initialize form data when project loads
+	$: if (project) {
+		formData = {
+			title: project.title || '',
+			description: project.description || '',
+			technologies: project.technologies || [],
+			status: project.status || 'planning',
+			featured: project.featured || false,
+			githubUrl: project.github_url || '',
+			demoUrl: project.live_url || '',
+			imageUrl: project.image || '',
+			content: project.content || ''
+		};
+	}
 
 	// Available technologies for autocomplete
 	const availableTechnologies = [
@@ -126,45 +130,6 @@
 		formData.technologies = formData.technologies.filter(t => t !== tech);
 	}
 
-	// Add challenge
-	function addChallenge() {
-		if (currentChallenge.trim()) {
-			formData.challenges = [...formData.challenges, currentChallenge.trim()];
-			currentChallenge = '';
-		}
-	}
-
-	// Remove challenge
-	function removeChallenge(index) {
-		formData.challenges = formData.challenges.filter((_, i) => i !== index);
-	}
-
-	// Add solution
-	function addSolution() {
-		if (currentSolution.trim()) {
-			formData.solutions = [...formData.solutions, currentSolution.trim()];
-			currentSolution = '';
-		}
-	}
-
-	// Remove solution
-	function removeSolution(index) {
-		formData.solutions = formData.solutions.filter((_, i) => i !== index);
-	}
-
-	// Add skill
-	function addSkill() {
-		if (currentSkill.trim()) {
-			formData.skillsDemonstrated = [...formData.skillsDemonstrated, currentSkill.trim()];
-			currentSkill = '';
-		}
-	}
-
-	// Remove skill
-	function removeSkill(index) {
-		formData.skillsDemonstrated = formData.skillsDemonstrated.filter((_, i) => i !== index);
-	}
-
 	// Form validation
 	function validateForm() {
 		errors = {};
@@ -202,6 +167,14 @@
 		}
 	}
 
+	// Handle Enter key in input fields
+	function handleKeyPress(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			addTechnology();
+		}
+	}
+
 	// Handle form submission
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -213,22 +186,39 @@
 		isLoading = true;
 
 		try {
-			// Convert date strings to Date objects
+			// Prepare project data for database (map form fields to database schema)
 			const projectData = {
-				...formData,
-				startDate: formData.startDate ? new Date(formData.startDate) : undefined,
-				completionDate: formData.completionDate ? new Date(formData.completionDate) : undefined
+				title: formData.title,
+				description: formData.description,
+				content: formData.content || null,
+				image: formData.imageUrl || null,
+				technologies: formData.technologies,
+				github_url: formData.githubUrl || null,
+				live_url: formData.demoUrl || null,
+				status: formData.status,
+				featured: formData.featured
 			};
 
-			// Update project in store (simulating database update)
-			projects.updateById(projectId, projectData);
+			// Update project via API
+			const response = await fetch(`/api/projects/${projectId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(projectData)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to update project');
+			}
 
 			// Show success message and redirect
 			alert('Project updated successfully!');
 			goto('/admin/projects');
 		} catch (error) {
 			console.error('Error updating project:', error);
-			errors.general = 'Failed to update project. Please try again.';
+			errors.general = error.message || 'Failed to update project. Please try again.';
 		} finally {
 			isLoading = false;
 		}
@@ -241,8 +231,18 @@
 		}
 
 		try {
-			// Remove from projects store (simulating database delete)
-			projects.deleteById(projectId);
+			// Delete project via API
+			const response = await fetch(`/api/projects/${projectId}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to delete project');
+			}
 
 			alert('Project deleted successfully!');
 			goto('/admin/projects');
@@ -251,18 +251,6 @@
 			alert('Failed to delete project. Please try again.');
 		}
 	}
-
-	// Handle Enter key in input fields
-	function handleKeyPress(event, action) {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			action();
-		}
-	}
-
-	onMount(() => {
-		loadProject();
-	});
 </script>
 
 <svelte:head>
@@ -284,30 +272,12 @@
 				Back to Projects
 			</a>
 
-			{#if isLoadingProject}
-				<h1>Loading Project...</h1>
-			{:else if !projectFound}
-				<h1>Project Not Found</h1>
-				<p>The project you're looking for doesn't exist.</p>
-			{:else}
-				<h1>Edit Project</h1>
-				<p>Update your project details</p>
-			{/if}
+			<h1>Edit Project</h1>
+			<p>Update your project details</p>
 		</div>
 	</header>
 
-	{#if isLoadingProject}
-		<div class="loading-container">
-			<div class="loading-spinner"></div>
-			<p>Loading project data...</p>
-		</div>
-	{:else if !projectFound}
-		<div class="not-found-container">
-			<h2>Project Not Found</h2>
-			<p>The project with ID "{projectId}" doesn't exist.</p>
-			<a href="/admin/projects" class="btn btn-primary">Back to Projects</a>
-		</div>
-	{:else}
+	{#if project}
 		<form class="form-container" on:submit={handleSubmit}>
 			{#if errors.general}
 				<div class="error-message" data-testid="form-error">
@@ -395,28 +365,6 @@
 
 				<div class="form-row">
 					<div class="form-group">
-						<label for="start-date">Start Date</label>
-						<input
-							id="start-date"
-							type="date"
-							bind:value={formData.startDate}
-							data-testid="project-start-date-input"
-						/>
-					</div>
-
-					<div class="form-group">
-						<label for="completion-date">Completion Date</label>
-						<input
-							id="completion-date"
-							type="date"
-							bind:value={formData.completionDate}
-							data-testid="project-completion-date-input"
-						/>
-					</div>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
 						<label for="github-url">GitHub URL</label>
 						<input
 							id="github-url"
@@ -470,7 +418,7 @@
 							bind:value={currentTech}
 							placeholder="Add technology (e.g., React, Node.js)"
 							list="tech-suggestions"
-							on:keypress={e => handleKeyPress(e, addTechnology)}
+							on:keypress={handleKeyPress}
 							data-testid="tech-input"
 						/>
 						<button type="button" on:click={addTechnology} class="btn-add">Add</button>
@@ -499,87 +447,20 @@
 				</div>
 			</section>
 
-			<!-- Challenges -->
+			<!-- Content -->
 			<section class="form-section">
-				<h2>Challenges & Solutions</h2>
+				<h2>Project Content</h2>
 
 				<div class="form-group">
-					<label>Challenges Faced</label>
-					<div class="list-input-container">
-						<input
-							type="text"
-							bind:value={currentChallenge}
-							placeholder="Describe a challenge you faced"
-							on:keypress={e => handleKeyPress(e, addChallenge)}
-							data-testid="challenge-input"
-						/>
-						<button type="button" on:click={addChallenge} class="btn-add">Add</button>
-					</div>
-
-					{#if formData.challenges.length > 0}
-						<div class="list-items">
-							{#each formData.challenges as challenge, index}
-								<div class="list-item">
-									<span>{challenge}</span>
-									<button type="button" on:click={() => removeChallenge(index)}>×</button>
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
-
-				<div class="form-group">
-					<label>Solutions Implemented</label>
-					<div class="list-input-container">
-						<input
-							type="text"
-							bind:value={currentSolution}
-							placeholder="Describe how you solved a challenge"
-							on:keypress={e => handleKeyPress(e, addSolution)}
-							data-testid="solution-input"
-						/>
-						<button type="button" on:click={addSolution} class="btn-add">Add</button>
-					</div>
-
-					{#if formData.solutions.length > 0}
-						<div class="list-items">
-							{#each formData.solutions as solution, index}
-								<div class="list-item">
-									<span>{solution}</span>
-									<button type="button" on:click={() => removeSolution(index)}>×</button>
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			</section>
-
-			<!-- Skills -->
-			<section class="form-section">
-				<h2>Skills Demonstrated</h2>
-
-				<div class="form-group">
-					<div class="list-input-container">
-						<input
-							type="text"
-							bind:value={currentSkill}
-							placeholder="Add a skill you demonstrated"
-							on:keypress={e => handleKeyPress(e, addSkill)}
-							data-testid="skill-input"
-						/>
-						<button type="button" on:click={addSkill} class="btn-add">Add</button>
-					</div>
-
-					{#if formData.skillsDemonstrated.length > 0}
-						<div class="skill-list">
-							{#each formData.skillsDemonstrated as skill, index}
-								<span class="skill-tag">
-									{skill}
-									<button type="button" on:click={() => removeSkill(index)}>×</button>
-								</span>
-							{/each}
-						</div>
-					{/if}
+					<label for="content">Detailed Description</label>
+					<textarea
+						id="content"
+						bind:value={formData.content}
+						placeholder="Write detailed project description, implementation details, etc. (Supports Markdown)"
+						rows="10"
+						data-testid="project-content-input"
+					></textarea>
+					<span class="field-help">You can use Markdown formatting here</span>
 				</div>
 			</section>
 
@@ -647,6 +528,8 @@
 				</div>
 			</section>
 		</form>
+	{:else}
+		<div class="error-message">Project not found or failed to load.</div>
 	{/if}
 </div>
 
