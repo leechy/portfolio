@@ -10,7 +10,7 @@ export const load = async () => {
 			allTags: [],
 			meta: {
 				total: 0,
-				title: 'Blog - Leechy Dev',
+				title: 'Leechy’s Dev Thoughts',
 				description:
 					'Read articles about web development, programming, and technology. Tips, tutorials, and insights from a full-stack developer.'
 			}
@@ -40,7 +40,7 @@ export const load = async () => {
 			allTags,
 			meta: {
 				total: publishedPosts.length,
-				title: 'Blog - Leechy Dev',
+				title: 'Leechy’s Dev Thoughts',
 				description:
 					'Read articles about web development, programming, and technology. Tips, tutorials, and insights from a full-stack developer.'
 			}
@@ -53,7 +53,7 @@ export const load = async () => {
 			allTags: [],
 			meta: {
 				total: 0,
-				title: 'Blog - Leechy Dev',
+				title: 'Leechy’s Dev Thoughts',
 				description:
 					'Read articles about web development, programming, and technology. Tips, tutorials, and insights from a full-stack developer.'
 			}

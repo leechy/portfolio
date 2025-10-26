@@ -57,13 +57,13 @@
 </script>
 
 <svelte:head>
-	<title>{data.meta?.title || 'Blog - Leechy Dev'}</title>
+	<title>{data.meta?.title || 'Leechy’s Dev Thoughts'}</title>
 	<meta
 		name="description"
 		content={data.meta?.description ||
 			'Read articles about web development, programming, and technology. Tips, tutorials, and insights from a full-stack developer.'}
 	/>
-	<meta property="og:title" content={data.meta?.title || 'Blog - Leechy Dev'} />
+	<meta property="og:title" content={data.meta?.title || 'Leechy’s Dev Thoughts'} />
 	<meta
 		property="og:description"
 		content={data.meta?.description ||

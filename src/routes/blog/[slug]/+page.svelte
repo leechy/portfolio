@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>{blog.title} - Leechy Dev Blog</title>
+	<title>{blog.title} - Leechy’s Dev Thoughts</title>
 	<meta name="description" content={blog.excerpt} />
 	<meta property="og:title" content={blog.title} />
 	<meta property="og:description" content={blog.excerpt} />

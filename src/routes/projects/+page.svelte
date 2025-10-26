@@ -19,12 +19,13 @@
 		if (searchQuery.trim()) {
 			// Client-side search through loaded projects
 			const query = searchQuery.trim().toLowerCase();
-			result = projects.filter(project => 
-				project.title.toLowerCase().includes(query) ||
-				project.description.toLowerCase().includes(query) ||
-				project.technologies.some(tech => tech.toLowerCase().includes(query)) ||
-				project.challenges.some(challenge => challenge.toLowerCase().includes(query)) ||
-				project.solutions.some(solution => solution.toLowerCase().includes(query))
+			result = projects.filter(
+				project =>
+					project.title.toLowerCase().includes(query) ||
+					project.description.toLowerCase().includes(query) ||
+					project.technologies.some(tech => tech.toLowerCase().includes(query)) ||
+					project.challenges.some(challenge => challenge.toLowerCase().includes(query)) ||
+					project.solutions.some(solution => solution.toLowerCase().includes(query))
 			);
 		}
 
@@ -48,10 +49,11 @@
 </script>
 
 <svelte:head>
-	<title>{data.meta?.title || 'Projects - Leechy\'s Portfolio'}</title>
+	<title>{data.meta?.title || "Projects - Leechy's Portfolio"}</title>
 	<meta
 		name="description"
-		content={data.meta?.description || "Explore my development projects, technologies used, and the challenges I've solved."}
+		content={data.meta?.description ||
+			"Explore my development projects, technologies used, and the challenges I've solved."}
 	/>
 </svelte:head>
 
@@ -66,126 +68,123 @@
 
 		<!-- Filters Section -->
 		<div class="filters-section" data-testid="projects-filters">
-				<div class="filter-controls">
-					<div class="search-control">
-						<label for="search-projects">Search Projects:</label>
-						<input
-							id="search-projects"
-							type="text"
-							bind:value={searchQuery}
-							placeholder="Search by title, description, or technology..."
-							data-testid="project-search-input"
-						/>
-					</div>
+			<div class="filter-controls">
+				<div class="search-control">
+					<label for="search-projects">Search Projects:</label>
+					<input
+						id="search-projects"
+						type="text"
+						bind:value={searchQuery}
+						placeholder="Search by title, description, or technology..."
+						data-testid="project-search-input"
+					/>
+				</div>
 
-					<div class="technology-filter">
-						<label for="technology-select">Filter by Technology:</label>
-						<select
-							id="technology-select"
-							bind:value={selectedTechnology}
-							data-testid="technology-filter-select"
-						>
-							<option value="">All Technologies</option>
-							{#each allTechnologies as tech}
-								<option value={tech}>{tech}</option>
-							{/each}
-						</select>
-					</div>
-
-					<button
-						type="button"
-						on:click={clearFilters}
-						class="clear-filters-btn"
-						data-testid="clear-filters-btn"
+				<div class="technology-filter">
+					<label for="technology-select">Filter by Technology:</label>
+					<select
+						id="technology-select"
+						bind:value={selectedTechnology}
+						data-testid="technology-filter-select"
 					>
+						<option value="">All Technologies</option>
+						{#each allTechnologies as tech}
+							<option value={tech}>{tech}</option>
+						{/each}
+					</select>
+				</div>
+
+				<button
+					type="button"
+					on:click={clearFilters}
+					class="clear-filters-btn"
+					data-testid="clear-filters-btn"
+				>
+					Clear Filters
+				</button>
+			</div>
+
+			<div class="filter-results">
+				<p data-testid="projects-count">
+					Showing {filteredProjects.length} of {projects.length} projects
+				</p>
+			</div>
+		</div>
+
+		<!-- Projects Grid -->
+		<div class="projects-grid" data-testid="projects-grid">
+			{#each filteredProjects as project (project.id)}
+				<article class="project-card" data-testid="project-overview-card">
+					<div class="project-card-content" on:click={() => handleProjectClick(project.id)}>
+						{#if project.imageUrl}
+							<div class="project-image">
+								<img src={project.imageUrl} alt="{project.title} screenshot" loading="lazy" />
+							</div>
+						{/if}
+
+						<div class="project-info">
+							<header class="project-card-header">
+								<h2 class="project-title">{project.title}</h2>
+								<div class="project-meta">
+									<span class="project-status status-{project.status}" data-testid="project-status">
+										{project.status}
+									</span>
+									{#if project.featured}
+										<span class="featured-badge" data-testid="featured-badge">Featured</span>
+									{/if}
+								</div>
+							</header>
+
+							<p class="project-description">{project.description}</p>
+
+							<div class="project-technologies" data-testid="project-technologies">
+								{#each project.technologies as tech}
+									<span class="tech-tag" data-testid="tech-tag">{tech}</span>
+								{/each}
+							</div>
+
+							<div class="project-links">
+								{#if project.demoUrl}
+									<a
+										href={project.demoUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="project-link demo-link"
+										data-testid="demo-link"
+										on:click|stopPropagation
+									>
+										View Demo
+									</a>
+								{/if}
+								{#if project.githubUrl}
+									<a
+										href={project.githubUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="project-link github-link"
+										data-testid="github-link"
+										on:click|stopPropagation
+									>
+										View Code
+									</a>
+								{/if}
+							</div>
+						</div>
+					</div>
+				</article>
+			{:else}
+				<div class="no-projects" data-testid="no-projects-found">
+					<h2>No Projects Found</h2>
+					<p>
+						No projects match your current filters. Try adjusting your search or clearing the
+						filters.
+					</p>
+					<button type="button" on:click={clearFilters} class="clear-filters-btn">
 						Clear Filters
 					</button>
 				</div>
-
-				<div class="filter-results">
-					<p data-testid="projects-count">
-						Showing {filteredProjects.length} of {projects.length} projects
-					</p>
-				</div>
-			</div>
-
-			<!-- Projects Grid -->
-			<div class="projects-grid" data-testid="projects-grid">
-				{#each filteredProjects as project (project.id)}
-					<article class="project-card" data-testid="project-overview-card">
-						<div class="project-card-content" on:click={() => handleProjectClick(project.id)}>
-							{#if project.imageUrl}
-								<div class="project-image">
-									<img src={project.imageUrl} alt="{project.title} screenshot" loading="lazy" />
-								</div>
-							{/if}
-
-							<div class="project-info">
-								<header class="project-card-header">
-									<h2 class="project-title">{project.title}</h2>
-									<div class="project-meta">
-										<span
-											class="project-status status-{project.status}"
-											data-testid="project-status"
-										>
-											{project.status}
-										</span>
-										{#if project.featured}
-											<span class="featured-badge" data-testid="featured-badge">Featured</span>
-										{/if}
-									</div>
-								</header>
-
-								<p class="project-description">{project.description}</p>
-
-								<div class="project-technologies" data-testid="project-technologies">
-									{#each project.technologies as tech}
-										<span class="tech-tag" data-testid="tech-tag">{tech}</span>
-									{/each}
-								</div>
-
-								<div class="project-links">
-									{#if project.demoUrl}
-										<a
-											href={project.demoUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="project-link demo-link"
-											data-testid="demo-link"
-											on:click|stopPropagation
-										>
-											View Demo
-										</a>
-									{/if}
-									{#if project.githubUrl}
-										<a
-											href={project.githubUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="project-link github-link"
-											data-testid="github-link"
-											on:click|stopPropagation
-										>
-											View Code
-										</a>
-									{/if}
-								</div>
-							</div>
-						</div>
-					</article>
-				{:else}
-					<div class="no-projects" data-testid="no-projects-found">
-						<h2>No Projects Found</h2>
-						<p>
-							No projects match your current filters. Try adjusting your search or clearing the
-							filters.
-						</p>
-						<button type="button" on:click={clearFilters} class="clear-filters-btn">
-							Clear Filters
-						</button>
-					</div>
-				{/each}
-			</div>
+			{/each}
+		</div>
 	</div>
 </div>
 
