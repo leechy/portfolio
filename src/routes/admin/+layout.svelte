@@ -1,13 +1,10 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { authStore, logout, initAuth } from '$lib/auth/auth';
+	import { authStore, logout } from '$lib/auth/auth';
+	import { redirect } from '@sveltejs/kit';
 
-	// Initialize auth on mount
-	onMount(() => {
-		initAuth();
-	});
+	export let data;
 
 	function handleLogout() {
 		logout();
@@ -16,6 +13,7 @@
 
 	// Get current page for active navigation styling
 	$: currentPath = $page.url.pathname;
+	$: isLoginPage = data?.isLoginPage || currentPath === '/admin/login';
 </script>
 
 <svelte:head>
@@ -23,7 +21,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if $authStore.loading}
+{#if !isLoginPage && $authStore.loading}
 	<div class="auth-loading">
 		<div class="loading-spinner">
 			<svg class="spinner" viewBox="0 0 24 24">
@@ -44,7 +42,7 @@
 		</div>
 		<p>Loading...</p>
 	</div>
-{:else if $authStore.isAuthenticated}
+{:else if !isLoginPage && $authStore.isAuthenticated}
 	<div class="admin-layout">
 		<!-- Admin Navigation Sidebar -->
 		<nav class="admin-sidebar" data-testid="admin-nav">
@@ -146,7 +144,7 @@
 		</main>
 	</div>
 {:else}
-	<!-- Not authenticated - slot will handle login page -->
+	<!-- Login page or not authenticated - let the page component handle the display -->
 	<slot />
 {/if}
 

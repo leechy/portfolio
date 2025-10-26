@@ -152,7 +152,7 @@
 
 		<!-- Demo credentials hint -->
 		<div class="demo-hint">
-			<strong>Demo:</strong> Use any email and password to login
+			<strong>Demo:</strong> Email: admin@leechy.dev, Password: admin123
 		</div>
 	</div>
 </div>

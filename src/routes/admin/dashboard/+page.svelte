@@ -1,41 +1,9 @@
 <script>
-	import { onMount } from 'svelte';
-	import { projects } from '$lib/stores/projects.js';
-	import { blogPosts } from '$lib/stores/blogs.js';
+	export let data;
 
-	let stats = {
-		totalProjects: 0,
-		publishedProjects: 0,
-		totalBlogPosts: 0,
-		publishedBlogPosts: 0,
-		draftPosts: 0,
-		totalViews: 0 // Placeholder for future analytics
-	};
-
-	let recentActivity = [
-		{
-			type: 'blog',
-			action: 'published',
-			title: 'Advanced TypeScript Patterns',
-			date: '2024-01-15'
-		},
-		{ type: 'project', action: 'created', title: 'E-commerce Dashboard', date: '2024-01-14' },
-		{ type: 'blog', action: 'updated', title: 'SvelteKit Performance Guide', date: '2024-01-13' }
-	];
-
-	onMount(() => {
-		// Calculate project stats
-		stats.totalProjects = projects.length;
-		stats.publishedProjects = projects.filter(p => p.status === 'completed').length;
-
-		// Calculate blog stats
-		stats.totalBlogPosts = blogPosts.length;
-		stats.publishedBlogPosts = blogPosts.length; // All are published for now
-		stats.draftPosts = 0; // No drafts yet
-
-		// Mock total views
-		stats.totalViews = 1247;
-	});
+	// Get stats and recent activity from server-side data
+	$: stats = data.stats;
+	$: recentActivity = data.recentActivity;
 </script>
 
 <svelte:head>

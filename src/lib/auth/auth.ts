@@ -23,6 +23,10 @@ interface LoginResult {
 	user?: User;
 }
 
+interface LogoutResult {
+	success: boolean;
+}
+
 interface TokenPayload {
 	user: User;
 	timestamp: number;
@@ -83,6 +87,16 @@ export function initAuth(): void {
 		return;
 	}
 
+	// Get current state to avoid unnecessary resets
+	let isAlreadyAuthenticated = false;
+	authStore.subscribe(state => {
+		isAlreadyAuthenticated = state.isAuthenticated && !state.loading;
+	})();
+
+	// If we're already authenticated, no need to reinitialize
+	if (isAlreadyAuthenticated) {
+		return;
+	}
 	authStore.update(state => ({ ...state, loading: true }));
 
 	const token = localStorage.getItem(TOKEN_KEY);
@@ -162,17 +176,22 @@ export async function login(email: string, password: string): Promise<LoginResul
 /**
  * Logout user
  */
-export function logout(): void {
+export async function logout(): Promise<LogoutResult> {
 	if (browser) {
-		localStorage.removeItem(TOKEN_KEY);
+		await localStorage.removeItem(TOKEN_KEY);
 	}
 
+	// Update auth store
 	authStore.set({
 		isAuthenticated: false,
 		user: null,
 		token: null,
 		loading: false
 	});
+
+	return {
+		success: true
+	};
 }
 
 /**
