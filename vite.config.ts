@@ -64,7 +64,7 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
-				additionalData: `@use 'sass:color';@use '@/lib/styles/variables.scss';`
+				additionalData: `@use 'sass:color';@import '@/lib/styles/variables.scss';`
 			}
 		}
 	},

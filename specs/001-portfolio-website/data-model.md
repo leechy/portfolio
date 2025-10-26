@@ -87,7 +87,7 @@ CREATE TABLE blog_posts (
   content TEXT NOT NULL, -- Full markdown content stored directly
   featured BOOLEAN DEFAULT FALSE,
   published BOOLEAN DEFAULT FALSE,
-  published_date DATETIME,
+  published_at DATETIME,
   read_time_minutes INTEGER,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -158,7 +158,7 @@ CREATE INDEX idx_project_skills_skill ON project_skills(skill_id);
 -- Blog indexes
 CREATE INDEX idx_blog_posts_slug ON blog_posts(slug);
 CREATE INDEX idx_blog_posts_published ON blog_posts(published);
-CREATE INDEX idx_blog_posts_published_date ON blog_posts(published_date);
+CREATE INDEX idx_blog_posts_published_at ON blog_posts(published_at);
 
 -- Full-text search for blog posts
 CREATE VIRTUAL TABLE blog_posts_fts USING fts5(

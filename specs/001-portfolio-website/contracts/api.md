@@ -70,7 +70,7 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
-  publishedDate?: string;
+  publishedAt?: string;
   readTimeMinutes?: number;
   tags: string[];
   featured: boolean;

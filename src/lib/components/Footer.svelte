@@ -106,8 +106,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../app.scss';
-
 	.footer {
 		padding: var(--spacing-3xl) 0 var(--spacing-xl);
 	}

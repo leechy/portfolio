@@ -244,7 +244,6 @@
 	}
 
 	.skills-section h2 {
-		text-align: center;
 		margin-bottom: var(--spacing-lg);
 		color: var(--color-text-primary);
 		font-size: 2rem;
@@ -305,7 +304,6 @@
 	}
 
 	.featured-projects h2 {
-		text-align: center;
 		margin-bottom: var(--spacing-lg);
 		color: var(--color-text-primary);
 		font-size: 2rem;

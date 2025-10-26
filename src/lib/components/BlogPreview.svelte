@@ -29,8 +29,8 @@
 			</h3>
 
 			<div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 mb-2">
-				<time datetime={blog.publishedAt.toISOString()} data-testid="blog-post-date">
-					{formatBlogDate(blog.publishedAt)}
+				<time datetime={blog.published_at} data-testid="blog-post-date">
+					{formatBlogDate(blog.published_at)}
 				</time>
 
 				{#if showAuthor}
