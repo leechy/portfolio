@@ -1,51 +1,31 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import {
-		loadProjects,
-		projectsStore,
-		getProjectsByTechnology,
-		searchProjects
-	} from '../../lib/stores/projects';
-	import type { Project } from '../../lib/stores/projects';
+	import type { Project } from '$lib/server/database.js';
+	import type { PageData } from './$types';
 
-	let projects: Project[] = [];
-	let filteredProjects: Project[] = [];
-	let loading = true;
-	let error: string | null = null;
+	export let data: PageData;
+
 	let searchQuery = '';
 	let selectedTechnology = '';
+	let filteredProjects: Project[] = [];
 
-	// Get unique technologies for filter dropdown
-	let allTechnologies: string[] = [];
+	// Extract data from server-side load
+	$: projects = data.projects || [];
+	$: allTechnologies = data.allTechnologies || [];
 
-	onMount(async () => {
-		try {
-			await loadProjects();
-			projectsStore.subscribe(state => {
-				projects = state.projects;
-				filteredProjects = projects;
-				loading = state.loading;
-				error = state.error;
-
-				// Extract all unique technologies
-				const techSet = new Set<string>();
-				projects.forEach(project => {
-					project.technologies.forEach(tech => techSet.add(tech));
-				});
-				allTechnologies = Array.from(techSet).sort();
-			});
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load projects';
-			loading = false;
-		}
-	});
-
-	// Filter projects based on search query and technology
+	// Client-side filtering based on search query and technology
 	$: {
 		let result = projects;
 
 		if (searchQuery.trim()) {
-			result = searchProjects(searchQuery);
+			// Client-side search through loaded projects
+			const query = searchQuery.trim().toLowerCase();
+			result = projects.filter(project => 
+				project.title.toLowerCase().includes(query) ||
+				project.description.toLowerCase().includes(query) ||
+				project.technologies.some(tech => tech.toLowerCase().includes(query)) ||
+				project.challenges.some(challenge => challenge.toLowerCase().includes(query)) ||
+				project.solutions.some(solution => solution.toLowerCase().includes(query))
+			);
 		}
 
 		if (selectedTechnology) {
@@ -68,10 +48,10 @@
 </script>
 
 <svelte:head>
-	<title>Projects - Leechy's Portfolio</title>
+	<title>{data.meta?.title || 'Projects - Leechy\'s Portfolio'}</title>
 	<meta
 		name="description"
-		content="Explore my development projects, technologies used, and the challenges I've solved."
+		content={data.meta?.description || "Explore my development projects, technologies used, and the challenges I've solved."}
 	/>
 </svelte:head>
 
@@ -84,19 +64,8 @@
 			</p>
 		</header>
 
-		{#if loading}
-			<div class="loading-section">
-				<div class="loading-spinner" data-testid="projects-loading"></div>
-				<p>Loading projects...</p>
-			</div>
-		{:else if error}
-			<div class="error-section" data-testid="projects-error">
-				<h2>Error Loading Projects</h2>
-				<p>{error}</p>
-			</div>
-		{:else}
-			<!-- Filters Section -->
-			<div class="filters-section" data-testid="projects-filters">
+		<!-- Filters Section -->
+		<div class="filters-section" data-testid="projects-filters">
 				<div class="filter-controls">
 					<div class="search-control">
 						<label for="search-projects">Search Projects:</label>
@@ -217,7 +186,6 @@
 					</div>
 				{/each}
 			</div>
-		{/if}
 	</div>
 </div>
 
