@@ -12,9 +12,13 @@ export const load: LayoutLoad = async ({ url }) => {
 	// In browser, check authentication status
 	if (browser) {
 		return new Promise(resolve => {
-			const unsubscribe = authStore.subscribe(auth => {
+			let unsubscribe: (() => void) | null = null;
+
+			unsubscribe = authStore.subscribe(auth => {
 				if (!auth.loading) {
-					unsubscribe();
+					if (unsubscribe) {
+						unsubscribe();
+					}
 					if (!auth.isAuthenticated) {
 						throw redirect(302, '/admin/login');
 					}
