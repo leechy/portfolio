@@ -1,34 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import { getProjectById, getRelatedProjects, loadProjects } from '../../../lib/stores/projects';
-	import type { Project } from '../../../lib/stores/projects';
+	import type { Project } from '$lib/server/database.js';
+	import type { PageData } from './$types';
 
-	let project: Project | undefined = undefined;
-	let relatedProjects: Project[] = [];
-	let loading = true;
-	let notFound = false;
+	export let data: PageData;
 
-	onMount(async () => {
-		try {
-			await loadProjects();
-
-			const slug = $page.params.slug;
-			project = getProjectById(slug);
-
-			if (project) {
-				relatedProjects = getRelatedProjects(project.id);
-				loading = false;
-			} else {
-				notFound = true;
-				loading = false;
-			}
-		} catch (error) {
-			console.error('Failed to load project:', error);
-			notFound = true;
-			loading = false;
-		}
-	});
+	// Extract data from server-side load
+	$: project = data.project;
+	$: relatedProjects = data.relatedProjects;
 
 	function navigateToProject(projectId: string) {
 		window.location.href = `/projects/${projectId}`;
@@ -40,31 +18,11 @@
 </script>
 
 <svelte:head>
-	<title>{project?.title || 'Project Not Found'} - Leechy's Portfolio</title>
-	<meta name="description" content={project?.description || 'Project details not available'} />
+	<title>{data.meta?.title || 'Project Not Found'}</title>
+	<meta name="description" content={data.meta?.description || 'Project details not available'} />
 </svelte:head>
 
-{#if loading}
-	<div class="loading-section">
-		<div class="loading-spinner"></div>
-		<p>Loading project details...</p>
-	</div>
-{:else if notFound}
-	<div class="not-found-section" data-testid="project-not-found">
-		<div class="container">
-			<h1>Project Not Found</h1>
-			<p>The requested project could not be found.</p>
-			<button
-				type="button"
-				on:click={navigateBack}
-				class="back-button"
-				data-testid="back-to-projects"
-			>
-				← Back to Projects
-			</button>
-		</div>
-	</div>
-{:else if project}
+{#if project}
 	<article class="project-detail">
 		<div class="container">
 			<!-- Breadcrumb Navigation -->
