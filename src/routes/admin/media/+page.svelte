@@ -15,6 +15,12 @@
 	let previewFile = null;
 	let showPreview = false;
 
+	// Editing state
+	let editingFile = null;
+	let editingName = ''; // Display name (original_filename)
+	let editingFilename = ''; // Actual filename on disk
+	let editingAltText = '';
+
 	// Error handling
 	let error = '';
 	let success = '';
@@ -32,42 +38,31 @@
 		return unsubscribe;
 	});
 
-	// Load existing media files
+	// Load existing media files from API
 	async function loadMediaFiles() {
 		try {
-			// Simulate loading media files - replace with actual API call
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			const params = new URLSearchParams();
+			if (searchTerm) params.append('search', searchTerm);
+			if (currentFilter !== 'all') params.append('type', currentFilter);
 
-			// Mock data for demonstration
-			mediaFiles = [
-				{
-					id: 1,
-					name: 'hero-image.jpg',
-					type: 'image/jpeg',
-					size: 245760,
-					url: '/images/placeholder.jpg',
-					uploadDate: new Date('2024-01-15'),
-					dimensions: { width: 1920, height: 1080 }
-				},
-				{
-					id: 2,
-					name: 'profile-photo.png',
-					type: 'image/png',
-					size: 102400,
-					url: '/images/placeholder.jpg',
-					uploadDate: new Date('2024-01-10'),
-					dimensions: { width: 400, height: 400 }
-				},
-				{
-					id: 3,
-					name: 'project-demo.mp4',
-					type: 'video/mp4',
-					size: 5242880,
-					url: '/videos/placeholder.mp4',
-					uploadDate: new Date('2024-01-05'),
-					duration: 120
-				}
-			];
+			const response = await fetch(`/api/media?${params}`);
+			const result = await response.json();
+
+			if (result.success) {
+				mediaFiles = result.data.map(file => ({
+					...file,
+					uploadDate: new Date(file.created_at),
+					name: file.original_filename,
+					type: file.mime_type,
+					size: file.file_size,
+					url: file.file_url,
+					dimensions:
+						file.width && file.height ? { width: file.width, height: file.height } : undefined,
+					duration: file.duration
+				}));
+			} else {
+				error = result.error || 'Failed to load media files';
+			}
 		} catch (err) {
 			error = 'Failed to load media files';
 		}
@@ -95,7 +90,7 @@
 		uploadFiles = uploadFiles.filter((_, i) => i !== index);
 	}
 
-	// Upload files
+	// Upload files to server
 	async function uploadMediaFiles() {
 		if (uploadFiles.length === 0) return;
 
@@ -104,27 +99,25 @@
 		success = '';
 
 		try {
-			// Simulate file upload - replace with actual upload logic
-			for (const file of uploadFiles) {
-				await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload time
+			const formData = new FormData();
+			uploadFiles.forEach(file => {
+				formData.append('files', file);
+			});
 
-				// Create mock media entry
-				const newMedia = {
-					id: Date.now() + Math.random(),
-					name: file.name,
-					type: file.type,
-					size: file.size,
-					url: URL.createObjectURL(file),
-					uploadDate: new Date(),
-					...(file.type.startsWith('image/') && { dimensions: { width: 800, height: 600 } }),
-					...(file.type.startsWith('video/') && { duration: 60 })
-				};
+			const response = await fetch('/api/media', {
+				method: 'POST',
+				body: formData
+			});
 
-				mediaFiles = [...mediaFiles, newMedia];
+			const result = await response.json();
+
+			if (result.success) {
+				success = `Successfully uploaded ${uploadFiles.length} file(s)`;
+				uploadFiles = [];
+				await loadMediaFiles(); // Reload the media list
+			} else {
+				error = result.error || 'Upload failed';
 			}
-
-			success = `Successfully uploaded ${uploadFiles.length} file(s)`;
-			uploadFiles = [];
 		} catch (err) {
 			error = 'Failed to upload files';
 		} finally {
@@ -141,14 +134,24 @@
 		}
 
 		try {
-			// Simulate deletion - replace with actual API call
-			await new Promise(resolve => setTimeout(resolve, 500));
+			const response = await fetch('/api/media', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ ids: Array.from(selectedFiles) })
+			});
 
-			mediaFiles = mediaFiles.filter(file => !selectedFiles.has(file.id));
-			selectedFiles.clear();
-			selectedFiles = new Set(); // Trigger reactivity
+			const result = await response.json();
 
-			success = 'Files deleted successfully';
+			if (result.success) {
+				success = `Successfully deleted ${result.data.deletedCount} file(s)`;
+				selectedFiles.clear();
+				selectedFiles = new Set(); // Trigger reactivity
+				await loadMediaFiles(); // Reload the media list
+			} else {
+				error = result.error || 'Failed to delete files';
+			}
 		} catch (err) {
 			error = 'Failed to delete files';
 		}
@@ -160,6 +163,103 @@
 		showPreview = true;
 	}
 
+	// Start editing file
+	function startEditingFile(file) {
+		editingFile = file;
+		editingName = file.original_filename;
+		editingFilename = file.filename;
+		editingAltText = file.alt_text || '';
+	}
+
+	// Save file edits
+	async function saveFileEdits() {
+		if (!editingFile) return;
+
+		try {
+			const response = await fetch(`/api/media/${editingFile.id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					filename: editingFilename, // This will rename the actual file
+					original_filename: editingName,
+					alt_text: editingAltText
+				})
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				success = 'File updated successfully';
+				editingFile = null;
+				await loadMediaFiles(); // Reload the media list
+			} else {
+				error = result.error || 'Failed to update file';
+			}
+		} catch (err) {
+			error = 'Failed to update file';
+		}
+	}
+
+	// Cancel editing
+	function cancelEdit() {
+		editingFile = null;
+		editingName = '';
+		editingAltText = '';
+	}
+
+	// Copy markdown link to clipboard
+	async function copyMarkdownLink(file) {
+		const isImage = file.type.startsWith('image/');
+		const markdownLink = isImage
+			? `![${file.alt_text || file.name}](${file.url})`
+			: `[${file.name}](${file.url})`;
+
+		try {
+			await navigator.clipboard.writeText(markdownLink);
+			success = `Markdown link copied to clipboard: ${markdownLink}`;
+		} catch (err) {
+			// Fallback for browsers that don't support clipboard API
+			const textArea = document.createElement('textarea');
+			textArea.value = markdownLink;
+			document.body.appendChild(textArea);
+			textArea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textArea);
+			success = `Markdown link copied to clipboard: ${markdownLink}`;
+		}
+	}
+
+	// Copy direct URL to clipboard
+	async function copyDirectUrl(file) {
+		try {
+			await navigator.clipboard.writeText(file.url);
+			success = `URL copied to clipboard: ${file.url}`;
+		} catch (err) {
+			// Fallback for browsers that don't support clipboard API
+			const textArea = document.createElement('textarea');
+			textArea.value = file.url;
+			document.body.appendChild(textArea);
+			textArea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textArea);
+			success = `URL copied to clipboard: ${file.url}`;
+		}
+	}
+
+	// Search and filter reactively
+	$: {
+		if (searchTerm !== undefined || currentFilter !== undefined) {
+			const debounceTimer = setTimeout(() => {
+				loadMediaFiles();
+			}, 300);
+
+			// Clear timeout to debounce
+			// return () => clearTimeout(debounceTimer);
+		}
+	}
+
 	// Format file size
 	function formatFileSize(bytes) {
 		if (bytes === 0) return '0 Bytes';
@@ -169,29 +269,8 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 	}
 
-	// Filter files
-	$: filteredFiles = mediaFiles.filter(file => {
-		// Search filter
-		if (searchTerm && !file.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-			return false;
-		}
-
-		// Type filter
-		if (currentFilter === 'images' && !file.type.startsWith('image/')) {
-			return false;
-		}
-		if (currentFilter === 'videos' && !file.type.startsWith('video/')) {
-			return false;
-		}
-		if (
-			(currentFilter === 'documents' && file.type.startsWith('image/')) ||
-			file.type.startsWith('video/')
-		) {
-			return false;
-		}
-
-		return true;
-	});
+	// Since filtering is now done server-side, we just use mediaFiles directly
+	$: filteredFiles = mediaFiles;
 
 	// Clear messages after delay
 	$: if (success || error) {
@@ -422,6 +501,40 @@
 
 					<!-- Actions -->
 					<div class="file-actions">
+						<button
+							class="action-btn"
+							on:click={() => copyMarkdownLink(file)}
+							title="Copy Markdown Link"
+						>
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+								/>
+							</svg>
+						</button>
+						<button class="action-btn" on:click={() => copyDirectUrl(file)} title="Copy Direct URL">
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+								/>
+							</svg>
+						</button>
+						<button class="action-btn" on:click={() => startEditingFile(file)} title="Edit/Rename">
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+								/>
+							</svg>
+						</button>
 						<button class="action-btn" on:click={() => previewMedia(file)} title="Preview">
 							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path
@@ -524,6 +637,94 @@
 					{/if}
 					<p><strong>Uploaded:</strong> {previewFile.uploadDate.toLocaleDateString()}</p>
 				</div>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Edit Modal -->
+{#if editingFile}
+	<div class="modal-overlay" on:click={cancelEdit}>
+		<div class="edit-modal" on:click|stopPropagation>
+			<div class="modal-header">
+				<h3>Edit Media File</h3>
+				<button class="close-btn" on:click={cancelEdit}>
+					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M6 18L18 6M6 6l12 12"
+						/>
+					</svg>
+				</button>
+			</div>
+
+			<div class="modal-content">
+				<div class="edit-form">
+					<div class="form-group">
+						<label for="edit-display-name">Display Name:</label>
+						<input
+							id="edit-display-name"
+							type="text"
+							bind:value={editingName}
+							placeholder="Enter display name"
+						/>
+						<small>This is the name shown in your content library</small>
+					</div>
+
+					<div class="form-group">
+						<label for="edit-filename">Actual Filename:</label>
+						<input
+							id="edit-filename"
+							type="text"
+							bind:value={editingFilename}
+							placeholder="Enter actual filename"
+						/>
+						<small>This will rename the actual file on disk. Include file extension!</small>
+					</div>
+
+					<div class="form-group">
+						<label for="edit-alt-text">Alt Text (for images):</label>
+						<input
+							id="edit-alt-text"
+							type="text"
+							bind:value={editingAltText}
+							placeholder="Describe the image for accessibility"
+						/>
+					</div>
+
+					<div class="form-group">
+						<label>Current URL:</label>
+						<div class="url-display">
+							<code>{editingFile.url}</code>
+							<button class="copy-btn" on:click={() => copyDirectUrl(editingFile)}> Copy </button>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label>Markdown Links:</label>
+						<div class="markdown-links">
+							<div class="link-option">
+								<span>Image:</span>
+								<code>![{editingAltText || editingName}]({editingFile.url})</code>
+								<button class="copy-btn" on:click={() => copyMarkdownLink(editingFile)}>
+									Copy
+								</button>
+							</div>
+							<div class="link-option">
+								<span>Link:</span>
+								<code>[{editingName}]({editingFile.url})</code>
+								<button class="copy-btn" on:click={() => copyDirectUrl(editingFile)}> Copy </button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-secondary" on:click={cancelEdit}>Cancel</button>
+				<button class="btn-upload" on:click={saveFileEdits}>Save Changes</button>
 			</div>
 		</div>
 	</div>
@@ -944,9 +1145,12 @@
 		top: 0.5rem;
 		right: 0.5rem;
 		display: flex;
+		flex-wrap: wrap;
+		flex-direction: row-reverse;
 		gap: 0.25rem;
 		opacity: 0;
 		transition: opacity 0.2s;
+		max-width: 100px; // Allow wrapping for more buttons
 	}
 
 	.media-item:hover .file-actions {
@@ -1127,6 +1331,135 @@
 		}
 	}
 
+	// Edit Modal Styles
+	.edit-modal {
+		background: white;
+		border-radius: 0.75rem;
+		max-width: 600px;
+		width: 90vw;
+		max-height: 90vh;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	.edit-form {
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+
+		.form-group {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+
+			label {
+				font-weight: 600;
+				color: #374151;
+				font-size: 0.9rem;
+			}
+
+			input {
+				padding: 0.75rem;
+				border: 1px solid #d1d5db;
+				border-radius: 0.5rem;
+				font-size: 1rem;
+
+				&:focus {
+					outline: none;
+					border-color: #3b82f6;
+					box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+				}
+			}
+
+			small {
+				font-size: 0.8rem;
+				color: #64748b;
+				margin-top: 0.25rem;
+			}
+		}
+
+		.url-display {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 0.75rem;
+			background: #f8fafc;
+			border: 1px solid #e2e8f0;
+			border-radius: 0.5rem;
+
+			code {
+				flex: 1;
+				font-size: 0.875rem;
+				color: #374151;
+				background: none;
+				word-break: break-all;
+			}
+
+			.copy-btn {
+				padding: 0.5rem 1rem;
+				background: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 0.25rem;
+				font-size: 0.875rem;
+				cursor: pointer;
+				transition: background 0.2s;
+
+				&:hover {
+					background: #2563eb;
+				}
+			}
+		}
+
+		.markdown-links {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+
+			.link-option {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.75rem;
+				background: #f8fafc;
+				border: 1px solid #e2e8f0;
+				border-radius: 0.5rem;
+
+				span {
+					font-weight: 500;
+					color: #64748b;
+					min-width: 50px;
+					font-size: 0.875rem;
+				}
+
+				code {
+					flex: 1;
+					font-size: 0.875rem;
+					color: #374151;
+					background: none;
+					word-break: break-all;
+				}
+
+				.copy-btn {
+					padding: 0.5rem 1rem;
+					background: #10b981;
+					color: white;
+					border: none;
+					border-radius: 0.25rem;
+					font-size: 0.875rem;
+					cursor: pointer;
+					transition: background 0.2s;
+
+					&:hover {
+						background: #059669;
+					}
+				}
+			}
+		}
+	}
+
 	@media (max-width: 768px) {
 		.media-container {
 			padding: 1rem;
@@ -1156,6 +1489,23 @@
 		.media-grid {
 			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 			gap: 1rem;
+		}
+
+		.edit-modal {
+			width: 95vw;
+			max-height: 95vh;
+		}
+
+		.edit-form .markdown-links .link-option {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.75rem;
+		}
+
+		.edit-form .url-display {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.75rem;
 		}
 	}
 </style>
