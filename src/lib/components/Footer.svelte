@@ -97,8 +97,6 @@
 				</p>
 				<div class="footer-bottom-links">
 					<a href="/privacy" class="bottom-link">Privacy Policy</a>
-					<a href="/terms" class="bottom-link">Terms of Service</a>
-					<a href="/sitemap" class="bottom-link">Sitemap</a>
 				</div>
 			</div>
 		</div>
