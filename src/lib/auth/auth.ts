@@ -41,13 +41,7 @@ export const authStore = writable<AuthState>({
 	loading: true
 });
 
-// Admin credentials (in production, use secure database with hashed passwords)
-const ADMIN_CREDENTIALS = {
-	email: 'admin@leechy.dev',
-	password: 'admin123', // In production: hash with bcrypt
-	name: 'Admin User',
-	role: 'admin'
-};
+// Database-based authentication using UserService
 
 // Token key for localStorage
 const TOKEN_KEY = 'admin_auth_token';
@@ -132,45 +126,59 @@ export function initAuth(): void {
  * Login with email and password
  */
 export async function login(email: string, password: string): Promise<LoginResult> {
-	// Simulate API delay
-	await new Promise(resolve => setTimeout(resolve, 1000));
+	try {
+		// Call login API endpoint
+		const response = await fetch('/api/auth/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ email, password })
+		});
 
-	// Validate credentials
-	if (email !== ADMIN_CREDENTIALS.email || password !== ADMIN_CREDENTIALS.password) {
+		const data = await response.json();
+
+		if (!response.ok || !data.success) {
+			return {
+				success: false,
+				error: data.error || 'Login failed'
+			};
+		}
+
+		// Create user object for frontend
+		const user: User = {
+			id: data.user.id,
+			email: data.user.email,
+			name: data.user.name,
+			role: data.user.role
+		};
+
+		// Generate token
+		const token = generateToken(user);
+
+		// Store token
+		if (browser) {
+			localStorage.setItem(TOKEN_KEY, token);
+		}
+
+		// Update auth store
+		authStore.set({
+			isAuthenticated: true,
+			user: user,
+			token: token,
+			loading: false
+		});
+
+		return {
+			success: true,
+			user: user
+		};
+	} catch (error) {
 		return {
 			success: false,
-			error: 'Invalid email or password'
+			error: error instanceof Error ? error.message : 'Authentication failed'
 		};
 	}
-
-	// Create user object
-	const user: User = {
-		id: 1,
-		email: ADMIN_CREDENTIALS.email,
-		name: ADMIN_CREDENTIALS.name,
-		role: ADMIN_CREDENTIALS.role
-	};
-
-	// Generate token
-	const token = generateToken(user);
-
-	// Store token
-	if (browser) {
-		localStorage.setItem(TOKEN_KEY, token);
-	}
-
-	// Update auth store
-	authStore.set({
-		isAuthenticated: true,
-		user: user,
-		token: token,
-		loading: false
-	});
-
-	return {
-		success: true,
-		user: user
-	};
 }
 
 /**

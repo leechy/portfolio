@@ -365,34 +365,28 @@
 		background: var(--color-bg-secondary);
 
 		h2 {
-			text-align: center;
-			margin-bottom: 3rem;
-			font-size: 2.5rem;
+			margin-bottom: var(--spacing-2xl);
+			font-size: var(--font-size-4xl);
+			font-weight: 600;
 			color: var(--color-text-primary);
 		}
 	}
 
 	.skills-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 1rem;
-		max-width: 800px;
-		margin: 0 auto;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: var(--spacing-md);
+		max-width: 1024px;
+		margin: 0;
 	}
 
 	.skill-tag {
-		background: var(--color-primary);
-		color: white;
-		padding: 1rem 1.5rem;
-		border-radius: 25px;
+		color: var(--color-text-primary);
+		padding: var(--spacing-sm) var(--spacing-md);
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
 		text-align: center;
 		font-weight: 600;
-		transition: all 0.3s ease;
-
-		&:hover {
-			transform: translateY(-3px);
-			box-shadow: 0 4px 15px color-mix(in srgb, var(--color-primary), transparent 70%);
-		}
 	}
 
 	// Experience Section

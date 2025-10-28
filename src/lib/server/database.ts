@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import { dev } from '$app/environment';
+import bcrypt from 'bcrypt';
 
 // Database configuration
 const DB_PATH = dev ? './data/portfolio.db' : './portfolio.db';
@@ -83,6 +84,21 @@ function createTables(): void {
 		)
 	`);
 
+	// Users table for authentication
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			email TEXT UNIQUE NOT NULL,
+			password_hash TEXT NOT NULL,
+			name TEXT NOT NULL,
+			role TEXT DEFAULT 'admin' CHECK (role IN ('admin', 'editor')),
+			is_active BOOLEAN DEFAULT 1,
+			last_login DATETIME,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)
+	`);
+
 	// Media files table
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS media_files (
@@ -103,21 +119,18 @@ function createTables(): void {
 		)
 	`);
 
-	// Create indexes for better performance
+	// Create indexes for better query performance
 	db.exec(`
 		CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 		CREATE INDEX IF NOT EXISTS idx_projects_featured ON projects(featured);
-		CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at);
-		
 		CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
 		CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts(status);
 		CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON blog_posts(published_at);
-		
 		CREATE INDEX IF NOT EXISTS idx_media_files_file_type ON media_files(file_type);
 		CREATE INDEX IF NOT EXISTS idx_media_files_created_at ON media_files(created_at);
-	`);
-
-	// Create trigger to update updated_at timestamp
+		CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+		CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+	`); // Create trigger to update updated_at timestamp
 	db.exec(`
 		CREATE TRIGGER IF NOT EXISTS update_projects_timestamp 
 		AFTER UPDATE ON projects
@@ -135,6 +148,12 @@ function createTables(): void {
 		AFTER UPDATE ON media_files
 		BEGIN
 			UPDATE media_files SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+		END;
+		
+		CREATE TRIGGER IF NOT EXISTS update_users_timestamp 
+		AFTER UPDATE ON users
+		BEGIN
+			UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 		END;
 	`);
 
@@ -157,6 +176,9 @@ function seedInitialData(): void {
 	const blogCount = db.prepare('SELECT COUNT(*) as count FROM blog_posts').get() as {
 		count: number;
 	};
+	const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as {
+		count: number;
+	};
 
 	if (projectCount.count === 0) {
 		seedProjects();
@@ -164,6 +186,10 @@ function seedInitialData(): void {
 
 	if (blogCount.count === 0) {
 		seedBlogPosts();
+	}
+
+	if (userCount.count === 0) {
+		seedUsers();
 	}
 }
 
@@ -470,7 +496,37 @@ Building scalable applications requires careful planning, the right architecture
 	});
 }
 
+/**
+ * Seed initial admin user
+ */
+function seedUsers(): void {
+	const saltRounds = 12;
+
+	// Hash the default admin password
+	const hashedPassword = bcrypt.hashSync('admin123!', saltRounds);
+
+	const insertUser = db.prepare(`
+		INSERT INTO users (email, password_hash, name, role, is_active)
+		VALUES (?, ?, ?, ?, ?)
+	`);
+
+	// Create default admin user
+	insertUser.run('admin@leechy.dev', hashedPassword, 'Admin User', 'admin', 1);
+}
+
 // Export types for use in other files
+export interface User {
+	id: number;
+	email: string;
+	password_hash: string;
+	name: string;
+	role: 'admin' | 'editor';
+	is_active: boolean;
+	last_login?: string;
+	created_at: string;
+	updated_at: string;
+}
+
 export interface Project {
 	id: number;
 	title: string;

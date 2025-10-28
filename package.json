@@ -53,7 +53,9 @@
     "vitest-browser-svelte": "^1.1.0"
   },
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/jsdom": "^27.0.0",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.4.1",
     "dompurify": "^3.3.0",
     "jsdom": "^27.0.1",
