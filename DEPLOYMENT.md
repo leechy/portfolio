@@ -5,6 +5,7 @@
 - [ ] DigitalOcean droplet created (Ubuntu 22.04 LTS)
 - [ ] Domain DNS pointed to droplet IP
 - [ ] Root/sudo access to server
+- [ ] **Node.js 20+ required** (setup script installs this automatically)
 
 ## Server Setup 🖥️
 

@@ -19,9 +19,9 @@ apt update && apt upgrade -y
 echo "🔧 Installing essential packages..."
 apt install -y curl wget git ufw fail2ban nginx certbot python3-certbot-nginx
 
-# Install Node.js 18 LTS
-echo "📱 Installing Node.js 18 LTS..."
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20 LTS
+echo "📱 Installing Node.js 20 LTS..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 apt install -y nodejs
 
 # Verify installations
