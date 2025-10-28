@@ -16,7 +16,7 @@
 
 	onMount(() => {
 		const handleScroll = () => {
-			scrolled = window.scrollY > 20;
+			scrolled = window.scrollY > 36;
 		};
 
 		window.addEventListener('scroll', handleScroll);
@@ -113,7 +113,7 @@
 	}
 
 	.navigation.scrolled {
-		padding: 0.5rem 0;
+		padding: var(--spacing-xs) 0;
 	}
 
 	.nav-content {

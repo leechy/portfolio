@@ -17,6 +17,7 @@
 	<header class="header">
 		<Navigation />
 	</header>
+	<div class="header-container"></div>
 
 	<main class="main">
 		{@render children?.()}
@@ -36,8 +37,13 @@
 		color: var(--color-text-primary);
 	}
 
+	.header-container {
+		height: 60px;
+	}
+
 	.header {
-		position: sticky;
+		position: fixed;
+		width: 100%;
 		top: 0;
 		z-index: 1020;
 		background-color: color-mix(in srgb, var(--color-bg-primary), transparent 70%);
