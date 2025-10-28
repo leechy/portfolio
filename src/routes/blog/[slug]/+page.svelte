@@ -1,7 +1,8 @@
 <script lang="ts">
 	import BlogPreview from '$lib/components/BlogPreview.svelte';
+	import MarkdownRenderer from '$lib/components/MarkdownRenderer.svelte';
 	import { formatBlogDate, formatReadTime } from '$lib/stores/blogs';
-	import type { BlogPost } from '$lib/stores/blogs';
+	import type { BlogPost } from '$lib/server/database.js';
 
 	export let data: { blog: BlogPost; relatedBlogs: BlogPost[] };
 
@@ -103,7 +104,7 @@
 
 	<!-- Article Content -->
 	<article class="prose prose-lg max-w-none mb-16" data-testid="blog-post-content">
-		{@html blog.content}
+		<MarkdownRenderer content={blog.content} />
 	</article>
 
 	<!-- Share Section -->
