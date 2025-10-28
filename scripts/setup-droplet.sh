@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # DigitalOcean Droplet Setup Script for SvelteKit Portfolio
-# Run this script as root on your Ubuntu droplet
+# Run this script as root on your Ubuntu droplet:
+#
+# curl -O https://raw.githubusercontent.com/leechy/portfolio/main/scripts/setup-droplet.sh
+# chmod +x setup-droplet.sh
+# sudo ./setup-droplet.sh
 
 set -e
 
@@ -74,7 +78,7 @@ server {
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private must-revalidate auth;
+    gzip_proxied expired no-cache no-store private auth;
     gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript;
 
     # Main proxy to SvelteKit app
