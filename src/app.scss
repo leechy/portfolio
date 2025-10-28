@@ -32,15 +32,15 @@ $color-border: #333333 !default; // Border color
 
 // Typography
 $font-family-primary:
-	'Inter',
-	-apple-system,
-	BlinkMacSystemFont,
-	'Segoe UI',
-	Roboto,
-	Oxygen,
-	Ubuntu,
-	Cantarell,
-	sans-serif;
+  'Inter',
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  Oxygen,
+  Ubuntu,
+  Cantarell,
+  sans-serif;
 $font-family-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Monaco, 'Courier New', monospace;
 
 // Font Sizes
@@ -118,23 +118,23 @@ $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
 // =============================================================================
 
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html {
-	font-size: 16px;
-	scroll-behavior: smooth;
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 body {
-	font-family: $font-family-primary;
-	background-color: $color-bg-primary;
-	color: $color-text-primary;
-	line-height: 1.6;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  font-family: $font-family-primary;
+  background-color: $color-bg-primary;
+  color: $color-text-primary;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 // =============================================================================
@@ -147,54 +147,54 @@ h3,
 h4,
 h5,
 h6 {
-	font-weight: 600;
-	line-height: 1.2;
-	margin-bottom: $spacing-md;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: $spacing-md;
 }
 
 h1 {
-	font-size: $font-size-5xl;
+  font-size: $font-size-5xl;
 }
 h2 {
-	font-size: $font-size-4xl;
+  font-size: $font-size-4xl;
 }
 h3 {
-	font-size: $font-size-3xl;
+  font-size: $font-size-3xl;
 }
 h4 {
-	font-size: $font-size-2xl;
+  font-size: $font-size-2xl;
 }
 h5 {
-	font-size: $font-size-xl;
+  font-size: $font-size-xl;
 }
 h6 {
-	font-size: $font-size-lg;
+  font-size: $font-size-lg;
 }
 
 p {
-	margin-bottom: $spacing-md;
+  margin-bottom: $spacing-md;
 
-	&:last-child {
-		margin-bottom: 0;
-	}
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 a {
-	color: $color-primary;
-	text-decoration: none;
-	transition: color $transition-fast;
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
 
-	&:hover {
-		color: lighten($color-primary, 10%);
-	}
+  &:hover {
+    color: lighten($color-primary, 10%);
+  }
 }
 
 code {
-	font-family: $font-family-mono;
-	background-color: $color-bg-secondary;
-	padding: $spacing-xs $spacing-sm;
-	border-radius: 4px;
-	font-size: 0.9em;
+  font-family: $font-family-mono;
+  background-color: $color-bg-secondary;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: 4px;
+  font-size: 0.9em;
 }
 
 // =============================================================================
@@ -202,21 +202,21 @@ code {
 // =============================================================================
 
 .container {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 0 $spacing-lg;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
 
-	@media (min-width: $breakpoint-lg) {
-		padding: 0 $spacing-xl;
-	}
+  @media (min-width: $breakpoint-lg) {
+    padding: 0 $spacing-xl;
+  }
 }
 
 .section {
-	padding: $spacing-3xl 0;
+  padding: $spacing-3xl 0;
 
-	@media (min-width: $breakpoint-md) {
-		padding: 4rem 0;
-	}
+  @media (min-width: $breakpoint-md) {
+    padding: 4rem 0;
+  }
 }
 
 // =============================================================================
@@ -224,55 +224,55 @@ code {
 // =============================================================================
 
 .text-center {
-	text-align: center;
+  text-align: center;
 }
 .text-left {
-	text-align: left;
+  text-align: left;
 }
 .text-right {
-	text-align: right;
+  text-align: right;
 }
 
 .text-primary {
-	color: $color-primary;
+  color: $color-primary;
 }
 .text-secondary {
-	color: $color-secondary;
+  color: $color-secondary;
 }
 .text-muted {
-	color: $color-text-muted;
+  color: $color-text-muted;
 }
 
 .mb-0 {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 .mb-sm {
-	margin-bottom: $spacing-sm;
+  margin-bottom: $spacing-sm;
 }
 .mb-md {
-	margin-bottom: $spacing-md;
+  margin-bottom: $spacing-md;
 }
 .mb-lg {
-	margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-lg;
 }
 .mb-xl {
-	margin-bottom: $spacing-xl;
+  margin-bottom: $spacing-xl;
 }
 
 .mt-0 {
-	margin-top: 0;
+  margin-top: 0;
 }
 .mt-sm {
-	margin-top: $spacing-sm;
+  margin-top: $spacing-sm;
 }
 .mt-md {
-	margin-top: $spacing-md;
+  margin-top: $spacing-md;
 }
 .mt-lg {
-	margin-top: $spacing-lg;
+  margin-top: $spacing-lg;
 }
 .mt-xl {
-	margin-top: $spacing-xl;
+  margin-top: $spacing-xl;
 }
 
 // =============================================================================
@@ -281,55 +281,55 @@ code {
 
 // Cards
 .card {
-	background-color: $color-bg-secondary;
-	border: 1px solid $color-border;
-	border-radius: 8px;
-	padding: $spacing-lg;
-	transition:
-		transform $transition-base,
-		box-shadow $transition-base;
+  background-color: $color-bg-secondary;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  transition:
+    transform $transition-base,
+    box-shadow $transition-base;
 
-	&:hover {
-		transform: translateY(-2px);
-		box-shadow: $shadow-lg;
-	}
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
 }
 
 // Buttons
 .btn {
-	display: inline-flex;
-	align-items: center;
-	gap: $spacing-sm;
-	padding: $spacing-sm $spacing-lg;
-	border: none;
-	border-radius: 6px;
-	font-family: inherit;
-	font-size: $font-size-base;
-	font-weight: 500;
-	cursor: pointer;
-	transition: all $transition-fast;
-	text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: $font-size-base;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-decoration: none;
 
-	&.btn-primary {
-		background-color: $color-primary;
-		color: $color-bg-primary;
+  &.btn-primary {
+    background-color: $color-primary;
+    color: $color-bg-primary;
 
-		&:hover {
-			// background-color: lighten($color-primary, 10%);
+    &:hover {
+      // background-color: lighten($color-primary, 10%);
       background-color: color.adjust($color-primary, $lightness: 10%);
-		}
-	}
+    }
+  }
 
-	&.btn-secondary {
-		background-color: transparent;
-		color: $color-primary;
-		border: 1px solid $color-primary;
+  &.btn-secondary {
+    background-color: transparent;
+    color: $color-primary;
+    border: 1px solid $color-primary;
 
-		&:hover {
-			background-color: $color-primary;
-			color: $color-bg-primary;
-		}
-	}
+    &:hover {
+      background-color: $color-primary;
+      color: $color-bg-primary;
+    }
+  }
 }
 
 // =============================================================================
@@ -337,25 +337,25 @@ code {
 // =============================================================================
 
 @media (max-width: $breakpoint-md) {
-	html {
-		font-size: 14px;
-	}
+  html {
+    font-size: 14px;
+  }
 
-	h1 {
-		font-size: $font-size-4xl;
-	}
-	h2 {
-		font-size: $font-size-3xl;
-	}
-	h3 {
-		font-size: $font-size-2xl;
-	}
+  h1 {
+    font-size: $font-size-4xl;
+  }
+  h2 {
+    font-size: $font-size-3xl;
+  }
+  h3 {
+    font-size: $font-size-2xl;
+  }
 
-	.container {
-		padding: 0 $spacing-md;
-	}
+  .container {
+    padding: 0 $spacing-md;
+  }
 
-	.section {
-		padding: $spacing-2xl 0;
-	}
+  .section {
+    padding: $spacing-2xl 0;
+  }
 }

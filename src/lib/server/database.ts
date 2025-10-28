@@ -11,45 +11,45 @@ let db: Database.Database;
  * Initialize database connection and create tables
  */
 export function initDatabase(): Database.Database {
-	db = new Database(DB_PATH);
+  db = new Database(DB_PATH);
 
-	// Enable foreign keys
-	db.pragma('foreign_keys = ON');
+  // Enable foreign keys
+  db.pragma('foreign_keys = ON');
 
-	// Create tables
-	createTables();
+  // Create tables
+  createTables();
 
-	// Seed initial data if tables are empty
-	seedInitialData();
+  // Seed initial data if tables are empty
+  seedInitialData();
 
-	return db;
+  return db;
 }
 
 /**
  * Get database instance
  */
 export function getDatabase(): Database.Database {
-	if (!db) {
-		return initDatabase();
-	}
-	return db;
+  if (!db) {
+    return initDatabase();
+  }
+  return db;
 }
 
 /**
  * Close database connection
  */
 export function closeDatabase(): void {
-	if (db) {
-		db.close();
-	}
+  if (db) {
+    db.close();
+  }
 }
 
 /**
  * Create database tables
  */
 function createTables(): void {
-	// Projects table
-	db.exec(`
+  // Projects table
+  db.exec(`
 		CREATE TABLE IF NOT EXISTS projects (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT NOT NULL,
@@ -66,8 +66,8 @@ function createTables(): void {
 		)
 	`);
 
-	// Blog posts table
-	db.exec(`
+  // Blog posts table
+  db.exec(`
 		CREATE TABLE IF NOT EXISTS blog_posts (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT NOT NULL,
@@ -84,8 +84,8 @@ function createTables(): void {
 		)
 	`);
 
-	// Users table for authentication
-	db.exec(`
+  // Users table for authentication
+  db.exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			email TEXT UNIQUE NOT NULL,
@@ -99,8 +99,8 @@ function createTables(): void {
 		)
 	`);
 
-	// Media files table
-	db.exec(`
+  // Media files table
+  db.exec(`
 		CREATE TABLE IF NOT EXISTS media_files (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			filename TEXT NOT NULL,
@@ -119,8 +119,8 @@ function createTables(): void {
 		)
 	`);
 
-	// Create indexes for better query performance
-	db.exec(`
+  // Create indexes for better query performance
+  db.exec(`
 		CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 		CREATE INDEX IF NOT EXISTS idx_projects_featured ON projects(featured);
 		CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
@@ -131,7 +131,7 @@ function createTables(): void {
 		CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 		CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 	`); // Create trigger to update updated_at timestamp
-	db.exec(`
+  db.exec(`
 		CREATE TRIGGER IF NOT EXISTS update_projects_timestamp 
 		AFTER UPDATE ON projects
 		BEGIN
@@ -157,134 +157,134 @@ function createTables(): void {
 		END;
 	`);
 
-	// Migration: Add category column if it doesn't exist
-	try {
-		db.exec(`ALTER TABLE blog_posts ADD COLUMN category TEXT`);
-	} catch {
-		// Column already exists, ignore error
-	}
+  // Migration: Add category column if it doesn't exist
+  try {
+    db.exec(`ALTER TABLE blog_posts ADD COLUMN category TEXT`);
+  } catch {
+    // Column already exists, ignore error
+  }
 }
 
 /**
  * Seed initial data if tables are empty
  */
 function seedInitialData(): void {
-	// Check if we already have data
-	const projectCount = db.prepare('SELECT COUNT(*) as count FROM projects').get() as {
-		count: number;
-	};
-	const blogCount = db.prepare('SELECT COUNT(*) as count FROM blog_posts').get() as {
-		count: number;
-	};
-	const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as {
-		count: number;
-	};
+  // Check if we already have data
+  const projectCount = db.prepare('SELECT COUNT(*) as count FROM projects').get() as {
+    count: number;
+  };
+  const blogCount = db.prepare('SELECT COUNT(*) as count FROM blog_posts').get() as {
+    count: number;
+  };
+  const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as {
+    count: number;
+  };
 
-	if (projectCount.count === 0) {
-		seedProjects();
-	}
+  if (projectCount.count === 0) {
+    seedProjects();
+  }
 
-	if (blogCount.count === 0) {
-		seedBlogPosts();
-	}
+  if (blogCount.count === 0) {
+    seedBlogPosts();
+  }
 
-	if (userCount.count === 0) {
-		seedUsers();
-	}
+  if (userCount.count === 0) {
+    seedUsers();
+  }
 }
 
 /**
  * Seed initial projects
  */
 function seedProjects(): void {
-	const insertProject = db.prepare(`
+  const insertProject = db.prepare(`
 		INSERT INTO projects (title, description, content, technologies, github_url, live_url, status, featured)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`);
 
-	const projects = [
-		{
-			title: 'E-commerce Dashboard',
-			description:
-				'A comprehensive admin dashboard for managing e-commerce operations with real-time analytics.',
-			content:
-				'Built with SvelteKit and TypeScript, this dashboard provides a complete solution for e-commerce management including inventory, orders, customers, and analytics. Features real-time updates, responsive design, and comprehensive reporting.',
-			technologies: JSON.stringify([
-				'SvelteKit',
-				'TypeScript',
-				'Tailwind CSS',
-				'Chart.js',
-				'SQLite'
-			]),
-			github_url: 'https://github.com/leechy/ecommerce-dashboard',
-			live_url: 'https://ecommerce-demo.leechy.dev',
-			status: 'completed',
-			featured: 1
-		},
-		{
-			title: 'Task Management System',
-			description: 'A modern task management application with team collaboration features.',
-			content:
-				'Full-featured task management system with drag-and-drop interface, team collaboration, file attachments, and project tracking. Built with modern web technologies for optimal performance.',
-			technologies: JSON.stringify(['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io']),
-			github_url: 'https://github.com/leechy/task-manager',
-			live_url: 'https://tasks.leechy.dev',
-			status: 'completed',
-			featured: 1
-		},
-		{
-			title: 'Weather Analytics Platform',
-			description:
-				'Advanced weather data visualization and analytics platform with predictive modeling.',
-			content:
-				'Comprehensive weather analytics platform that aggregates data from multiple sources, provides interactive visualizations, and uses machine learning for weather predictions.',
-			technologies: JSON.stringify(['Python', 'FastAPI', 'React', 'D3.js', 'PostgreSQL', 'Docker']),
-			github_url: 'https://github.com/leechy/weather-analytics',
-			live_url: null,
-			status: 'in-progress',
-			featured: 0
-		},
-		{
-			title: 'Portfolio Website',
-			description: 'Personal portfolio website with blog and admin interface.',
-			content:
-				'Modern portfolio website built with SvelteKit featuring a blog system, admin interface, and media management. Includes authentication, CRUD operations, and responsive design.',
-			technologies: JSON.stringify(['SvelteKit', 'TypeScript', 'SQLite', 'Tailwind CSS']),
-			github_url: 'https://github.com/leechy/portfolio',
-			live_url: 'https://leechy.dev',
-			status: 'completed',
-			featured: 1
-		}
-	];
+  const projects = [
+    {
+      title: 'E-commerce Dashboard',
+      description:
+        'A comprehensive admin dashboard for managing e-commerce operations with real-time analytics.',
+      content:
+        'Built with SvelteKit and TypeScript, this dashboard provides a complete solution for e-commerce management including inventory, orders, customers, and analytics. Features real-time updates, responsive design, and comprehensive reporting.',
+      technologies: JSON.stringify([
+        'SvelteKit',
+        'TypeScript',
+        'Tailwind CSS',
+        'Chart.js',
+        'SQLite'
+      ]),
+      github_url: 'https://github.com/leechy/ecommerce-dashboard',
+      live_url: 'https://ecommerce-demo.leechy.dev',
+      status: 'completed',
+      featured: 1
+    },
+    {
+      title: 'Task Management System',
+      description: 'A modern task management application with team collaboration features.',
+      content:
+        'Full-featured task management system with drag-and-drop interface, team collaboration, file attachments, and project tracking. Built with modern web technologies for optimal performance.',
+      technologies: JSON.stringify(['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io']),
+      github_url: 'https://github.com/leechy/task-manager',
+      live_url: 'https://tasks.leechy.dev',
+      status: 'completed',
+      featured: 1
+    },
+    {
+      title: 'Weather Analytics Platform',
+      description:
+        'Advanced weather data visualization and analytics platform with predictive modeling.',
+      content:
+        'Comprehensive weather analytics platform that aggregates data from multiple sources, provides interactive visualizations, and uses machine learning for weather predictions.',
+      technologies: JSON.stringify(['Python', 'FastAPI', 'React', 'D3.js', 'PostgreSQL', 'Docker']),
+      github_url: 'https://github.com/leechy/weather-analytics',
+      live_url: null,
+      status: 'in-progress',
+      featured: 0
+    },
+    {
+      title: 'Portfolio Website',
+      description: 'Personal portfolio website with blog and admin interface.',
+      content:
+        'Modern portfolio website built with SvelteKit featuring a blog system, admin interface, and media management. Includes authentication, CRUD operations, and responsive design.',
+      technologies: JSON.stringify(['SvelteKit', 'TypeScript', 'SQLite', 'Tailwind CSS']),
+      github_url: 'https://github.com/leechy/portfolio',
+      live_url: 'https://leechy.dev',
+      status: 'completed',
+      featured: 1
+    }
+  ];
 
-	projects.forEach(project => {
-		insertProject.run(
-			project.title,
-			project.description,
-			project.content,
-			project.technologies,
-			project.github_url,
-			project.live_url,
-			project.status,
-			project.featured
-		);
-	});
+  projects.forEach(project => {
+    insertProject.run(
+      project.title,
+      project.description,
+      project.content,
+      project.technologies,
+      project.github_url,
+      project.live_url,
+      project.status,
+      project.featured
+    );
+  });
 }
 
 /**
  * Seed initial blog posts
  */
 function seedBlogPosts(): void {
-	const insertBlogPost = db.prepare(`
+  const insertBlogPost = db.prepare(`
 		INSERT INTO blog_posts (title, slug, content, excerpt, category, tags, status, published_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`);
 
-	const blogPosts = [
-		{
-			title: 'Getting Started with SvelteKit',
-			slug: 'getting-started-with-sveltekit',
-			content: `# Getting Started with SvelteKit
+  const blogPosts = [
+    {
+      title: 'Getting Started with SvelteKit',
+      slug: 'getting-started-with-sveltekit',
+      content: `# Getting Started with SvelteKit
 
 SvelteKit is a powerful framework for building web applications with Svelte. In this post, we'll explore the fundamentals and see why it's becoming increasingly popular among developers.
 
@@ -322,17 +322,17 @@ That's it! You now have a fully functional SvelteKit application.
 ## Conclusion
 
 SvelteKit offers a refreshing approach to web development with its compile-time optimizations and intuitive API. Whether you're building a simple website or a complex web application, SvelteKit provides the tools you need to succeed.`,
-			excerpt:
-				"Discover the fundamentals of SvelteKit and learn why it's becoming the go-to framework for modern web development.",
-			category: 'Frontend Development',
-			tags: JSON.stringify(['SvelteKit', 'JavaScript', 'Web Development', 'Tutorial']),
-			status: 'published',
-			published_at: '2024-01-15 10:00:00'
-		},
-		{
-			title: 'Advanced TypeScript Patterns for Better Code',
-			slug: 'advanced-typescript-patterns',
-			content: `# Advanced TypeScript Patterns for Better Code
+      excerpt:
+        "Discover the fundamentals of SvelteKit and learn why it's becoming the go-to framework for modern web development.",
+      category: 'Frontend Development',
+      tags: JSON.stringify(['SvelteKit', 'JavaScript', 'Web Development', 'Tutorial']),
+      status: 'published',
+      published_at: '2024-01-15 10:00:00'
+    },
+    {
+      title: 'Advanced TypeScript Patterns for Better Code',
+      slug: 'advanced-typescript-patterns',
+      content: `# Advanced TypeScript Patterns for Better Code
 
 TypeScript has evolved significantly, introducing powerful patterns that can make your code more robust, maintainable, and type-safe. Let's explore some advanced patterns that every TypeScript developer should know.
 
@@ -400,17 +400,17 @@ type UpdateUser = Partial<CreateUser>;
 ## Conclusion
 
 These advanced TypeScript patterns can significantly improve your code quality and developer experience. Start incorporating them into your projects to write more robust and maintainable code.`,
-			excerpt:
-				'Explore advanced TypeScript patterns including conditional types, template literals, and mapped types to write better, more type-safe code.',
-			category: 'Programming Languages',
-			tags: JSON.stringify(['TypeScript', 'Programming', 'Best Practices', 'Advanced']),
-			status: 'published',
-			published_at: '2024-01-10 14:30:00'
-		},
-		{
-			title: 'Building Scalable Web Applications',
-			slug: 'building-scalable-web-applications',
-			content: `# Building Scalable Web Applications
+      excerpt:
+        'Explore advanced TypeScript patterns including conditional types, template literals, and mapped types to write better, more type-safe code.',
+      category: 'Programming Languages',
+      tags: JSON.stringify(['TypeScript', 'Programming', 'Best Practices', 'Advanced']),
+      status: 'published',
+      published_at: '2024-01-10 14:30:00'
+    },
+    {
+      title: 'Building Scalable Web Applications',
+      slug: 'building-scalable-web-applications',
+      content: `# Building Scalable Web Applications
 
 Scalability is crucial for modern web applications. As your user base grows, your application needs to handle increased traffic, data, and complexity. Here's how to build applications that scale.
 
@@ -473,103 +473,103 @@ function trackPerformance(operation, duration) {
 ## Conclusion
 
 Building scalable applications requires careful planning, the right architecture choices, and continuous optimization. Start with solid foundations and iterate based on real-world usage patterns.`,
-			excerpt:
-				'Learn the essential principles and strategies for building web applications that can scale to handle growing user bases and increased complexity.',
-			category: 'Full Stack Development',
-			tags: JSON.stringify(['Architecture', 'Scalability', 'Performance', 'Best Practices']),
-			status: 'published',
-			published_at: '2024-01-05 09:15:00'
-		}
-	];
+      excerpt:
+        'Learn the essential principles and strategies for building web applications that can scale to handle growing user bases and increased complexity.',
+      category: 'Full Stack Development',
+      tags: JSON.stringify(['Architecture', 'Scalability', 'Performance', 'Best Practices']),
+      status: 'published',
+      published_at: '2024-01-05 09:15:00'
+    }
+  ];
 
-	blogPosts.forEach(post => {
-		insertBlogPost.run(
-			post.title,
-			post.slug,
-			post.content,
-			post.excerpt,
-			post.category,
-			post.tags,
-			post.status,
-			post.published_at
-		);
-	});
+  blogPosts.forEach(post => {
+    insertBlogPost.run(
+      post.title,
+      post.slug,
+      post.content,
+      post.excerpt,
+      post.category,
+      post.tags,
+      post.status,
+      post.published_at
+    );
+  });
 }
 
 /**
  * Seed initial admin user
  */
 function seedUsers(): void {
-	const saltRounds = 12;
+  const saltRounds = 12;
 
-	// Hash the default admin password
-	const hashedPassword = bcrypt.hashSync('admin123!', saltRounds);
+  // Hash the default admin password
+  const hashedPassword = bcrypt.hashSync('admin123!', saltRounds);
 
-	const insertUser = db.prepare(`
+  const insertUser = db.prepare(`
 		INSERT INTO users (email, password_hash, name, role, is_active)
 		VALUES (?, ?, ?, ?, ?)
 	`);
 
-	// Create default admin user
-	insertUser.run('admin@leechy.dev', hashedPassword, 'Admin User', 'admin', 1);
+  // Create default admin user
+  insertUser.run('admin@leechy.dev', hashedPassword, 'Admin User', 'admin', 1);
 }
 
 // Export types for use in other files
 export interface User {
-	id: number;
-	email: string;
-	password_hash: string;
-	name: string;
-	role: 'admin' | 'editor';
-	is_active: boolean;
-	last_login?: string;
-	created_at: string;
-	updated_at: string;
+  id: number;
+  email: string;
+  password_hash: string;
+  name: string;
+  role: 'admin' | 'editor';
+  is_active: boolean;
+  last_login?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Project {
-	id: number;
-	title: string;
-	description: string;
-	content?: string;
-	image?: string;
-	technologies: string[]; // Will be parsed from JSON
-	github_url?: string;
-	live_url?: string;
-	status: 'planning' | 'in-progress' | 'completed' | 'on-hold';
-	featured: boolean;
-	created_at: string;
-	updated_at: string;
+  id: number;
+  title: string;
+  description: string;
+  content?: string;
+  image?: string;
+  technologies: string[]; // Will be parsed from JSON
+  github_url?: string;
+  live_url?: string;
+  status: 'planning' | 'in-progress' | 'completed' | 'on-hold';
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface BlogPost {
-	id: number;
-	title: string;
-	category?: string;
-	slug: string;
-	content: string; // Raw markdown content
-	excerpt?: string;
-	featured_image?: string;
-	tags: string[]; // Will be parsed from JSON
-	status: 'draft' | 'published' | 'archived';
-	published_at?: string;
-	created_at: string;
-	updated_at: string;
+  id: number;
+  title: string;
+  category?: string;
+  slug: string;
+  content: string; // Raw markdown content
+  excerpt?: string;
+  featured_image?: string;
+  tags: string[]; // Will be parsed from JSON
+  status: 'draft' | 'published' | 'archived';
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface MediaFile {
-	id: number;
-	filename: string;
-	original_filename: string;
-	file_path: string;
-	file_url: string;
-	file_type: string;
-	file_size: number;
-	mime_type: string;
-	width?: number;
-	height?: number;
-	duration?: number;
-	alt_text?: string;
-	created_at: string;
-	updated_at: string;
+  id: number;
+  filename: string;
+  original_filename: string;
+  file_path: string;
+  file_url: string;
+  file_type: string;
+  file_size: number;
+  mime_type: string;
+  width?: number;
+  height?: number;
+  duration?: number;
+  alt_text?: string;
+  created_at: string;
+  updated_at: string;
 }

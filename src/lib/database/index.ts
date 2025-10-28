@@ -37,17 +37,17 @@ export const skillDAO = new SkillDAO();
  * Call this once at application startup
  */
 export function initializePortfolioDatabase() {
-	try {
-		initializeDatabase();
-		console.log('✅ Portfolio database initialized successfully');
+  try {
+    initializeDatabase();
+    console.log('✅ Portfolio database initialized successfully');
 
-		return {
-			blogPostDAO,
-			projectDAO,
-			skillDAO
-		};
-	} catch (error) {
-		console.error('❌ Failed to initialize portfolio database:', error);
-		throw error;
-	}
+    return {
+      blogPostDAO,
+      projectDAO,
+      skillDAO
+    };
+  } catch (error) {
+    console.error('❌ Failed to initialize portfolio database:', error);
+    throw error;
+  }
 }

@@ -11,54 +11,54 @@ export type * from './database/types.js';
 // =============================================================================
 
 export interface NavigationItem {
-	href: string;
-	label: string;
-	icon?: string;
-	external?: boolean;
-	children?: NavigationItem[];
+  href: string;
+  label: string;
+  icon?: string;
+  external?: boolean;
+  children?: NavigationItem[];
 }
 
 export interface SocialLink {
-	name: string;
-	url: string;
-	icon: string;
+  name: string;
+  url: string;
+  icon: string;
 }
 
 export interface MetaTags {
-	title: string;
-	description: string;
-	keywords?: string;
-	author?: string;
-	canonical?: string;
+  title: string;
+  description: string;
+  keywords?: string;
+  author?: string;
+  canonical?: string;
 
-	// Open Graph
-	'og:type'?: 'website' | 'article' | 'profile';
-	'og:title'?: string;
-	'og:description'?: string;
-	'og:image'?: string;
-	'og:image:alt'?: string;
-	'og:url'?: string;
-	'og:site_name'?: string;
-	'og:locale'?: string;
+  // Open Graph
+  'og:type'?: 'website' | 'article' | 'profile';
+  'og:title'?: string;
+  'og:description'?: string;
+  'og:image'?: string;
+  'og:image:alt'?: string;
+  'og:url'?: string;
+  'og:site_name'?: string;
+  'og:locale'?: string;
 
-	// Twitter Card
-	'twitter:card'?: 'summary' | 'summary_large_image' | 'app' | 'player';
-	'twitter:site'?: string;
-	'twitter:creator'?: string;
-	'twitter:title'?: string;
-	'twitter:description'?: string;
-	'twitter:image'?: string;
-	'twitter:image:alt'?: string;
-	'twitter:url'?: string;
+  // Twitter Card
+  'twitter:card'?: 'summary' | 'summary_large_image' | 'app' | 'player';
+  'twitter:site'?: string;
+  'twitter:creator'?: string;
+  'twitter:title'?: string;
+  'twitter:description'?: string;
+  'twitter:image'?: string;
+  'twitter:image:alt'?: string;
+  'twitter:url'?: string;
 
-	// Article specific (for blog posts)
-	'article:published_time'?: string;
-	'article:modified_time'?: string;
-	'article:author'?: string;
-	'article:tag'?: string;
+  // Article specific (for blog posts)
+  'article:published_time'?: string;
+  'article:modified_time'?: string;
+  'article:author'?: string;
+  'article:tag'?: string;
 
-	// Additional meta properties
-	[key: string]: string | undefined;
+  // Additional meta properties
+  [key: string]: string | undefined;
 }
 
 // =============================================================================
@@ -66,31 +66,31 @@ export interface MetaTags {
 // =============================================================================
 
 export interface ApiResponse<T = unknown> {
-	success: boolean;
-	data?: T;
-	error?: string;
-	message?: string;
-	timestamp: string;
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  timestamp: string;
 }
 
 export interface ApiError {
-	code: string;
-	message: string;
-	details?: Record<string, string | number | boolean>;
-	timestamp: string;
+  code: string;
+  message: string;
+  details?: Record<string, string | number | boolean>;
+  timestamp: string;
 }
 
 export interface PaginationInfo {
-	page: number;
-	totalPages: number;
-	totalItems: number;
-	itemsPerPage: number;
-	hasNext: boolean;
-	hasPrev: boolean;
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 }
 
 export interface PaginatedApiResponse<T> extends ApiResponse<T[]> {
-	pagination: PaginationInfo;
+  pagination: PaginationInfo;
 }
 
 // =============================================================================
@@ -98,29 +98,29 @@ export interface PaginatedApiResponse<T> extends ApiResponse<T[]> {
 // =============================================================================
 
 export interface ValidationError {
-	field: string;
-	message: string;
-	code?: string;
+  field: string;
+  message: string;
+  code?: string;
 }
 
 export interface FormState<T = Record<string, unknown>> {
-	data: T;
-	errors: ValidationError[];
-	isValid: boolean;
-	isSubmitting: boolean;
-	isDirty: boolean;
+  data: T;
+  errors: ValidationError[];
+  isValid: boolean;
+  isSubmitting: boolean;
+  isDirty: boolean;
 }
 
 export interface ContactFormData {
-	name: string;
-	email: string;
-	subject?: string;
-	message: string;
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
 }
 
 export interface NewsletterFormData {
-	email: string;
-	name?: string;
+  email: string;
+  name?: string;
 }
 
 // =============================================================================
@@ -128,27 +128,27 @@ export interface NewsletterFormData {
 // =============================================================================
 
 export interface SearchParams {
-	query?: string;
-	category?: string;
-	tag?: string;
-	status?: string;
-	sort?: string;
-	order?: 'asc' | 'desc';
-	page?: number;
-	limit?: number;
+  query?: string;
+  category?: string;
+  tag?: string;
+  status?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
 }
 
 export interface FilterOption {
-	value: string;
-	label: string;
-	count?: number;
+  value: string;
+  label: string;
+  count?: number;
 }
 
 export interface SearchResult<T> {
-	items: T[];
-	totalCount: number;
-	facets?: Record<string, FilterOption[]>;
-	suggestions?: string[];
+  items: T[];
+  totalCount: number;
+  facets?: Record<string, FilterOption[]>;
+  suggestions?: string[];
 }
 
 // =============================================================================
@@ -156,49 +156,49 @@ export interface SearchResult<T> {
 // =============================================================================
 
 export interface ToastMessage {
-	id: string;
-	type: 'success' | 'error' | 'warning' | 'info';
-	title: string;
-	message?: string;
-	duration?: number;
-	action?: {
-		label: string;
-		handler: () => void;
-	};
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  message?: string;
+  duration?: number;
+  action?: {
+    label: string;
+    handler: () => void;
+  };
 }
 
 export interface ModalConfig {
-	id: string;
-	title: string;
-	content?: string;
-	component?: unknown;
-	props?: Record<string, unknown>;
-	size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-	closable?: boolean;
-	persistent?: boolean;
+  id: string;
+  title: string;
+  content?: string;
+  component?: unknown;
+  props?: Record<string, unknown>;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  closable?: boolean;
+  persistent?: boolean;
 }
 
 export interface Theme {
-	name: string;
-	colors: {
-		primary: string;
-		secondary: string;
-		background: string;
-		surface: string;
-		text: string;
-		textSecondary: string;
-		border: string;
-	};
-	fonts: {
-		primary: string;
-		mono: string;
-	};
-	breakpoints: {
-		sm: string;
-		md: string;
-		lg: string;
-		xl: string;
-	};
+  name: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    background: string;
+    surface: string;
+    text: string;
+    textSecondary: string;
+    border: string;
+  };
+  fonts: {
+    primary: string;
+    mono: string;
+  };
+  breakpoints: {
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+  };
 }
 
 // =============================================================================
@@ -206,33 +206,33 @@ export interface Theme {
 // =============================================================================
 
 export interface ImageAsset {
-	src: string;
-	alt: string;
-	width?: number;
-	height?: number;
-	srcset?: string;
-	sizes?: string;
-	loading?: 'lazy' | 'eager';
-	placeholder?: string;
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  srcset?: string;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  placeholder?: string;
 }
 
 export interface VideoAsset {
-	src: string;
-	poster?: string;
-	width?: number;
-	height?: number;
-	autoplay?: boolean;
-	loop?: boolean;
-	muted?: boolean;
-	controls?: boolean;
+  src: string;
+  poster?: string;
+  width?: number;
+  height?: number;
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  controls?: boolean;
 }
 
 export interface CodeBlock {
-	code: string;
-	language: string;
-	filename?: string;
-	highlights?: number[];
-	showLineNumbers?: boolean;
+  code: string;
+  language: string;
+  filename?: string;
+  highlights?: number[];
+  showLineNumbers?: boolean;
 }
 
 // =============================================================================
@@ -240,21 +240,21 @@ export interface CodeBlock {
 // =============================================================================
 
 export interface AnalyticsEvent {
-	name: string;
-	category: string;
-	action: string;
-	label?: string;
-	value?: number;
-	customParameters?: Record<string, string | number>;
+  name: string;
+  category: string;
+  action: string;
+  label?: string;
+  value?: number;
+  customParameters?: Record<string, string | number>;
 }
 
 export interface PageView {
-	path: string;
-	title: string;
-	referrer?: string;
-	timestamp: string;
-	sessionId: string;
-	userId?: string;
+  path: string;
+  title: string;
+  referrer?: string;
+  timestamp: string;
+  sessionId: string;
+  userId?: string;
 }
 
 // =============================================================================
@@ -262,35 +262,35 @@ export interface PageView {
 // =============================================================================
 
 export interface DashboardStats {
-	visitors: {
-		total: number;
-		unique: number;
-		change: number;
-	};
-	pageViews: {
-		total: number;
-		change: number;
-	};
-	topPages: Array<{
-		path: string;
-		views: number;
-		title: string;
-	}>;
-	recentActivity: Array<{
-		type: 'blog' | 'project' | 'contact';
-		title: string;
-		timestamp: string;
-		url?: string;
-	}>;
+  visitors: {
+    total: number;
+    unique: number;
+    change: number;
+  };
+  pageViews: {
+    total: number;
+    change: number;
+  };
+  topPages: Array<{
+    path: string;
+    views: number;
+    title: string;
+  }>;
+  recentActivity: Array<{
+    type: 'blog' | 'project' | 'contact';
+    title: string;
+    timestamp: string;
+    url?: string;
+  }>;
 }
 
 export interface AdminUser {
-	id: string;
-	email: string;
-	name: string;
-	role: 'admin' | 'editor' | 'viewer';
-	lastLogin?: string;
-	permissions: string[];
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'editor' | 'viewer';
+  lastLogin?: string;
+  permissions: string[];
 }
 
 // =============================================================================
@@ -298,24 +298,24 @@ export interface AdminUser {
 // =============================================================================
 
 export interface GitHubRepo {
-	id: number;
-	name: string;
-	fullName: string;
-	description: string;
-	url: string;
-	language: string;
-	stars: number;
-	forks: number;
-	updatedAt: string;
-	topics: string[];
+  id: number;
+  name: string;
+  fullName: string;
+  description: string;
+  url: string;
+  language: string;
+  stars: number;
+  forks: number;
+  updatedAt: string;
+  topics: string[];
 }
 
 export interface GitHubCommit {
-	sha: string;
-	message: string;
-	author: string;
-	date: string;
-	url: string;
+  sha: string;
+  message: string;
+  author: string;
+  date: string;
+  url: string;
 }
 
 // =============================================================================
@@ -323,7 +323,7 @@ export interface GitHubCommit {
 // =============================================================================
 
 export type DeepPartial<T> = {
-	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
@@ -331,7 +331,7 @@ export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type OptionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type StringKeys<T> = {
-	[K in keyof T]: T[K] extends string ? K : never;
+  [K in keyof T]: T[K] extends string ? K : never;
 }[keyof T];
 
 export type NonNullable<T> = T extends null | undefined ? never : T;
@@ -341,11 +341,11 @@ export type NonNullable<T> = T extends null | undefined ? never : T;
 // =============================================================================
 
 export interface CustomEventMap {
-	'toast:show': { detail: ToastMessage };
-	'modal:open': { detail: ModalConfig };
-	'modal:close': { detail: { id: string } };
-	'theme:change': { detail: { theme: string } };
-	'navigation:change': { detail: { path: string } };
+  'toast:show': { detail: ToastMessage };
+  'modal:open': { detail: ModalConfig };
+  'modal:close': { detail: { id: string } };
+  'theme:change': { detail: { theme: string } };
+  'navigation:change': { detail: { path: string } };
 }
 
 // =============================================================================
@@ -353,30 +353,30 @@ export interface CustomEventMap {
 // =============================================================================
 
 export interface AppConfig {
-	siteName: string;
-	siteUrl: string;
-	description: string;
-	author: string;
-	social: Record<string, string>;
-	analytics?: {
-		googleAnalytics?: string;
-		plausible?: string;
-	};
-	features: {
-		blog: boolean;
-		projects: boolean;
-		contact: boolean;
-		newsletter: boolean;
-		search: boolean;
-		comments: boolean;
-	};
-	database: {
-		path: string;
-		backup: boolean;
-	};
-	email?: {
-		provider: string;
-		apiKey: string;
-		fromAddress: string;
-	};
+  siteName: string;
+  siteUrl: string;
+  description: string;
+  author: string;
+  social: Record<string, string>;
+  analytics?: {
+    googleAnalytics?: string;
+    plausible?: string;
+  };
+  features: {
+    blog: boolean;
+    projects: boolean;
+    contact: boolean;
+    newsletter: boolean;
+    search: boolean;
+    comments: boolean;
+  };
+  database: {
+    path: string;
+    backup: boolean;
+  };
+  email?: {
+    provider: string;
+    apiKey: string;
+    fromAddress: string;
+  };
 }

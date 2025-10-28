@@ -6,32 +6,32 @@ import type { ProjectStatus } from '$lib/stores/projects.js';
 const projectService = new ProjectService();
 
 export const GET: RequestHandler = async ({ url }) => {
-	try {
-		const status = url.searchParams.get('status');
-		const search = url.searchParams.get('search');
+  try {
+    const status = url.searchParams.get('status');
+    const search = url.searchParams.get('search');
 
-		let projects;
+    let projects;
 
-		if (status) {
-			projects = await projectService.getProjectsByStatus(status as ProjectStatus);
-		} else if (search) {
-			projects = await projectService.searchProjects(search);
-		} else {
-			projects = await projectService.getAllProjects();
-		}
+    if (status) {
+      projects = await projectService.getProjectsByStatus(status as ProjectStatus);
+    } else if (search) {
+      projects = await projectService.searchProjects(search);
+    } else {
+      projects = await projectService.getAllProjects();
+    }
 
-		return json(projects);
-	} catch {
-		return json({ error: 'Failed to fetch projects' }, { status: 500 });
-	}
+    return json(projects);
+  } catch {
+    return json({ error: 'Failed to fetch projects' }, { status: 500 });
+  }
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-	try {
-		const projectData = await request.json();
-		const newProject = await projectService.createProject(projectData);
-		return json(newProject, { status: 201 });
-	} catch {
-		return json({ error: 'Failed to create project' }, { status: 500 });
-	}
+  try {
+    const projectData = await request.json();
+    const newProject = await projectService.createProject(projectData);
+    return json(newProject, { status: 201 });
+  } catch {
+    return json({ error: 'Failed to create project' }, { status: 500 });
+  }
 };
