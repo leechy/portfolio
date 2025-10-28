@@ -74,6 +74,7 @@ function createTables(): void {
 			content TEXT NOT NULL,
 			excerpt TEXT,
 			featured_image TEXT,
+			category TEXT,
 			tags TEXT, -- JSON array as string
 			status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
 			published_at DATETIME,
@@ -136,6 +137,13 @@ function createTables(): void {
 			UPDATE media_files SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 		END;
 	`);
+
+	// Migration: Add category column if it doesn't exist
+	try {
+		db.exec(`ALTER TABLE blog_posts ADD COLUMN category TEXT`);
+	} catch {
+		// Column already exists, ignore error
+	}
 }
 
 /**
@@ -242,8 +250,8 @@ function seedProjects(): void {
  */
 function seedBlogPosts(): void {
 	const insertBlogPost = db.prepare(`
-		INSERT INTO blog_posts (title, slug, content, excerpt, tags, status, published_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO blog_posts (title, slug, content, excerpt, category, tags, status, published_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`);
 
 	const blogPosts = [
@@ -290,6 +298,7 @@ That's it! You now have a fully functional SvelteKit application.
 SvelteKit offers a refreshing approach to web development with its compile-time optimizations and intuitive API. Whether you're building a simple website or a complex web application, SvelteKit provides the tools you need to succeed.`,
 			excerpt:
 				"Discover the fundamentals of SvelteKit and learn why it's becoming the go-to framework for modern web development.",
+			category: 'Frontend Development',
 			tags: JSON.stringify(['SvelteKit', 'JavaScript', 'Web Development', 'Tutorial']),
 			status: 'published',
 			published_at: '2024-01-15 10:00:00'
@@ -367,6 +376,7 @@ type UpdateUser = Partial<CreateUser>;
 These advanced TypeScript patterns can significantly improve your code quality and developer experience. Start incorporating them into your projects to write more robust and maintainable code.`,
 			excerpt:
 				'Explore advanced TypeScript patterns including conditional types, template literals, and mapped types to write better, more type-safe code.',
+			category: 'Programming Languages',
 			tags: JSON.stringify(['TypeScript', 'Programming', 'Best Practices', 'Advanced']),
 			status: 'published',
 			published_at: '2024-01-10 14:30:00'
@@ -439,6 +449,7 @@ function trackPerformance(operation, duration) {
 Building scalable applications requires careful planning, the right architecture choices, and continuous optimization. Start with solid foundations and iterate based on real-world usage patterns.`,
 			excerpt:
 				'Learn the essential principles and strategies for building web applications that can scale to handle growing user bases and increased complexity.',
+			category: 'Full Stack Development',
 			tags: JSON.stringify(['Architecture', 'Scalability', 'Performance', 'Best Practices']),
 			status: 'published',
 			published_at: '2024-01-05 09:15:00'
@@ -451,6 +462,7 @@ Building scalable applications requires careful planning, the right architecture
 			post.slug,
 			post.content,
 			post.excerpt,
+			post.category,
 			post.tags,
 			post.status,
 			post.published_at
@@ -477,8 +489,9 @@ export interface Project {
 export interface BlogPost {
 	id: number;
 	title: string;
+	category?: string;
 	slug: string;
-	content: string;
+	content: string; // Raw markdown content
 	excerpt?: string;
 	featured_image?: string;
 	tags: string[]; // Will be parsed from JSON

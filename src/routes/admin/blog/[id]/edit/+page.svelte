@@ -63,7 +63,6 @@
 		'Gatsby',
 		'HTML',
 		'CSS',
-		'Tailwind CSS',
 		'SCSS',
 		'Bootstrap',
 		'MongoDB',
@@ -105,11 +104,15 @@
 			...blog,
 			// Convert Date object to string format for input
 			publishedAt: blog.published_at ? formatDateForInput(blog.published_at) : '',
-			// Ensure arrays exist
-			tags: blog.tags || [],
+			// Handle published status
+			published: blog.status === 'published',
+			// Ensure tags is always an array
+			tags: Array.isArray(blog.tags) ? blog.tags : blog.tags ? [blog.tags] : [],
 			// Handle readTime format - calculate from content
 			readTime: calculateReadTimeFromContent(blog.content)
 		};
+
+		console.log('Loaded blog data:', formData);
 
 		isLoadingBlog = false;
 	}
@@ -202,15 +205,35 @@
 				formData.publishedAt = new Date().toISOString().split('T')[0];
 			}
 
-			// Convert date string to Date object
+			// Convert date string to Date object and prepare API payload
 			const blogData = {
-				...formData,
-				publishedAt: formData.publishedAt ? new Date(formData.publishedAt) : undefined,
-				readTimeMinutes: parseInt(formData.readTime.replace(/\D/g, '')) || 1
+				title: formData.title,
+				category: formData.category,
+				content: formData.content,
+				excerpt: formData.excerpt,
+				slug: formData.slug,
+				tags: formData.tags.join(','),
+				status: formData.published ? 'published' : 'draft',
+				published_at:
+					formData.published && formData.publishedAt
+						? new Date(formData.publishedAt).toISOString()
+						: null,
+				featured_image: null // You can add featured image support later
 			};
 
-			// Update blog in store (simulating database update)
-			blogs.updateById(blogId, blogData);
+			// Update blog via API
+			const response = await fetch(`/api/blogs/${blogId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(blogData)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to update blog post');
+			}
 
 			// Show success message and redirect
 			console.log('Blog post updated successfully!');
@@ -230,8 +253,15 @@
 		}
 
 		try {
-			// Remove from blogs store (simulating database delete)
-			blogs.deleteById(blogId);
+			// Delete via API
+			const response = await fetch(`/api/blogs/${blogId}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to delete blog post');
+			}
 
 			console.log('Blog post deleted successfully!');
 			goto('/admin/blog');
@@ -299,7 +329,7 @@
 				<h1>Blog Post Not Found</h1>
 				<p>The blog post you're looking for doesn't exist.</p>
 			{:else}
-				<h1>Edit Blog Post</h1>
+				<h1>Edit Blog Post “{formData.title}”</h1>
 				<p>Update your blog post content and settings</p>
 			{/if}
 		</div>
@@ -345,16 +375,14 @@
 					</div>
 
 					<div class="form-group">
-						<label for="blog-id">Post ID</label>
+						<label for="blog-id">Post slug</label>
 						<input
 							id="blog-id"
 							type="text"
-							bind:value={formData.id}
-							readonly
-							class="readonly"
-							data-testid="blog-id-input"
+							bind:value={formData.slug}
+							data-testid="blog-slug-input"
 						/>
-						<span class="field-help">Blog post ID cannot be changed after creation</span>
+						<span class="field-help">Slug is the URL-friendly version of the post title</span>
 					</div>
 				</div>
 

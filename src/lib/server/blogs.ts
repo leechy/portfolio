@@ -9,6 +9,7 @@ interface BlogPostRow {
 	content: string;
 	excerpt: string | null;
 	featured_image: string | null;
+	category: string | null;
 	tags: string;
 	status: string;
 	published_at: string | null;
@@ -31,7 +32,7 @@ export class BlogService {
 	 */
 	getAllBlogPosts(): BlogPost[] {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			ORDER BY created_at DESC
@@ -46,10 +47,10 @@ export class BlogService {
 	 */
 	getPublishedBlogPosts(): BlogPost[] {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
-			WHERE status = 'published' 
+			WHERE status = 'published' AND published_at <= CURRENT_TIMESTAMP
 			ORDER BY published_at DESC
 		`);
 
@@ -62,7 +63,7 @@ export class BlogService {
 	 */
 	getBlogPostById(id: number): BlogPost | null {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			WHERE id = ?
@@ -77,7 +78,7 @@ export class BlogService {
 	 */
 	getBlogPostBySlug(slug: string): BlogPost | null {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			WHERE slug = ?
@@ -92,13 +93,14 @@ export class BlogService {
 	 */
 	createBlogPost(postData: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>): BlogPost {
 		const stmt = this.db.prepare(`
-			INSERT INTO blog_posts (title, slug, content, excerpt, featured_image, tags, 
+			INSERT INTO blog_posts (title, category, slug, content, excerpt, featured_image, tags, 
 			                       status, published_at)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 		`);
 
 		const result = stmt.run(
 			postData.title,
+			postData.category,
 			postData.slug,
 			postData.content,
 			postData.excerpt || null,
@@ -131,7 +133,7 @@ export class BlogService {
 		const stmt = this.db.prepare(`
 			UPDATE blog_posts 
 			SET title = ?, slug = ?, content = ?, excerpt = ?, featured_image = ?, 
-			    tags = ?, status = ?, published_at = ?
+			    category = ?, tags = ?, status = ?, published_at = ?
 			WHERE id = ?
 		`);
 
@@ -141,6 +143,7 @@ export class BlogService {
 			postData.content ?? currentPost.content,
 			postData.excerpt ?? currentPost.excerpt,
 			postData.featured_image ?? currentPost.featured_image,
+			postData.category ?? currentPost.category,
 			JSON.stringify(postData.tags ?? currentPost.tags),
 			postData.status ?? currentPost.status,
 			postData.published_at ?? currentPost.published_at,
@@ -169,7 +172,7 @@ export class BlogService {
 	 */
 	searchBlogPosts(query: string): BlogPost[] {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			WHERE title LIKE ? OR content LIKE ? OR excerpt LIKE ? OR tags LIKE ?
@@ -186,7 +189,7 @@ export class BlogService {
 	 */
 	getBlogPostsByStatus(status: BlogPost['status']): BlogPost[] {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			WHERE status = ?
@@ -202,7 +205,7 @@ export class BlogService {
 	 */
 	getBlogPostsByTag(tag: string): BlogPost[] {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			WHERE tags LIKE ?
@@ -218,7 +221,7 @@ export class BlogService {
 	 */
 	getRecentBlogPosts(limit: number = 5): BlogPost[] {
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at
 			FROM blog_posts 
 			WHERE status = 'published'
@@ -262,7 +265,7 @@ export class BlogService {
 		const tagPlaceholders = currentPost.tags.map(() => '?').join(',');
 
 		const stmt = this.db.prepare(`
-			SELECT id, title, slug, content, excerpt, featured_image, tags, 
+			SELECT id, title, slug, content, excerpt, featured_image, category, tags, 
 			       status, published_at, created_at, updated_at,
 			       (
 			         SELECT COUNT(*)
@@ -314,6 +317,7 @@ export class BlogService {
 			content: row.content,
 			excerpt: row.excerpt || undefined,
 			featured_image: row.featured_image || undefined,
+			category: row.category || undefined,
 			tags: JSON.parse(row.tags || '[]'),
 			status: row.status as BlogPost['status'],
 			published_at: row.published_at || undefined,
