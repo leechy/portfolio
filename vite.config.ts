@@ -1,4 +1,3 @@
-import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'path';
@@ -11,13 +10,7 @@ export default defineConfig({
     }
   },
 
-  plugins: [
-    sveltekit(),
-    paraglideVitePlugin({
-      project: './project.inlang',
-      outdir: './src/lib/paraglide'
-    })
-  ],
+  plugins: [sveltekit()],
 
   // Build optimizations
   build: {
