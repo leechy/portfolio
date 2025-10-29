@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BlogPost } from '$lib/stores/blogs';
-  import { formatBlogDate, formatReadTime } from '$lib/stores/blogs';
+  import { formatBlogDate } from '$lib/stores/blogs';
 
   export let blog: BlogPost;
   export let showExcerpt = true;
@@ -30,9 +30,11 @@
       </h3>
 
       <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 mb-2">
-        <time datetime={blog.published_at} data-testid="blog-post-date">
-          {formatBlogDate(blog.published_at)}
-        </time>
+        {#if blog.published_at}
+          <time datetime={blog.published_at} data-testid="blog-post-date">
+            {formatBlogDate(blog.published_at)}
+          </time>
+        {/if}
 
         {#if showAuthor}
           <span class="text-gray-400">•</span>
@@ -100,6 +102,7 @@
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -107,6 +110,7 @@
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

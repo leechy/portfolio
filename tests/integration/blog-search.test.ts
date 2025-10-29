@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
 import {
   blogStore,
-  getAllBlogTags,
+  getAllBlogTagsSync,
   loadBlogs,
-  searchBlogs,
-  filterBlogsByTag,
+  searchBlogsSync,
+  filterBlogsByTagSync,
   type BlogPost
 } from '$lib/stores/blogs';
 
@@ -14,6 +14,8 @@ describe('Blog Search Integration Tests', () => {
     // Reset store before each test
     blogStore.set({
       blogs: [],
+      posts: [],
+      published: [],
       featured: [],
       loading: false,
       error: null
@@ -25,7 +27,7 @@ describe('Blog Search Integration Tests', () => {
       await loadBlogs();
       const state = get(blogStore);
 
-      const results = searchBlogs('');
+      const results = searchBlogsSync('');
       expect(results).toEqual(state.blogs); // Should return all blogs for empty search
     });
 
@@ -33,7 +35,7 @@ describe('Blog Search Integration Tests', () => {
       await loadBlogs();
       const state = get(blogStore);
 
-      const results = searchBlogs('   ');
+      const results = searchBlogsSync('   ');
       expect(results).toEqual(state.blogs); // Should return all blogs for whitespace
     });
 
@@ -41,8 +43,8 @@ describe('Blog Search Integration Tests', () => {
       await loadBlogs();
 
       const query = 'javascript';
-      const trimmedResults = searchBlogs(query);
-      const untrimmedResults = searchBlogs(`  ${query}  `);
+      const trimmedResults = searchBlogsSync(query);
+      const untrimmedResults = searchBlogsSync(`  ${query}  `);
 
       expect(trimmedResults).toEqual(untrimmedResults);
     });
@@ -53,7 +55,7 @@ describe('Blog Search Integration Tests', () => {
       const specialQueries = ['C++', 'Node.js', 'React/Next.js', '@types', '#hashtag'];
 
       specialQueries.forEach(query => {
-        const results = searchBlogs(query);
+        const results = searchBlogsSync(query);
         expect(Array.isArray(results)).toBe(true);
         // Should not throw errors for special characters
       });
@@ -63,7 +65,7 @@ describe('Blog Search Integration Tests', () => {
       await loadBlogs();
 
       const longQuery = 'a'.repeat(1000); // 1000 character string
-      const results = searchBlogs(longQuery);
+      const results = searchBlogsSync(longQuery);
 
       expect(Array.isArray(results)).toBe(true);
       // Should handle long queries without performance issues
@@ -77,7 +79,7 @@ describe('Blog Search Integration Tests', () => {
 
       if (state.blogs.length > 0) {
         const targetBlog = state.blogs[0];
-        const results = searchBlogs(targetBlog.title);
+        const results = searchBlogsSync(targetBlog.title);
 
         expect(results.length).toBeGreaterThan(0);
         expect(results.find(blog => blog.id === targetBlog.id)).toBeDefined();
@@ -94,7 +96,7 @@ describe('Blog Search Integration Tests', () => {
 
         if (partialTitle.length > 2) {
           // Only test if word is meaningful
-          const results = searchBlogs(partialTitle);
+          const results = searchBlogsSync(partialTitle);
 
           expect(Array.isArray(results)).toBe(true);
           // Should find the target blog or other blogs with similar titles
@@ -114,9 +116,9 @@ describe('Blog Search Integration Tests', () => {
         const targetBlog = state.blogs[0];
         const titleWord = targetBlog.title.split(' ')[0];
 
-        const lowerResults = searchBlogs(titleWord.toLowerCase());
-        const upperResults = searchBlogs(titleWord.toUpperCase());
-        const mixedResults = searchBlogs(titleWord);
+        const lowerResults = searchBlogsSync(titleWord.toLowerCase());
+        const upperResults = searchBlogsSync(titleWord.toUpperCase());
+        const mixedResults = searchBlogsSync(titleWord);
 
         expect(lowerResults.length).toBe(upperResults.length);
         expect(upperResults.length).toBe(mixedResults.length);
@@ -135,7 +137,7 @@ describe('Blog Search Integration Tests', () => {
 
         if (contentWords.length > 0) {
           const keyword = contentWords[0];
-          const results = searchBlogs(keyword);
+          const results = searchBlogsSync(keyword);
 
           expect(Array.isArray(results)).toBe(true);
           // Should find blogs containing the keyword
@@ -158,9 +160,9 @@ describe('Blog Search Integration Tests', () => {
         const targetBlog = state.blogs[0];
         const excerptWords = targetBlog.excerpt.split(' ').filter(word => word.length > 4);
 
-        if (excerptWords.length > 0) {
+        if (excerptWords && excerptWords.length > 0) {
           const keyword = excerptWords[0];
-          const results = searchBlogs(keyword);
+          const results = searchBlogsSync(keyword);
 
           expect(Array.isArray(results)).toBe(true);
           // Should find the target blog or blogs with similar excerpts
@@ -184,7 +186,7 @@ describe('Blog Search Integration Tests', () => {
         if (targetBlog) {
           const exactWord = targetBlog.title.split(' ').find(word => word.length > 6);
           if (exactWord) {
-            const results = searchBlogs(exactWord);
+            const results = searchBlogsSync(exactWord);
 
             // The blog with exact title match should be ranked highly
             const targetIndex = results.findIndex(blog => blog.id === targetBlog.id);
@@ -199,11 +201,11 @@ describe('Blog Search Integration Tests', () => {
   describe('Tag Search Functionality', () => {
     it('should find blogs by tag names', async () => {
       await loadBlogs();
-      const allTags = getAllBlogTags();
+      const allTags = getAllBlogTagsSync();
 
       if (allTags.length > 0) {
         const targetTag = allTags[0];
-        const results = searchBlogs(targetTag);
+        const results = searchBlogsSync(targetTag);
 
         expect(Array.isArray(results)).toBe(true);
         expect(results.length).toBeGreaterThan(0);
@@ -217,14 +219,14 @@ describe('Blog Search Integration Tests', () => {
 
     it('should find blogs by partial tag names', async () => {
       await loadBlogs();
-      const allTags = getAllBlogTags();
+      const allTags = getAllBlogTagsSync();
 
       // Find a tag that can be partially searched
       const longTag = allTags.find(tag => tag.length > 4);
 
       if (longTag) {
         const partialTag = longTag.substring(0, longTag.length - 1);
-        const results = searchBlogs(partialTag);
+        const results = searchBlogsSync(partialTag);
 
         expect(Array.isArray(results)).toBe(true);
         // Should find blogs with tags containing the partial string
@@ -237,13 +239,13 @@ describe('Blog Search Integration Tests', () => {
 
     it('should handle tag search case-insensitively', async () => {
       await loadBlogs();
-      const allTags = getAllBlogTags();
+      const allTags = getAllBlogTagsSync();
 
       if (allTags.length > 0) {
         const targetTag = allTags[0];
 
-        const lowerResults = searchBlogs(targetTag.toLowerCase());
-        const upperResults = searchBlogs(targetTag.toUpperCase());
+        const lowerResults = searchBlogsSync(targetTag.toLowerCase());
+        const upperResults = searchBlogsSync(targetTag.toUpperCase());
 
         expect(lowerResults.length).toBe(upperResults.length);
       }
@@ -260,7 +262,7 @@ describe('Blog Search Integration Tests', () => {
         const commonTerms = ['development', 'javascript', 'web', 'code', 'build'];
 
         commonTerms.forEach(term => {
-          const results = searchBlogs(term);
+          const results = searchBlogsSync(term);
 
           if (results.length > 0) {
             // Verify that results contain the term in at least one field
@@ -285,7 +287,7 @@ describe('Blog Search Integration Tests', () => {
 
       // This test assumes we have blogs with specific patterns
       // In a real implementation, we would test ranking logic
-      const results = searchBlogs('guide');
+      const results = searchBlogsSync('guide');
 
       if (results.length > 1) {
         // Check if blogs with title matches appear before content-only matches
@@ -308,11 +310,11 @@ describe('Blog Search Integration Tests', () => {
   describe('Tag Filtering Integration', () => {
     it('should filter blogs by selected tags', async () => {
       await loadBlogs();
-      const allTags = getAllBlogTags();
+      const allTags = getAllBlogTagsSync();
 
       if (allTags.length > 0) {
         const targetTag = allTags[0];
-        const filteredBlogs = filterBlogsByTag(targetTag);
+        const filteredBlogs = filterBlogsByTagSync(targetTag);
 
         expect(Array.isArray(filteredBlogs)).toBe(true);
 
@@ -324,16 +326,16 @@ describe('Blog Search Integration Tests', () => {
 
     it('should combine search and tag filtering', async () => {
       await loadBlogs();
-      const allTags = getAllBlogTags();
+      const allTags = getAllBlogTagsSync();
 
       if (allTags.length > 0) {
         const targetTag = allTags[0];
-        const filteredBlogs = filterBlogsByTag(targetTag);
+        const filteredBlogs = filterBlogsByTagSync(targetTag);
 
         if (filteredBlogs.length > 0) {
           // Now search within filtered results
           const searchTerm = 'test';
-          const searchResults = searchBlogs(searchTerm);
+          const searchResults = searchBlogsSync(searchTerm);
 
           // Intersection of filtered and search results
           const combinedResults = filteredBlogs.filter(filteredBlog =>
@@ -358,14 +360,14 @@ describe('Blog Search Integration Tests', () => {
 
     it('should maintain tag list consistency after filtering', async () => {
       await loadBlogs();
-      const originalTags = getAllBlogTags();
+      const originalTags = getAllBlogTagsSync();
 
       if (originalTags.length > 0) {
         // Filter by a tag
-        filterBlogsByTag(originalTags[0]);
+        filterBlogsByTagSync(originalTags[0]);
 
         // Tag list should remain the same
-        const tagsAfterFilter = getAllBlogTags();
+        const tagsAfterFilter = getAllBlogTagsSync();
         expect(tagsAfterFilter).toEqual(originalTags);
       }
     });
@@ -378,7 +380,7 @@ describe('Blog Search Integration Tests', () => {
       const startTime = performance.now();
 
       // Search for a common term that might return many results
-      searchBlogs('a');
+      searchBlogsSync('a');
 
       const endTime = performance.now();
       const searchTime = endTime - startTime;
@@ -395,7 +397,7 @@ describe('Blog Search Integration Tests', () => {
       const startTime = performance.now();
 
       searchQueries.forEach(query => {
-        searchBlogs(query);
+        searchBlogsSync(query);
       });
 
       const endTime = performance.now();
@@ -416,7 +418,7 @@ describe('Blog Search Integration Tests', () => {
 
       complexQueries.forEach(query => {
         const startTime = performance.now();
-        searchBlogs(query);
+        searchBlogsSync(query);
         const endTime = performance.now();
 
         expect(endTime - startTime).toBeLessThan(25);
@@ -431,7 +433,7 @@ describe('Blog Search Integration Tests', () => {
       const technicalTerms = ['API', 'component', 'state', 'props', 'routing'];
 
       technicalTerms.forEach(term => {
-        const results = searchBlogs(term);
+        const results = searchBlogsSync(term);
 
         // Each result should be relevant to the search term
         results.forEach(blog => {
@@ -456,8 +458,8 @@ describe('Blog Search Integration Tests', () => {
       ];
 
       variations.forEach(([singular, plural]) => {
-        const singularResults = searchBlogs(singular);
-        const pluralResults = searchBlogs(plural);
+        const singularResults = searchBlogsSync(singular);
+        const pluralResults = searchBlogsSync(plural);
 
         // Should find relevant results for both forms
         expect(Array.isArray(singularResults)).toBe(true);
@@ -469,7 +471,7 @@ describe('Blog Search Integration Tests', () => {
       await loadBlogs();
 
       // Search for a very common term
-      const results = searchBlogs('the');
+      const results = searchBlogsSync('the');
 
       // Should limit results to prevent performance issues
       expect(results.length).toBeLessThanOrEqual(50); // Reasonable limit
@@ -479,7 +481,7 @@ describe('Blog Search Integration Tests', () => {
       await loadBlogs();
 
       const noMatchQuery = 'xyzabc123nonexistent';
-      const results = searchBlogs(noMatchQuery);
+      const results = searchBlogsSync(noMatchQuery);
 
       expect(results).toEqual([]);
     });

@@ -88,7 +88,7 @@ CREATE TABLE blog_posts (
   featured BOOLEAN DEFAULT FALSE,
   published BOOLEAN DEFAULT FALSE,
   published_at DATETIME,
-  read_time_minutes INTEGER,
+  reading_time INTEGER,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -99,7 +99,7 @@ CREATE TABLE blog_posts (
 
 - `excerpt`: Short preview for blog listing pages
 - `published`: Allows draft posts
-- `read_time_minutes`: Calculated reading time
+- `reading_time`: Calculated reading time
 
 ### Blog_Post_Tags Junction Table
 

@@ -125,10 +125,6 @@
       font-weight: 600;
       margin-bottom: var(--spacing-md);
       color: var(--color-text-primary);
-
-      .logo-accent {
-        color: var(--color-primary);
-      }
     }
 
     .footer-description {

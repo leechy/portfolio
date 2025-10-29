@@ -8,7 +8,7 @@
   $: project = data.project;
   $: relatedProjects = data.relatedProjects;
 
-  function navigateToProject(projectId: string) {
+  function navigateToProject(projectId: string | number) {
     window.location.href = `/projects/${projectId}`;
   }
 
@@ -30,7 +30,7 @@
         <button
           type="button"
           on:click={navigateBack}
-          class="back-link"
+          class="back-link back-button"
           data-testid="back-to-projects"
         >
           ← Back to Projects
@@ -98,29 +98,6 @@
               <h2>Project Overview</h2>
               <div class="content-text">
                 {@html project.content.replace(/\n/g, '<br>')}
-              </div>
-            </section>
-          {/if}
-
-          <!-- Challenges & Solutions -->
-          {#if project.challenges && project.solutions}
-            <section class="challenges-solutions">
-              <div class="challenges-section" data-testid="project-challenges">
-                <h2>Challenges Faced</h2>
-                <ul class="challenges-list">
-                  {#each project.challenges as challenge}
-                    <li class="challenge-item" data-testid="challenge-item">{challenge}</li>
-                  {/each}
-                </ul>
-              </div>
-
-              <div class="solutions-section" data-testid="project-solutions">
-                <h2>Solutions Implemented</h2>
-                <ul class="solutions-list">
-                  {#each project.solutions as solution}
-                    <li class="solution-item" data-testid="solution-item">{solution}</li>
-                  {/each}
-                </ul>
               </div>
             </section>
           {/if}
@@ -193,43 +170,6 @@
 {/if}
 
 <style lang="scss">
-  .loading-section {
-    min-height: 50vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-    .loading-spinner {
-      width: 3rem;
-      height: 3rem;
-      border: 3px solid $color-border;
-      border-top: 3px solid $color-primary;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 1rem;
-    }
-  }
-
-  .not-found-section {
-    min-height: 50vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-    h1 {
-      color: $color-primary;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      color: $color-text-secondary;
-      margin-bottom: 2rem;
-    }
-  }
-
   .project-detail {
     min-height: 100vh;
     padding: 2rem 0;
@@ -423,36 +363,6 @@
 
       :global(p) {
         margin-bottom: 1rem;
-      }
-    }
-  }
-
-  .challenges-solutions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-    }
-
-    .challenges-list,
-    .solutions-list {
-      list-style: none;
-      padding: 0;
-
-      .challenge-item,
-      .solution-item {
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid $color-primary;
-        background: $color-bg-secondary;
-        line-height: 1.6;
       }
     }
   }

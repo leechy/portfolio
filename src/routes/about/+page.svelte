@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
 
   // Sample data - you can update this with your actual information
-  let personalInfo = {
+  const personalInfo = {
     name: 'Andrey Lechev',
     title: 'Software Architect, Developer, and Team Lead',
     location: 'Olm, Luxembourg',
@@ -21,7 +21,7 @@
     ]
   };
 
-  let workExperience = [
+  const workExperience = [
     {
       id: 1,
       position: 'Senior Software Developer — Frontend',
@@ -118,9 +118,9 @@
     }
   ];
 
-  let activeExperience = null;
+  let activeExperience: number | null = null;
 
-  function toggleExperience(id) {
+  function toggleExperience(id: number) {
     activeExperience = activeExperience === id ? null : id;
   }
 
@@ -182,7 +182,14 @@
           <div class="timeline-item" class:active={activeExperience === experience.id}>
             <div class="timeline-marker"></div>
             <div class="timeline-content">
-              <div class="experience-header" on:click={() => toggleExperience(experience.id)}>
+              <div
+                class="experience-header"
+                on:click={() => toggleExperience(experience.id)}
+                on:keydown={e => e.key === 'Enter' && toggleExperience(experience.id)}
+                tabindex="0"
+                role="button"
+                aria-expanded={activeExperience === experience.id}
+              >
                 <div class="experience-main">
                   <h3>{experience.position}</h3>
                   <h4>{experience.company}</h4>

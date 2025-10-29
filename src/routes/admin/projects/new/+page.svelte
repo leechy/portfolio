@@ -1,22 +1,29 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
 
   // Form state
   let formData = {
     title: '',
+    slug: '',
     description: '',
-    technologies: [],
+    content: '',
+    technologies: [] as string[],
     status: 'planning',
     featured: false,
     githubUrl: '',
     demoUrl: '',
     imageUrl: '',
-    content: ''
+    startDate: '',
+    completionDate: '',
+    challenges: [] as string[],
+    solutions: [] as string[],
+    skillsDemonstrated: [] as string[],
+    metaDescription: ''
   };
 
   // UI state
   let isLoading = false;
-  let errors = {};
+  let errors: { [key: string]: string } = {};
   let currentTech = '';
 
   // Available technologies for autocomplete
@@ -61,15 +68,15 @@
 
   // Add technology to the list
   function addTechnology() {
-    if (currentTech.trim() && !formData.technologies.includes(currentTech.trim())) {
-      formData.technologies = [...formData.technologies, currentTech.trim()];
+    if (currentTech?.trim() && !formData.technologies?.includes(currentTech.trim())) {
+      formData.technologies = [...(formData.technologies || []), currentTech.trim()];
       currentTech = '';
     }
   }
 
   // Remove technology from the list
-  function removeTechnology(tech) {
-    formData.technologies = formData.technologies.filter(t => t !== tech);
+  function removeTechnology(tech: string) {
+    formData.technologies = formData.technologies?.filter(t => t !== tech) || [];
   }
 
   // Form validation
@@ -100,17 +107,27 @@
   }
 
   // URL validation helper
-  function isValidUrl(string) {
+  function isValidUrl(url: string) {
     try {
-      new URL(string);
+      new URL(url);
       return true;
     } catch (_) {
       return false;
     }
   }
 
+  // Generate slug from title
+  function generateSlug(title: string) {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   // Handle form submission
-  async function handleSubmit(event) {
+  async function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -120,17 +137,29 @@
     isLoading = true;
 
     try {
+      // Generate slug if not provided
+      const slug = formData.slug || generateSlug(formData.title);
+
       // Prepare project data for database (map form fields to database schema)
       const projectData = {
         title: formData.title,
+        slug: slug,
         description: formData.description,
         content: formData.content || null,
-        image: formData.imageUrl || null,
+        image_url: formData.imageUrl || null,
         technologies: formData.technologies,
         github_url: formData.githubUrl || null,
-        live_url: formData.demoUrl || null,
+        demo_url: formData.demoUrl || null,
+        repository_url: formData.githubUrl || null, // Use same as github_url for now
         status: formData.status,
-        featured: formData.featured
+        featured: formData.featured,
+        start_date: formData.startDate || null,
+        completion_date: formData.completionDate || null,
+        challenges: formData.challenges.length > 0 ? formData.challenges : null,
+        solutions: formData.solutions.length > 0 ? formData.solutions : null,
+        skills_demonstrated:
+          formData.skillsDemonstrated.length > 0 ? formData.skillsDemonstrated : null,
+        meta_description: formData.metaDescription || null
       };
 
       // Create project via API
@@ -150,7 +179,7 @@
       // Show success message and redirect
       console.log('Project created successfully!');
       goto('/admin/projects');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating project:', error);
       errors.general = error.message || 'Failed to create project. Please try again.';
     } finally {
@@ -159,7 +188,7 @@
   }
 
   // Handle Enter key in input fields
-  function handleKeyPress(event) {
+  function handleKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
       addTechnology();
@@ -231,6 +260,21 @@
         {#if errors.description}
           <span class="field-error">{errors.description}</span>
         {/if}
+      </div>
+
+      <div class="form-group">
+        <label for="slug">URL Slug</label>
+        <input
+          id="slug"
+          name="slug"
+          type="text"
+          bind:value={formData.slug}
+          placeholder="project-url-slug (auto-generated if empty)"
+          data-testid="project-slug-input"
+        />
+        <span class="field-help"
+          >Used in the project URL. Leave empty to auto-generate from title.</span
+        >
       </div>
     </section>
 
@@ -315,6 +359,36 @@
       </div>
     </section>
 
+    <!-- Project Timeline -->
+    <section class="form-section">
+      <h2>Timeline</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="start-date">Start Date</label>
+          <input
+            id="start-date"
+            name="startDate"
+            type="date"
+            bind:value={formData.startDate}
+            data-testid="project-start-date-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="completion-date">Completion Date</label>
+          <input
+            id="completion-date"
+            name="completionDate"
+            type="date"
+            bind:value={formData.completionDate}
+            data-testid="project-completion-date-input"
+          />
+          <span class="field-help">Leave empty if project is still in progress</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Technologies -->
     <section class="form-section">
       <h2>Technologies *</h2>
@@ -367,6 +441,112 @@
       </div>
     </section>
 
+    <!-- Project Details -->
+    <section class="form-section">
+      <h2>Project Challenges & Solutions</h2>
+
+      <div class="form-group">
+        <h3>Challenges Faced</h3>
+        <div class="dynamic-list">
+          {#each formData.challenges as challenge, index}
+            <div class="dynamic-item">
+              <input
+                type="text"
+                bind:value={formData.challenges[index]}
+                placeholder="Describe a challenge you faced..."
+                data-testid="challenge-input"
+              />
+              <button
+                type="button"
+                class="btn btn-small btn-danger"
+                on:click={() =>
+                  (formData.challenges = formData.challenges.filter((_, i) => i !== index))}
+              >
+                Remove
+              </button>
+            </div>
+          {/each}
+          <button
+            type="button"
+            class="btn btn-small btn-secondary"
+            on:click={() => (formData.challenges = [...(formData.challenges || []), ''])}
+          >
+            Add Challenge
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <h3>Solutions Implemented</h3>
+        <div class="dynamic-list">
+          {#each formData.solutions as solution, index}
+            <div class="dynamic-item">
+              <input
+                type="text"
+                bind:value={formData.solutions[index]}
+                placeholder="Describe how you solved it..."
+                data-testid="solution-input"
+              />
+              <button
+                type="button"
+                class="btn btn-small btn-danger"
+                on:click={() =>
+                  (formData.solutions = formData.solutions.filter((_, i) => i !== index))}
+              >
+                Remove
+              </button>
+            </div>
+          {/each}
+          <button
+            type="button"
+            class="btn btn-small btn-secondary"
+            on:click={() => (formData.solutions = [...(formData.solutions || []), ''])}
+          >
+            Add Solution
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Demonstrated -->
+    <section class="form-section">
+      <h2>Skills Demonstrated</h2>
+
+      <div class="form-group">
+        <h3>Skills</h3>
+        <div class="dynamic-list">
+          {#each formData.skillsDemonstrated as skill, index}
+            <div class="dynamic-item">
+              <input
+                type="text"
+                bind:value={formData.skillsDemonstrated[index]}
+                placeholder="e.g., Full-stack Development, API Design..."
+                data-testid="skill-input"
+              />
+              <button
+                type="button"
+                class="btn btn-small btn-danger"
+                on:click={() =>
+                  (formData.skillsDemonstrated = formData.skillsDemonstrated.filter(
+                    (_, i) => i !== index
+                  ))}
+              >
+                Remove
+              </button>
+            </div>
+          {/each}
+          <button
+            type="button"
+            class="btn btn-small btn-secondary"
+            on:click={() =>
+              (formData.skillsDemonstrated = [...(formData.skillsDemonstrated || []), ''])}
+          >
+            Add Skill
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- Content -->
     <section class="form-section">
       <h2>Project Content</h2>
@@ -381,6 +561,18 @@
           data-testid="project-content-input"
         ></textarea>
         <span class="field-help">You can use Markdown formatting here</span>
+      </div>
+
+      <div class="form-group">
+        <label for="meta-description">Meta Description</label>
+        <textarea
+          id="meta-description"
+          bind:value={formData.metaDescription}
+          placeholder="Brief description for search engines and social media (150-160 characters recommended)"
+          rows="3"
+          data-testid="project-meta-description-input"
+        ></textarea>
+        <span class="field-help">Used for SEO and social media previews</span>
       </div>
     </section>
 
@@ -508,7 +700,8 @@
     }
   }
 
-  label {
+  label,
+  h3 {
     font-weight: 500;
     color: #374151;
     font-size: 0.875rem;
@@ -537,13 +730,16 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  input,
+  textarea {
     &.error {
       border-color: #dc2626;
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-    }
-
-    &::placeholder {
-      color: #9ca3af;
     }
   }
 
@@ -571,8 +767,7 @@
     margin-bottom: 2rem;
   }
 
-  .tech-input-container,
-  .list-input-container {
+  .tech-input-container {
     display: flex;
     gap: 0.5rem;
 
@@ -628,73 +823,6 @@
     }
   }
 
-  .skill-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .skill-tag {
-    background: #f0fdf4;
-    color: #166534;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-
-    button {
-      background: none;
-      border: none;
-      color: #166534;
-      cursor: pointer;
-      font-size: 0.875rem;
-      padding: 0;
-      width: 1rem;
-      height: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-
-  .list-items {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f8fafc;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e2e8f0;
-
-    button {
-      background: #ef4444;
-      color: white;
-      border: none;
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-
-      &:hover {
-        background: #dc2626;
-      }
-    }
-  }
-
   .form-actions {
     background: #f8fafc;
     padding: 1.5rem 2rem;
@@ -742,6 +870,34 @@
 
       &:hover {
         background: #f9fafb;
+      }
+    }
+  }
+
+  .dynamic-list {
+    .dynamic-item {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      align-items: center;
+
+      input {
+        flex: 1;
+      }
+
+      .btn-small {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .btn-danger {
+        background: #ef4444;
+        color: white;
+        border: 1px solid #dc2626;
+
+        &:hover {
+          background: #dc2626;
+        }
       }
     }
   }

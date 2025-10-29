@@ -1,9 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { ProjectService } from '$lib/server/projects.js';
 import { building } from '$app/environment';
-import type { PageServerLoad } from './$types';
-
-export const load: PageServerLoad = async ({ params }) => {
+export const load = async ({ params }: { params: { slug: string } }) => {
   // During build time, return empty data to prevent SQLite access issues
   if (building) {
     return {

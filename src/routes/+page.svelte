@@ -127,10 +127,10 @@
             <article class="project-card" data-testid="project-card">
               <div
                 class="project-card-content"
-                on:click={() => (window.location.href = `/projects/${project.id}`)}
+                onclick={() => (window.location.href = `/projects/${project.id}`)}
                 role="button"
                 tabindex="0"
-                on:keydown={e =>
+                onkeydown={e =>
                   e.key === 'Enter' && (window.location.href = `/projects/${project.id}`)}
                 data-testid="project-card-content"
               >
@@ -150,7 +150,7 @@
                       class="project-link"
                       target="_blank"
                       rel="noopener noreferrer"
-                      on:click={e => e.stopPropagation()}
+                      onclick={e => e.stopPropagation()}
                     >
                       View Demo
                     </a>
@@ -161,7 +161,7 @@
                       class="project-link"
                       target="_blank"
                       rel="noopener noreferrer"
-                      on:click={e => e.stopPropagation()}
+                      onclick={e => e.stopPropagation()}
                     >
                       GitHub
                     </a>
@@ -358,7 +358,7 @@
   .project-technologies {
     display: flex;
     flex-wrap: wrap;
-    gap: $spacing-sm;
+    gap: var(--spacing-sm);
   }
 
   .tech-tag {
@@ -370,89 +370,18 @@
     font-weight: 500;
   }
 
-  /* Contact Section */
-  .contact-section {
-    padding: $spacing-xl 0;
-    background: #f8fafc;
-  }
-
-  .contact-section h2 {
-    text-align: center;
-    margin-bottom: $spacing-lg;
-    color: $color-text-primary;
-    font-size: 2rem;
-  }
-
-  .contact-content {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .contact-info p {
-    font-size: 1.125rem;
-    color: $color-text-secondary;
-    margin-bottom: $spacing-md;
-  }
-
-  .contact-methods {
-    margin-bottom: $spacing-lg;
-  }
-
-  .contact-method {
-    display: inline-flex;
-    align-items: center;
-    gap: $spacing-sm;
-    color: $color-primary;
-    text-decoration: none;
-    font-size: 1.1rem;
-    transition: color 0.2s ease;
-  }
-
-  .contact-method:hover {
-    color: darken($color-primary, 10%);
-  }
-
-  .method-label {
-    font-weight: 600;
-  }
-
-  .social-links {
-    display: flex;
-    justify-content: center;
-    gap: $spacing-md;
-    flex-wrap: wrap;
-  }
-
-  .social-link {
-    display: inline-block;
-    padding: $spacing-sm $spacing-md;
-    background: white;
-    color: $color-primary;
-    text-decoration: none;
-    border-radius: 8px;
-    border: 2px solid $color-primary;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-
-  .social-link:hover {
-    background: $color-primary;
-    color: white;
-  }
-
   /* Loading and Error States */
   .loading-state,
   .error-state {
     text-align: center;
-    padding: $spacing-lg;
+    padding: var(--spacing-lg);
     border-radius: 8px;
-    margin: $spacing-md 0;
+    margin: var(--spacing-md) 0;
   }
 
   .loading-state {
     background: rgba(59, 130, 246, 0.1);
-    color: $color-primary;
+    color: var(--color-primary);
     font-style: italic;
   }
 
@@ -464,36 +393,36 @@
 
   /* Enhanced Skill Cards */
   .category-icon {
-    margin-right: $spacing-sm;
+    margin-right: var(--spacing-sm);
     font-size: 1.2rem;
   }
 
   .skill-description {
     font-size: 0.875rem;
-    color: $color-text-secondary;
-    margin-top: $spacing-xs;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
     line-height: 1.4;
   }
 
   .skill-experience {
     font-size: 0.75rem;
-    color: $color-text-tertiary;
-    margin-top: $spacing-xs;
+    color: var(--color-text-tertiary);
+    margin-top: var(--spacing-xs);
     font-style: italic;
   }
 
   /* Project Links */
   .project-links {
     display: flex;
-    gap: $spacing-sm;
-    margin-top: $spacing-md;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
     flex-wrap: wrap;
   }
 
   .project-link {
     display: inline-block;
-    padding: $spacing-xs $spacing-sm;
-    background: $color-primary;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-primary);
     color: white;
     text-decoration: none;
     border-radius: 4px;
@@ -503,18 +432,18 @@
   }
 
   .project-link:hover {
-    background: darken($color-primary, 10%);
+    background: color-mix(in srgb, var(--color-primary-dark), black 10%);
     transform: translateY(-1px);
   }
 
   .project-detail-link {
     background: transparent;
-    color: $color-primary;
-    border: 1px solid $color-primary;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
   }
 
   .project-detail-link:hover {
-    background: $color-primary;
+    background: var(--color-primary);
     color: white;
   }
 </style>

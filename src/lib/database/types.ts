@@ -6,11 +6,12 @@ export interface BlogPost {
   id: number;
   title: string;
   slug: string;
-  excerpt?: string;
+  excerpt: string;
+  featured_image?: string;
   content: string;
   author: string;
   published: boolean;
-  featured: boolean;
+  featured?: boolean;
   created_at: string;
   updated_at: string;
   published_at?: string;
@@ -93,7 +94,7 @@ export interface ContactSubmission {
 export interface CreateBlogPostInput {
   title: string;
   slug: string;
-  excerpt?: string;
+  excerpt: string;
   content: string;
   author?: string;
   published?: boolean;

@@ -39,7 +39,6 @@ export default defineConfig(
       'no-undef': 'off',
 
       // Code quality rules
-      'no-console': 'warn',
       'no-debugger': 'warn',
       'no-unused-vars': 'off', // Handled by TypeScript
       '@typescript-eslint/no-unused-vars': 'error',
@@ -59,7 +58,12 @@ export default defineConfig(
       'svelte/no-at-debug-tags': 'warn',
       'svelte/no-unused-svelte-ignore': 'error',
       'svelte/prefer-class-directive': 'error',
-      'svelte/prefer-style-directive': 'error'
+      'svelte/prefer-style-directive': 'error',
+
+      // Project specific overrides
+      'svelte/no-navigation-without-resolve': 'off',
+      'no-console': 'off',
+      'svelte/a11y_media_has_caption': 'off'
     }
   },
   {

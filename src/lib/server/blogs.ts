@@ -9,7 +9,7 @@ interface BlogPostRow {
   content: string;
   excerpt: string | null;
   featured_image: string | null;
-  category: string | null;
+  category: string;
   tags: string;
   status: string;
   published_at: string | null;
@@ -315,9 +315,9 @@ export class BlogService {
       title: row.title,
       slug: row.slug,
       content: row.content,
-      excerpt: row.excerpt || undefined,
+      excerpt: row.excerpt || '',
       featured_image: row.featured_image || undefined,
-      category: row.category || undefined,
+      category: row.category || '',
       tags: JSON.parse(row.tags || '[]'),
       status: row.status as BlogPost['status'],
       published_at: row.published_at || undefined,

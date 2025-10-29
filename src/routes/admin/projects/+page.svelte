@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
+  import { type Project } from '$lib/server/database.js';
   export let data;
 
-  let filteredProjects = [];
+  let filteredProjects: Project[] = [];
   let searchTerm = '';
   let statusFilter = 'all';
   let sortBy = 'date';
@@ -42,8 +43,12 @@
         break;
       case 'date':
       default:
-        filtered.sort(
-          (a, b) => new Date(b.created_at || b.updated_at) - new Date(a.created_at || a.updated_at)
+        filtered.sort((a, b) =>
+          new Date(b.created_at || b.updated_at || 0).getTime() -
+            new Date(a.created_at || a.updated_at || 0).getTime() >
+          0
+            ? 1
+            : -1
         );
         break;
     }
@@ -51,7 +56,7 @@
     filteredProjects = filtered;
   }
 
-  async function deleteProject(projectId) {
+  async function deleteProject(projectId: string | number) {
     if (confirm('Are you sure you want to delete this project?')) {
       try {
         const response = await fetch(`/api/projects/${projectId}`, {
@@ -74,7 +79,7 @@
     }
   }
 
-  function getStatusBadgeClass(status) {
+  function getStatusBadgeClass(status: string): string {
     switch (status) {
       case 'completed':
         return 'status-completed';
@@ -172,8 +177,8 @@
       {#each filteredProjects as project (project.id)}
         <div class="project-card" data-testid="project-item">
           <div class="project-image">
-            {#if project.image}
-              <img src={project.image} alt={project.title} />
+            {#if project.image_url}
+              <img src={project.image_url} alt={project.title} />
             {:else}
               <div class="placeholder-image">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -470,6 +475,7 @@
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { authStore, logout } from '$lib/auth/auth';
-  import { redirect } from '@sveltejs/kit';
 
-  export let data;
+  export let data: {
+    isLoginPage?: boolean;
+  };
 
   function handleLogout() {
     logout();

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import { authStore, login, initAuth } from '$lib/auth/auth';
@@ -8,7 +8,7 @@
     password: ''
   };
 
-  let errors = {};
+  let errors: { email?: string; password?: string; general?: string } = {};
   let isLoading = false;
 
   onMount(() => {
@@ -25,7 +25,7 @@
     return unsubscribe;
   });
 
-  async function handleLogin(event) {
+  async function handleLogin(event: Event) {
     event.preventDefault();
     errors = {};
     isLoading = true;

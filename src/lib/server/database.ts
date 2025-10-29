@@ -53,14 +53,22 @@ function createTables(): void {
 		CREATE TABLE IF NOT EXISTS projects (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT NOT NULL,
+			slug TEXT UNIQUE NOT NULL,
 			description TEXT NOT NULL,
 			content TEXT,
-			image TEXT,
+			image_url TEXT,
 			technologies TEXT, -- JSON array as string
 			github_url TEXT,
-			live_url TEXT,
+			demo_url TEXT,
+			repository_url TEXT, -- Alias for github_url for backward compatibility
 			status TEXT DEFAULT 'in-progress' CHECK (status IN ('planning', 'in-progress', 'completed', 'on-hold')),
 			featured BOOLEAN DEFAULT FALSE,
+			start_date TEXT,
+			completion_date TEXT,
+			challenges TEXT, -- JSON array as string
+			solutions TEXT, -- JSON array as string
+			skills_demonstrated TEXT, -- JSON array as string
+			meta_description TEXT,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		)
@@ -163,6 +171,46 @@ function createTables(): void {
   } catch {
     // Column already exists, ignore error
   }
+
+  // Migration: Add missing columns to projects table
+  const projectMigrations = [
+    'ALTER TABLE projects ADD COLUMN slug TEXT',
+    'ALTER TABLE projects ADD COLUMN image_url TEXT',
+    'ALTER TABLE projects ADD COLUMN demo_url TEXT',
+    'ALTER TABLE projects ADD COLUMN repository_url TEXT',
+    'ALTER TABLE projects ADD COLUMN start_date TEXT',
+    'ALTER TABLE projects ADD COLUMN completion_date TEXT',
+    'ALTER TABLE projects ADD COLUMN challenges TEXT',
+    'ALTER TABLE projects ADD COLUMN solutions TEXT',
+    'ALTER TABLE projects ADD COLUMN skills_demonstrated TEXT',
+    'ALTER TABLE projects ADD COLUMN meta_description TEXT'
+  ];
+
+  projectMigrations.forEach(migration => {
+    try {
+      db.exec(migration);
+    } catch {
+      // Column already exists, ignore error
+    }
+  });
+
+  // Update existing projects to have slugs if they don't
+  try {
+    const projectsWithoutSlugs = db
+      .prepare("SELECT id, title FROM projects WHERE slug IS NULL OR slug = ''")
+      .all() as { id: number; title: string }[];
+    const updateSlug = db.prepare('UPDATE projects SET slug = ? WHERE id = ?');
+
+    projectsWithoutSlugs.forEach(project => {
+      const slug = project.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      updateSlug.run(slug, project.id);
+    });
+  } catch (error) {
+    console.warn('Failed to update project slugs:', error);
+  }
 }
 
 /**
@@ -198,13 +246,18 @@ function seedInitialData(): void {
  */
 function seedProjects(): void {
   const insertProject = db.prepare(`
-		INSERT INTO projects (title, description, content, technologies, github_url, live_url, status, featured)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO projects (
+			title, slug, description, content, technologies, github_url, demo_url, repository_url, 
+			status, featured, start_date, completion_date, challenges, solutions, skills_demonstrated,
+			image_url, meta_description
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`);
 
   const projects = [
     {
       title: 'E-commerce Dashboard',
+      slug: 'ecommerce-dashboard',
       description:
         'A comprehensive admin dashboard for managing e-commerce operations with real-time analytics.',
       content:
@@ -217,56 +270,160 @@ function seedProjects(): void {
         'SQLite'
       ]),
       github_url: 'https://github.com/leechy/ecommerce-dashboard',
-      live_url: 'https://ecommerce-demo.leechy.dev',
+      demo_url: 'https://ecommerce-demo.leechy.dev',
+      repository_url: 'https://github.com/leechy/ecommerce-dashboard',
       status: 'completed',
-      featured: 1
+      featured: 1,
+      start_date: '2024-01-15',
+      completion_date: '2024-03-20',
+      challenges: JSON.stringify([
+        'Complex state management for real-time data updates',
+        'Optimizing database queries for large datasets',
+        'Implementing secure user authentication and authorization'
+      ]),
+      solutions: JSON.stringify([
+        'Used Svelte stores with reactive subscriptions for state management',
+        'Implemented database indexing and query optimization',
+        'Integrated JWT-based authentication with role-based access control'
+      ]),
+      skills_demonstrated: JSON.stringify([
+        'Full-stack Development',
+        'Database Design',
+        'UI/UX Design',
+        'Real-time Data Handling',
+        'Authentication & Security'
+      ]),
+      image_url: '/images/projects/ecommerce-dashboard.jpg',
+      meta_description:
+        'Comprehensive admin dashboard for e-commerce operations built with SvelteKit and TypeScript'
     },
     {
       title: 'Task Management System',
+      slug: 'task-management-system',
       description: 'A modern task management application with team collaboration features.',
       content:
         'Full-featured task management system with drag-and-drop interface, team collaboration, file attachments, and project tracking. Built with modern web technologies for optimal performance.',
       technologies: JSON.stringify(['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io']),
       github_url: 'https://github.com/leechy/task-manager',
-      live_url: 'https://tasks.leechy.dev',
+      demo_url: 'https://tasks.leechy.dev',
+      repository_url: 'https://github.com/leechy/task-manager',
       status: 'completed',
-      featured: 1
+      featured: 1,
+      start_date: '2023-09-01',
+      completion_date: '2023-12-15',
+      challenges: JSON.stringify([
+        'Implementing real-time collaboration features',
+        'Complex drag-and-drop functionality across multiple lists',
+        'Managing file uploads and storage efficiently'
+      ]),
+      solutions: JSON.stringify([
+        'Integrated Socket.io for real-time updates and collaboration',
+        'Built custom drag-and-drop system with React DnD',
+        'Implemented cloud storage integration with automatic file compression'
+      ]),
+      skills_demonstrated: JSON.stringify([
+        'React Development',
+        'Real-time Communication',
+        'File Management',
+        'Team Collaboration Features',
+        'RESTful API Design'
+      ]),
+      image_url: '/images/projects/task-management.jpg',
+      meta_description:
+        'Modern task management application with drag-and-drop interface and team collaboration'
     },
     {
       title: 'Weather Analytics Platform',
+      slug: 'weather-analytics-platform',
       description:
         'Advanced weather data visualization and analytics platform with predictive modeling.',
       content:
         'Comprehensive weather analytics platform that aggregates data from multiple sources, provides interactive visualizations, and uses machine learning for weather predictions.',
       technologies: JSON.stringify(['Python', 'FastAPI', 'React', 'D3.js', 'PostgreSQL', 'Docker']),
       github_url: 'https://github.com/leechy/weather-analytics',
-      live_url: null,
+      demo_url: null,
+      repository_url: 'https://github.com/leechy/weather-analytics',
       status: 'in-progress',
-      featured: 0
+      featured: 0,
+      start_date: '2024-02-01',
+      completion_date: null,
+      challenges: JSON.stringify([
+        'Processing large volumes of weather data in real-time',
+        'Building accurate predictive models',
+        'Creating intuitive data visualizations for complex datasets'
+      ]),
+      solutions: JSON.stringify([
+        'Implemented distributed data processing with Apache Kafka',
+        'Used machine learning libraries for time-series forecasting',
+        'Built interactive dashboards with D3.js and custom React components'
+      ]),
+      skills_demonstrated: JSON.stringify([
+        'Data Engineering',
+        'Machine Learning',
+        'Data Visualization',
+        'API Development',
+        'Distributed Systems'
+      ]),
+      image_url: '/images/projects/weather-analytics.jpg',
+      meta_description:
+        'Advanced weather analytics platform with predictive modeling and data visualization'
     },
     {
       title: 'Portfolio Website',
+      slug: 'portfolio-website',
       description: 'Personal portfolio website with blog and admin interface.',
       content:
         'Modern portfolio website built with SvelteKit featuring a blog system, admin interface, and media management. Includes authentication, CRUD operations, and responsive design.',
       technologies: JSON.stringify(['SvelteKit', 'TypeScript', 'SQLite', 'Tailwind CSS']),
       github_url: 'https://github.com/leechy/portfolio',
-      live_url: 'https://leechy.dev',
+      demo_url: 'https://leechy.dev',
+      repository_url: 'https://github.com/leechy/portfolio',
       status: 'completed',
-      featured: 1
+      featured: 1,
+      start_date: '2023-11-01',
+      completion_date: '2024-01-15',
+      challenges: JSON.stringify([
+        'Building a comprehensive admin interface',
+        'Implementing secure authentication without external dependencies',
+        'Creating a flexible blog system with markdown support'
+      ]),
+      solutions: JSON.stringify([
+        'Developed modular admin components with role-based access',
+        'Implemented JWT-based authentication with secure session management',
+        'Built custom markdown parser with syntax highlighting'
+      ]),
+      skills_demonstrated: JSON.stringify([
+        'SvelteKit Development',
+        'Full-stack Architecture',
+        'Authentication Systems',
+        'Content Management',
+        'Responsive Design'
+      ]),
+      image_url: '/images/projects/portfolio-website.jpg',
+      meta_description:
+        'Personal portfolio website built with SvelteKit featuring blog and admin interface'
     }
   ];
 
   projects.forEach(project => {
     insertProject.run(
       project.title,
+      project.slug,
       project.description,
       project.content,
       project.technologies,
       project.github_url,
-      project.live_url,
+      project.demo_url,
+      project.repository_url,
       project.status,
-      project.featured
+      project.featured,
+      project.start_date,
+      project.completion_date,
+      project.challenges,
+      project.solutions,
+      project.skills_demonstrated,
+      project.image_url,
+      project.meta_description
     );
   });
 }
@@ -530,14 +687,28 @@ export interface User {
 export interface Project {
   id: number;
   title: string;
+  slug: string;
   description: string;
   content?: string;
-  image?: string;
+  image_url?: string;
+  imageUrl?: string; // Computed property for backward compatibility
   technologies: string[]; // Will be parsed from JSON
   github_url?: string;
-  live_url?: string;
+  githubUrl?: string; // Computed property for backward compatibility
+  demo_url?: string;
+  demoUrl?: string; // Computed property for backward compatibility
+  repository_url?: string;
   status: 'planning' | 'in-progress' | 'completed' | 'on-hold';
   featured: boolean;
+  start_date?: string;
+  startDate?: Date; // Computed property for backward compatibility
+  completion_date?: string;
+  completionDate?: Date; // Computed property for backward compatibility
+  challenges?: string[]; // Will be parsed from JSON
+  solutions?: string[]; // Will be parsed from JSON
+  skills_demonstrated?: string[]; // Will be parsed from JSON
+  skillsDemonstrated?: string[]; // Computed property for backward compatibility
+  meta_description?: string;
   created_at: string;
   updated_at: string;
 }
@@ -545,14 +716,16 @@ export interface Project {
 export interface BlogPost {
   id: number;
   title: string;
-  category?: string;
+  category: string;
   slug: string;
   content: string; // Raw markdown content
-  excerpt?: string;
+  excerpt: string;
   featured_image?: string;
+  featured?: boolean;
   tags: string[]; // Will be parsed from JSON
   status: 'draft' | 'published' | 'archived';
   published_at?: string;
+  reading_time?: number;
   created_at: string;
   updated_at: string;
 }

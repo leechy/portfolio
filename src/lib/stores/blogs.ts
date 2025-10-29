@@ -8,16 +8,20 @@ export type BlogStatus = 'draft' | 'published' | 'archived';
 import type { BlogPost } from '$lib/server/database.js';
 
 export interface BlogsState {
+  blogs: BlogPost[];
   posts: BlogPost[];
   published: BlogPost[];
+  featured: BlogPost[];
   loading: boolean;
   error: string | null;
 }
 
 // Initial state
 const initialState: BlogsState = {
+  blogs: [],
   posts: [],
   published: [],
+  featured: [],
   loading: false,
   error: null
 };
@@ -136,11 +140,16 @@ export async function loadBlogs(): Promise<void> {
 
     const allPosts = await response.json();
     const publishedPosts = allPosts.filter((post: BlogPost) => post.status === 'published');
+    const featuredPosts = publishedPosts
+      .filter((post: BlogPost) => post.status === 'published')
+      .slice(0, 3);
 
     blogsStore.update(state => ({
       ...state,
+      blogs: allPosts, // For backward compatibility with tests
       posts: allPosts,
       published: publishedPosts,
+      featured: featuredPosts,
       loading: false,
       error: null
     }));
@@ -224,6 +233,80 @@ export async function filterBlogsByTag(tag: string): Promise<BlogPost[]> {
   // This would need to be implemented as an API endpoint
   void tag;
   return [];
+}
+
+// Synchronous versions for tests that work with current store state
+import { get } from 'svelte/store';
+
+export function getBlogByIdSync(idOrSlug: string | number): BlogPost | null {
+  const state = get(blogsStore);
+  const blogs = state.blogs || state.posts;
+
+  if (typeof idOrSlug === 'string') {
+    // Try slug first, then parse as ID
+    const bySlug = blogs.find(blog => blog.slug === idOrSlug);
+    if (bySlug) {
+      return bySlug;
+    }
+
+    const id = parseInt(idOrSlug);
+    if (!isNaN(id)) {
+      return blogs.find(blog => blog.id === id) || null;
+    }
+    return null;
+  }
+
+  return blogs.find(blog => blog.id === idOrSlug) || null;
+}
+
+export function getRelatedBlogsSync(blogId: string | number, limit = 3): BlogPost[] {
+  const state = get(blogsStore);
+  const blogs = state.blogs || state.posts;
+  const targetBlog = getBlogByIdSync(blogId);
+
+  if (!targetBlog) {
+    return [];
+  }
+
+  const related = blogs
+    .filter(blog => blog.id !== targetBlog.id)
+    .filter(blog => blog.tags.some(tag => targetBlog.tags.includes(tag)))
+    .slice(0, limit);
+
+  return related;
+}
+
+export function searchBlogsSync(query: string): BlogPost[] {
+  const state = get(blogsStore);
+  const blogs = state.blogs || state.posts;
+
+  if (!query.trim()) {
+    return blogs;
+  }
+
+  const lowerQuery = query.toLowerCase();
+  return blogs.filter(
+    blog =>
+      blog.title.toLowerCase().includes(lowerQuery) ||
+      blog.content.toLowerCase().includes(lowerQuery) ||
+      (blog.excerpt && blog.excerpt.toLowerCase().includes(lowerQuery)) ||
+      blog.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+  );
+}
+
+export function getAllBlogTagsSync(): string[] {
+  const state = get(blogsStore);
+  const blogs = state.blogs || state.posts;
+
+  const allTags = blogs.flatMap(blog => blog.tags);
+  return [...new Set(allTags)];
+}
+
+export function filterBlogsByTagSync(tag: string): BlogPost[] {
+  const state = get(blogsStore);
+  const blogs = state.blogs || state.posts;
+
+  return blogs.filter(blog => blog.tags.includes(tag));
 }
 
 export function formatBlogDate(dateString: string): string {

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let data;
 
   // Get stats and recent activity from server-side data

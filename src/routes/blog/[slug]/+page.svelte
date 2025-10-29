@@ -16,10 +16,12 @@
   <meta property="og:title" content={blog.title} />
   <meta property="og:description" content={blog.excerpt} />
   <meta property="og:type" content="article" />
-  <meta property="article:published_time" content={blog.publishedAt?.toISOString?.()} />
-  <meta property="article:author" content={blog.author} />
-  {#if blog.coverImageUrl}
-    <meta property="og:image" content={blog.coverImageUrl} />
+  {#if blog.published_at}
+    <meta property="article:published_time" content={new Date(blog.published_at).toISOString()} />
+  {/if}
+  <meta property="article:author" content="Andrey Lechev (Leechy)" />
+  {#if blog.featured_image}
+    <meta property="og:image" content={blog.featured_image} />
   {/if}
   {#each blog.tags as tag}
     <meta property="article:tag" content={tag} />
@@ -61,15 +63,21 @@
       class="flex flex-wrap items-center gap-4 text-gray-600 mb-6"
       data-testid="blog-post-metadata"
     >
-      <time datetime={blog?.published_at?.toISOString?.()} class="text-sm" data-testid="blog-date">
-        {formatBlogDate(blog.published_at)}
-      </time>
-      <span class="text-gray-400">•</span>
-      <span class="text-sm" data-testid="blog-author">by {blog.author}</span>
-      <span class="text-gray-400">•</span>
-      <span class="text-sm" data-testid="blog-read-time">
-        {formatReadTime(blog.readTimeMinutes)}
-      </span>
+      {#if blog.published_at}
+        <time
+          datetime={new Date(blog?.published_at).toISOString()}
+          class="text-sm"
+          data-testid="blog-date"
+        >
+          {formatBlogDate(blog.published_at)}
+        </time>
+        <span class="text-gray-400">•</span>
+      {/if}
+      {#if blog.reading_time}
+        <span class="text-sm" data-testid="blog-read-time">
+          {formatReadTime(blog.reading_time)}
+        </span>
+      {/if}
     </div>
 
     {#if blog.tags && blog.tags.length > 0}
@@ -86,10 +94,10 @@
       </div>
     {/if}
 
-    {#if blog.coverImageUrl}
+    {#if blog.featured_image}
       <div class="mb-8">
         <img
-          src={blog.coverImageUrl}
+          src={blog.featured_image}
           alt={blog.title}
           class="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
           data-testid="blog-cover-image"
@@ -201,11 +209,15 @@
                 {relatedBlog.excerpt}
               </p>
               <div class="flex items-center text-xs text-gray-500 gap-2">
-                <time datetime={relatedBlog.published_at?.toISOString?.()}>
-                  {formatBlogDate(relatedBlog.published_at)}
-                </time>
-                <span>•</span>
-                <span>{formatReadTime(relatedBlog.readTimeMinutes)}</span>
+                {#if relatedBlog.published_at}
+                  <time datetime={new Date(relatedBlog.published_at).toISOString()}>
+                    {formatBlogDate(relatedBlog.published_at)}
+                  </time>
+                  <span>•</span>
+                {/if}
+                {#if relatedBlog.reading_time}
+                  <span>{formatReadTime(relatedBlog.reading_time)}</span>
+                {/if}
               </div>
             </a>
           </article>
@@ -221,96 +233,96 @@
   }
 
   /* Prose styles for article content */
-  .prose {
+  .prose :global {
     color: #374151;
     line-height: 1.75;
-  }
 
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose h5,
-  .prose h6 {
-    color: #111827;
-    font-weight: 600;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #111827;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
 
-  .prose h1 {
-    font-size: 2.25rem;
-    line-height: 1.2;
-  }
+    h1 {
+      font-size: 2.25rem;
+      line-height: 1.2;
+    }
 
-  .prose h2 {
-    font-size: 1.875rem;
-    line-height: 1.3;
-  }
+    h2 {
+      font-size: 1.875rem;
+      line-height: 1.3;
+    }
 
-  .prose h3 {
-    font-size: 1.5rem;
-    line-height: 1.4;
-  }
+    h3 {
+      font-size: 1.5rem;
+      line-height: 1.4;
+    }
 
-  .prose p {
-    margin-bottom: 1.5rem;
-  }
+    p {
+      margin-bottom: 1.5rem;
+    }
 
-  .prose code {
-    background-color: #f3f4f6;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-    font-family: 'Fira Code', 'Courier New', monospace;
-    font-size: 0.875em;
-  }
+    code {
+      background-color: #f3f4f6;
+      padding: 0.125rem 0.25rem;
+      border-radius: 0.25rem;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.875em;
+    }
 
-  .prose pre {
-    background-color: #1f2937;
-    color: #f9fafb;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
+    pre {
+      background-color: #1f2937;
+      color: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
 
-  .prose pre code {
-    background-color: transparent;
-    padding: 0;
-    color: inherit;
-  }
+    pre code {
+      background-color: transparent;
+      padding: 0;
+      color: inherit;
+    }
 
-  .prose blockquote {
-    border-left: 4px solid #3b82f6;
-    padding-left: 1rem;
-    margin: 1.5rem 0;
-    font-style: italic;
-    color: #6b7280;
-  }
+    blockquote {
+      border-left: 4px solid #3b82f6;
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #6b7280;
+    }
 
-  .prose ul,
-  .prose ol {
-    margin: 1.5rem 0;
-    padding-left: 1.5rem;
-  }
+    ul,
+    ol {
+      margin: 1.5rem 0;
+      padding-left: 1.5rem;
+    }
 
-  .prose li {
-    margin-bottom: 0.5rem;
-  }
+    li {
+      margin-bottom: 0.5rem;
+    }
 
-  .prose a {
-    color: #3b82f6;
-    text-decoration: underline;
-  }
+    a {
+      color: #3b82f6;
+      text-decoration: underline;
+    }
 
-  .prose a:hover {
-    color: #1d4ed8;
-  }
+    a:hover {
+      color: #1d4ed8;
+    }
 
-  .prose img {
-    margin: 2rem 0;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    img {
+      margin: 2rem 0;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
   }
 
   /* Responsive design */
@@ -320,16 +332,18 @@
       padding-right: 1rem;
     }
 
-    .prose h1 {
-      font-size: 1.875rem;
-    }
+    .prose :global {
+      h1 {
+        font-size: 1.875rem;
+      }
 
-    .prose h2 {
-      font-size: 1.5rem;
-    }
+      h2 {
+        font-size: 1.5rem;
+      }
 
-    .prose h3 {
-      font-size: 1.25rem;
+      h3 {
+        font-size: 1.25rem;
+      }
     }
   }
 </style>

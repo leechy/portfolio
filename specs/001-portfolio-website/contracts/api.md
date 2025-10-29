@@ -71,7 +71,7 @@ interface BlogPost {
   slug: string;
   excerpt: string;
   publishedAt?: string;
-  readTimeMinutes?: number;
+  reading_time?: number;
   tags: string[];
   featured: boolean;
 }

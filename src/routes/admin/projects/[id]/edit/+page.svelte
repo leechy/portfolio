@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
 
@@ -9,35 +9,72 @@
   $: project = data.project;
 
   // Form state - initialize with server data
-  let formData = {
+  let formData: {
+    title: string;
+    slug: string;
+    description: string;
+    content: string;
+    imageUrl: string;
+    technologies: string[];
+    githubUrl: string;
+    demoUrl: string;
+    repositoryUrl: string;
+    status: string;
+    featured: boolean;
+    startDate: string;
+    completionDate: string;
+    challenges: string[];
+    solutions: string[];
+    skillsDemonstrated: string[];
+    metaDescription: string;
+  } = {
     title: '',
+    slug: '',
     description: '',
+    content: '',
+    imageUrl: '',
     technologies: [],
-    status: 'planning',
-    featured: false,
     githubUrl: '',
     demoUrl: '',
-    imageUrl: '',
-    content: ''
+    repositoryUrl: '',
+    status: 'planning',
+    featured: false,
+    startDate: '',
+    completionDate: '',
+    challenges: [],
+    solutions: [],
+    skillsDemonstrated: [],
+    metaDescription: ''
   };
 
   // UI state
   let isLoading = false;
-  let errors = {};
+  let errors: { [key: string]: string } = {};
   let currentTech = '';
+  let currentChallenge = '';
+  let currentSolution = '';
+  let currentSkill = '';
 
   // Initialize form data when project loads
   $: if (project) {
     formData = {
       title: project.title || '',
+      slug: project.slug || '',
       description: project.description || '',
+      content: project.content || '',
+      imageUrl: project.imageUrl || project.image_url || '',
       technologies: project.technologies || [],
+      githubUrl: project.githubUrl || project.github_url || '',
+      demoUrl: project.demoUrl || project.demo_url || '',
+      repositoryUrl: project.repository_url || '',
       status: project.status || 'planning',
       featured: project.featured || false,
-      githubUrl: project.github_url || '',
-      demoUrl: project.live_url || '',
-      imageUrl: project.image || '',
-      content: project.content || ''
+      startDate: formatDateForInput(project.startDate || project.start_date),
+      completionDate: formatDateForInput(project.completionDate || project.completion_date),
+      challenges: project.challenges || [],
+      solutions: project.solutions || [],
+      skillsDemonstrated: project.skills_demonstrated || [],
+      metaDescription: project.meta_description || ''
     };
   }
 
@@ -81,40 +118,27 @@
     'Prettier'
   ];
 
-  // Load project data
-  function loadProject() {
-    const project = projects.find(p => p.id === projectId);
-
-    if (!project) {
-      projectFound = false;
-      isLoadingProject = false;
-      return;
-    }
-
-    projectFound = true;
-
-    // Populate form with project data
-    formData = {
-      ...project,
-      // Convert Date objects to string format for inputs
-      startDate: project.startDate ? formatDateForInput(project.startDate) : '',
-      completionDate: project.completionDate ? formatDateForInput(project.completionDate) : '',
-      // Ensure arrays exist
-      technologies: project.technologies || [],
-      challenges: project.challenges || [],
-      solutions: project.solutions || [],
-      skillsDemonstrated: project.skillsDemonstrated || [],
-      relatedProjects: project.relatedProjects || []
-    };
-
-    isLoadingProject = false;
-  }
-
   // Format Date object for date input
-  function formatDateForInput(date) {
+  function formatDateForInput(date: any): string {
     if (!date) return '';
     if (typeof date === 'string') return date.split('T')[0];
-    return date.toISOString().split('T')[0];
+    if (date instanceof Date) return date.toISOString().split('T')[0];
+    return '';
+  }
+
+  // Generate slug from title
+  function generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  // Auto-generate slug when title changes
+  $: if (formData.title) {
+    formData.slug = generateSlug(formData.title);
   }
 
   // Add technology to the list
@@ -126,8 +150,44 @@
   }
 
   // Remove technology from the list
-  function removeTechnology(tech) {
+  function removeTechnology(tech: string) {
     formData.technologies = formData.technologies.filter(t => t !== tech);
+  }
+
+  // Challenge management
+  function addChallenge() {
+    if (currentChallenge.trim() && !formData.challenges.includes(currentChallenge.trim())) {
+      formData.challenges = [...formData.challenges, currentChallenge.trim()];
+      currentChallenge = '';
+    }
+  }
+
+  function removeChallenge(challenge: string) {
+    formData.challenges = formData.challenges.filter(c => c !== challenge);
+  }
+
+  // Solution management
+  function addSolution() {
+    if (currentSolution.trim() && !formData.solutions.includes(currentSolution.trim())) {
+      formData.solutions = [...formData.solutions, currentSolution.trim()];
+      currentSolution = '';
+    }
+  }
+
+  function removeSolution(solution: string) {
+    formData.solutions = formData.solutions.filter(s => s !== solution);
+  }
+
+  // Skills demonstrated management
+  function addSkill() {
+    if (currentSkill.trim() && !formData.skillsDemonstrated.includes(currentSkill.trim())) {
+      formData.skillsDemonstrated = [...formData.skillsDemonstrated, currentSkill.trim()];
+      currentSkill = '';
+    }
+  }
+
+  function removeSkill(skill: string) {
+    formData.skillsDemonstrated = formData.skillsDemonstrated.filter(s => s !== skill);
   }
 
   // Form validation
@@ -154,11 +214,15 @@
       errors.demoUrl = 'Please enter a valid demo URL';
     }
 
+    if (formData.repositoryUrl && !isValidUrl(formData.repositoryUrl)) {
+      errors.repositoryUrl = 'Please enter a valid repository URL';
+    }
+
     return Object.keys(errors).length === 0;
   }
 
   // URL validation helper
-  function isValidUrl(string) {
+  function isValidUrl(string: string): boolean {
     try {
       new URL(string);
       return true;
@@ -168,7 +232,7 @@
   }
 
   // Handle Enter key in input fields
-  function handleKeyPress(event) {
+  function handleKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
       addTechnology();
@@ -176,7 +240,7 @@
   }
 
   // Handle form submission
-  async function handleSubmit(event) {
+  async function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -189,14 +253,22 @@
       // Prepare project data for database (map form fields to database schema)
       const projectData = {
         title: formData.title,
+        slug: formData.slug,
         description: formData.description,
         content: formData.content || null,
-        image: formData.imageUrl || null,
+        image_url: formData.imageUrl || null,
         technologies: formData.technologies,
         github_url: formData.githubUrl || null,
-        live_url: formData.demoUrl || null,
+        demo_url: formData.demoUrl || null,
+        repository_url: formData.repositoryUrl || null,
         status: formData.status,
-        featured: formData.featured
+        featured: formData.featured,
+        start_date: formData.startDate || null,
+        completion_date: formData.completionDate || null,
+        challenges: formData.challenges,
+        solutions: formData.solutions,
+        skills_demonstrated: formData.skillsDemonstrated,
+        meta_description: formData.metaDescription || null
       };
 
       // Update project via API
@@ -216,9 +288,9 @@
       // Show success message and redirect
       console.log('Project updated successfully!');
       goto('/admin/projects');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating project:', error);
-      errors.general = error.message || 'Failed to update project. Please try again.';
+      errors.general = error?.message || 'Failed to update project. Please try again.';
     } finally {
       isLoading = false;
     }
@@ -306,16 +378,19 @@
           </div>
 
           <div class="form-group">
-            <label for="project-id">Project ID</label>
+            <label for="slug">URL Slug</label>
             <input
-              id="project-id"
+              id="slug"
               type="text"
-              bind:value={formData.id}
-              readonly
-              class="readonly"
-              data-testid="project-id-input"
+              bind:value={formData.slug}
+              class:error={errors.slug}
+              placeholder="project-url-slug"
+              data-testid="project-slug-input"
             />
-            <span class="field-help">Project ID cannot be changed after creation</span>
+            <span class="field-help">Used in the project URL. Auto-generated from title.</span>
+            {#if errors.slug}
+              <span class="field-error">{errors.slug}</span>
+            {/if}
           </div>
         </div>
 
@@ -344,9 +419,9 @@
             <label for="status">Status</label>
             <select id="status" bind:value={formData.status} data-testid="project-status-select">
               <option value="planning">Planning</option>
-              <option value="development">In Development</option>
+              <option value="in-progress">In Progress</option>
               <option value="completed">Completed</option>
-              <option value="maintenance">Maintenance</option>
+              <option value="on-hold">On Hold</option>
             </select>
           </div>
 
@@ -360,6 +435,28 @@
               Featured Project
             </label>
             <span class="field-help">Featured projects appear prominently on the homepage</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="start-date">Start Date</label>
+            <input
+              id="start-date"
+              type="date"
+              bind:value={formData.startDate}
+              data-testid="project-start-date-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="completion-date">Completion Date</label>
+            <input
+              id="completion-date"
+              type="date"
+              bind:value={formData.completionDate}
+              data-testid="project-completion-date-input"
+            />
           </div>
         </div>
 
@@ -395,15 +492,44 @@
           </div>
         </div>
 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="repository-url">Repository URL</label>
+            <input
+              id="repository-url"
+              type="url"
+              bind:value={formData.repositoryUrl}
+              class:error={errors.repositoryUrl}
+              placeholder="https://..."
+              data-testid="project-repository-input"
+            />
+            {#if errors.repositoryUrl}
+              <span class="field-error">{errors.repositoryUrl}</span>
+            {/if}
+          </div>
+
+          <div class="form-group">
+            <label for="image-url">Project Image URL</label>
+            <input
+              id="image-url"
+              type="url"
+              bind:value={formData.imageUrl}
+              placeholder="https://..."
+              data-testid="project-image-input"
+            />
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="image-url">Project Image URL</label>
-          <input
-            id="image-url"
-            type="url"
-            bind:value={formData.imageUrl}
-            placeholder="https://..."
-            data-testid="project-image-input"
-          />
+          <label for="meta-description">Meta Description</label>
+          <textarea
+            id="meta-description"
+            bind:value={formData.metaDescription}
+            placeholder="SEO meta description for this project page (recommended: 150-160 characters)"
+            rows="3"
+            data-testid="project-meta-description-input"
+          ></textarea>
+          <span class="field-help">Used for SEO and social media sharing</span>
         </div>
       </section>
 
@@ -464,20 +590,108 @@
         </div>
       </section>
 
-      <!-- Content -->
+      <!-- Challenges -->
       <section class="form-section">
-        <h2>Project Content</h2>
+        <h2>Challenges</h2>
+        <p>What challenges did you face while working on this project?</p>
 
         <div class="form-group">
-          <label for="content">Detailed Description</label>
-          <textarea
-            id="content"
-            bind:value={formData.content}
-            placeholder="Write detailed project description, implementation details, etc. (Supports Markdown)"
-            rows="10"
-            data-testid="project-content-input"
-          ></textarea>
-          <span class="field-help">You can use Markdown formatting here</span>
+          <div class="list-input-container">
+            <input
+              type="text"
+              bind:value={currentChallenge}
+              placeholder="Describe a challenge you faced..."
+              data-testid="challenge-input"
+            />
+            <button type="button" on:click={addChallenge} class="btn-add">Add</button>
+          </div>
+
+          {#if formData.challenges.length > 0}
+            <div class="dynamic-list">
+              {#each formData.challenges as challenge, index}
+                <div class="dynamic-item">
+                  <span>{challenge}</span>
+                  <button
+                    type="button"
+                    on:click={() => removeChallenge(challenge)}
+                    class="btn-small btn-danger"
+                  >
+                    Remove
+                  </button>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      </section>
+
+      <!-- Solutions -->
+      <section class="form-section">
+        <h2>Solutions</h2>
+        <p>How did you solve the challenges mentioned above?</p>
+
+        <div class="form-group">
+          <div class="list-input-container">
+            <input
+              type="text"
+              bind:value={currentSolution}
+              placeholder="Describe how you solved a challenge..."
+              data-testid="solution-input"
+            />
+            <button type="button" on:click={addSolution} class="btn-add">Add</button>
+          </div>
+
+          {#if formData.solutions.length > 0}
+            <div class="dynamic-list">
+              {#each formData.solutions as solution, index}
+                <div class="dynamic-item">
+                  <span>{solution}</span>
+                  <button
+                    type="button"
+                    on:click={() => removeSolution(solution)}
+                    class="btn-small btn-danger"
+                  >
+                    Remove
+                  </button>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      </section>
+
+      <!-- Skills Demonstrated -->
+      <section class="form-section">
+        <h2>Skills Demonstrated</h2>
+        <p>What key skills were demonstrated in this project?</p>
+
+        <div class="form-group">
+          <div class="list-input-container">
+            <input
+              type="text"
+              bind:value={currentSkill}
+              placeholder="e.g., Problem Solving, API Integration..."
+              data-testid="skill-input"
+            />
+            <button type="button" on:click={addSkill} class="btn-add">Add</button>
+          </div>
+
+          {#if formData.skillsDemonstrated.length > 0}
+            <div class="dynamic-list">
+              {#each formData.skillsDemonstrated as skill, index}
+                <div class="dynamic-item">
+                  <span>{skill}</span>
+                  <button
+                    type="button"
+                    on:click={() => removeSkill(skill)}
+                    class="btn-small btn-danger"
+                  >
+                    Remove
+                  </button>
+                </div>
+              {/each}
+            </div>
+          {/if}
         </div>
       </section>
 
@@ -577,51 +791,6 @@
     }
   }
 
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 0.75rem;
-    border: 1px solid #e2e8f0;
-
-    p {
-      color: #64748b;
-      margin-top: 1rem;
-    }
-  }
-
-  .loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 2px solid #e5e7eb;
-    border-top: 2px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  .not-found-container {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 0.75rem;
-    border: 1px solid #e2e8f0;
-
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
-    }
-
-    p {
-      color: #64748b;
-      margin-bottom: 2rem;
-    }
-  }
-
   .form-container {
     background: white;
     border-radius: 0.75rem;
@@ -695,18 +864,16 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  input,
+  textarea {
     &.error {
       border-color: #dc2626;
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-    }
-
-    &.readonly {
-      background-color: #f9fafb;
-      cursor: not-allowed;
-    }
-
-    &::placeholder {
-      color: #9ca3af;
     }
   }
 
@@ -791,73 +958,6 @@
     }
   }
 
-  .skill-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .skill-tag {
-    background: #f0fdf4;
-    color: #166534;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-
-    button {
-      background: none;
-      border: none;
-      color: #166534;
-      cursor: pointer;
-      font-size: 0.875rem;
-      padding: 0;
-      width: 1rem;
-      height: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-
-  .list-items {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f8fafc;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e2e8f0;
-
-    button {
-      background: #ef4444;
-      color: white;
-      border: none;
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-
-      &:hover {
-        background: #dc2626;
-      }
-    }
-  }
-
   .form-actions {
     background: #f8fafc;
     padding: 1.5rem 2rem;
@@ -934,6 +1034,47 @@
     width: 1rem;
     height: 1rem;
     animation: spin 1s linear infinite;
+  }
+
+  .dynamic-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .dynamic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+
+    span {
+      flex: 1;
+      color: #374151;
+    }
+  }
+
+  .btn-small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &.btn-danger {
+      background: #ef4444;
+      color: white;
+
+      &:hover {
+        background: #dc2626;
+      }
+    }
   }
 
   @keyframes spin {

@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { type BlogPost } from '$lib/server/database';
 
   export let data;
 
@@ -9,25 +10,27 @@
   $: blogId = blog.id;
 
   // Form state
-  let formData = {
-    id: '',
+  let formData: Partial<BlogPost> & {
+    publishedAt?: string;
+    readTime?: string;
+  } = {
+    id: blogId,
     title: '',
     excerpt: '',
+    slug: '',
     content: '',
-    tags: [],
+    tags: [] as string[],
     category: '',
     featured: false,
-    published: false,
+    status: 'draft',
     publishedAt: '',
-    readTime: '',
-    author: 'Leechy',
-    authorAvatar: '/images/avatar.jpg'
+    readTime: ''
   };
 
   // UI state
   let isLoading = false;
   let isLoadingBlog = true;
-  let errors = {};
+  let errors: { [key: string]: string } = {};
   let currentTag = '';
   let blogFound = false;
 
@@ -104,8 +107,6 @@
       ...blog,
       // Convert Date object to string format for input
       publishedAt: blog.published_at ? formatDateForInput(blog.published_at) : '',
-      // Handle published status
-      published: blog.status === 'published',
       // Ensure tags is always an array
       tags: Array.isArray(blog.tags) ? blog.tags : blog.tags ? [blog.tags] : [],
       // Handle readTime format - calculate from content
@@ -118,7 +119,7 @@
   }
 
   // Calculate reading time from content
-  function calculateReadTimeFromContent(content) {
+  function calculateReadTimeFromContent(content: string): string {
     const wordsPerMinute = 200;
     const wordCount = content.split(/\s+/).length;
     const readTimeMinutes = Math.ceil(wordCount / wordsPerMinute);
@@ -126,7 +127,7 @@
   }
 
   // Format Date object for date input
-  function formatDateForInput(date) {
+  function formatDateForInput(date: Date | string): string {
     if (!date) return '';
     if (typeof date === 'string') return date.split('T')[0];
     return date.toISOString().split('T')[0];
@@ -135,37 +136,37 @@
   // Calculate estimated read time based on content
   function calculateReadTime() {
     const wordsPerMinute = 200;
-    const wordCount = formData.content.trim().split(/\s+/).length;
+    const wordCount = formData.content?.trim().split(/\s+/).length || 0;
     const readTimeMinutes = Math.ceil(wordCount / wordsPerMinute);
     formData.readTime = `${readTimeMinutes} min read`;
   }
 
   // Add tag to the list
   function addTag() {
-    if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
-      formData.tags = [...formData.tags, currentTag.trim()];
+    if (currentTag?.trim() && !formData.tags?.includes(currentTag.trim())) {
+      formData.tags = [...(formData.tags || []), currentTag.trim()];
       currentTag = '';
     }
   }
 
   // Remove tag from the list
-  function removeTag(tag) {
-    formData.tags = formData.tags.filter(t => t !== tag);
+  function removeTag(tag: string) {
+    formData.tags = formData.tags?.filter((t: string) => t !== tag) || [];
   }
 
   // Form validation
   function validateForm() {
     errors = {};
 
-    if (!formData.title.trim()) {
+    if (!formData.title?.trim()) {
       errors.title = 'Blog post title is required';
     }
 
-    if (!formData.excerpt.trim()) {
+    if (!formData.excerpt?.trim()) {
       errors.excerpt = 'Blog post excerpt is required';
     }
 
-    if (!formData.content.trim()) {
+    if (!formData.content?.trim()) {
       errors.content = 'Blog post content is required';
     }
 
@@ -173,11 +174,11 @@
       errors.category = 'Please select a category';
     }
 
-    if (formData.tags.length === 0) {
+    if ((formData.tags?.length || 0) === 0) {
       errors.tags = 'At least one tag is required';
     }
 
-    if (formData.published && !formData.publishedAt) {
+    if (formData.status === 'published' && !formData.publishedAt) {
       errors.publishedAt = 'Published date is required for published posts';
     }
 
@@ -185,7 +186,7 @@
   }
 
   // Handle form submission
-  async function handleSubmit(event) {
+  async function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -201,7 +202,7 @@
       }
 
       // Set published date to now if publishing and no date set
-      if (formData.published && !formData.publishedAt) {
+      if (formData.status === 'published' && !formData.publishedAt) {
         formData.publishedAt = new Date().toISOString().split('T')[0];
       }
 
@@ -212,10 +213,10 @@
         content: formData.content,
         excerpt: formData.excerpt,
         slug: formData.slug,
-        tags: formData.tags.join(','),
-        status: formData.published ? 'published' : 'draft',
+        tags: formData.tags?.join(',') || '',
+        status: formData.status === 'published' ? 'published' : 'draft',
         published_at:
-          formData.published && formData.publishedAt
+          formData.status === 'published' && formData.publishedAt
             ? new Date(formData.publishedAt).toISOString()
             : null,
         featured_image: null // You can add featured image support later
@@ -277,7 +278,7 @@
   }
 
   // Handle Enter key in input fields
-  function handleKeyPress(event, action) {
+  function handleKeyPress(event: KeyboardEvent, action: () => void) {
     if (event.key === 'Enter') {
       event.preventDefault();
       action();
@@ -286,13 +287,13 @@
 
   // Handle save as draft
   function saveAsDraft() {
-    formData.published = false;
+    formData.status = 'draft';
     handleSubmit(new Event('submit'));
   }
 
   // Handle publish
   function publishPost() {
-    formData.published = true;
+    formData.status = 'published';
     if (!formData.publishedAt) {
       formData.publishedAt = new Date().toISOString().split('T')[0];
     }
@@ -442,29 +443,6 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="author">Author</label>
-            <input
-              id="author"
-              type="text"
-              bind:value={formData.author}
-              data-testid="blog-author-input"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="author-avatar">Author Avatar URL</label>
-            <input
-              id="author-avatar"
-              type="url"
-              bind:value={formData.authorAvatar}
-              placeholder="https://..."
-              data-testid="blog-author-avatar-input"
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
             <label class="checkbox-label">
               <input
                 type="checkbox"
@@ -481,7 +459,7 @@
             <input
               id="published-date"
               type="date"
-              bind:value={formData.publishedAt}
+              bind:value={formData.published_at}
               class:error={errors.publishedAt}
               data-testid="blog-published-date-input"
             />
@@ -492,16 +470,16 @@
         </div>
 
         <div class="form-group">
-          <label class="status-label">
+          <h3 class="status-label">
             Publication Status:
             <span
               class="status-badge"
-              class:published={formData.published}
-              class:draft={!formData.published}
+              class:published={formData.status === 'published'}
+              class:draft={formData.status === 'draft'}
             >
-              {formData.published ? 'Published' : 'Draft'}
+              {formData.status === 'published' ? 'Published' : 'Draft'}
             </span>
-          </label>
+          </h3>
         </div>
       </section>
 
@@ -528,7 +506,7 @@
             {/each}
           </datalist>
 
-          {#if formData.tags.length > 0}
+          {#if (formData.tags?.length || 0) > 0}
             <div class="tag-list">
               {#each formData.tags as tag}
                 <span class="tag-item">
@@ -567,7 +545,7 @@
             <span class="field-help"
               >Supports Markdown formatting (headings, links, code blocks, etc.)</span
             >
-            {#if formData.content.trim()}
+            {#if formData.content?.trim()}
               <span class="word-count">
                 {formData.content.trim().split(/\s+/).length} words
               </span>
@@ -603,7 +581,7 @@
             disabled={isLoading}
             data-testid="save-draft-blog"
           >
-            {#if isLoading && !formData.published}
+            {#if isLoading && formData.status !== 'published'}
               <svg class="spinner" viewBox="0 0 24 24">
                 <circle
                   cx="12"
@@ -632,7 +610,7 @@
             disabled={isLoading}
             data-testid="update-blog"
           >
-            {#if isLoading && formData.published}
+            {#if isLoading && formData.status === 'published'}
               <svg class="spinner" viewBox="0 0 24 24">
                 <circle
                   cx="12"
@@ -650,7 +628,7 @@
               </svg>
               Updating...
             {:else}
-              {formData.published ? 'Update Post' : 'Publish Post'}
+              {formData.status === 'published' ? 'Update Post' : 'Publish Post'}
             {/if}
           </button>
         </div>
@@ -848,11 +826,6 @@
     &.error {
       border-color: #dc2626;
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-    }
-
-    &.readonly {
-      background-color: #f9fafb;
-      cursor: not-allowed;
     }
 
     &::placeholder {

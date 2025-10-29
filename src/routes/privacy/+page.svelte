@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   const lastUpdated = 'October 27, 2025';
   const contactEmail = 'andrey@lechev.me';
   const websiteUrl = 'https://www.leechy.dev';
@@ -289,8 +289,7 @@
       }
     }
 
-    ul,
-    ol {
+    ul {
       margin: var(--spacing-md) 0;
       padding-left: var(--spacing-xl);
 
@@ -354,8 +353,7 @@
         font-size: var(--font-size-lg);
       }
 
-      ul,
-      ol {
+      ul {
         padding-left: var(--font-size-2xl);
       }
 

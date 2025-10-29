@@ -1,22 +1,23 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { authStore } from '$lib/auth/auth';
   import { goto } from '$app/navigation';
+  import { type MediaFile } from '$lib/server/database';
 
   // Media state
-  let mediaFiles = [];
-  let uploadFiles = [];
+  let mediaFiles: MediaFile[] = [];
+  let uploadFiles: File[] = [];
   let isUploading = false;
-  let selectedFiles = new Set();
+  let selectedFiles = [] as boolean[];
   let searchTerm = '';
   let currentFilter = 'all'; // all, images, videos, documents
 
   // File preview state
-  let previewFile = null;
+  let previewFile: MediaFile | null = null;
   let showPreview = false;
 
   // Editing state
-  let editingFile = null;
+  let editingFile: MediaFile | null = null;
   let editingName = ''; // Display name (original_filename)
   let editingFilename = ''; // Actual filename on disk
   let editingAltText = '';
@@ -24,6 +25,8 @@
   // Error handling
   let error = '';
   let success = '';
+
+  let fileInput: HTMLInputElement;
 
   // Check authentication on mount
   onMount(() => {
@@ -49,7 +52,7 @@
       const result = await response.json();
 
       if (result.success) {
-        mediaFiles = result.data.map(file => ({
+        mediaFiles = result.data.map((file: any) => ({
           ...file,
           uploadDate: new Date(file.created_at),
           name: file.original_filename,
@@ -69,24 +72,26 @@
   }
 
   // Handle file selection
-  function handleFileSelect(event) {
-    const files = Array.from(event.target.files);
-    uploadFiles = [...uploadFiles, ...files];
+  function handleFileSelect(event: Event) {
+    const files = Array.from((event.target as HTMLInputElement).files || []);
+    uploadFiles = [...(uploadFiles || []), ...files];
   }
 
   // Handle drag and drop
-  function handleDrop(event) {
+  function handleDrop(event: DragEvent) {
     event.preventDefault();
-    const files = Array.from(event.dataTransfer.files);
-    uploadFiles = [...uploadFiles, ...files];
+    if (event.dataTransfer?.files) {
+      const files = Array.from(event.dataTransfer.files);
+      uploadFiles = [...(uploadFiles || []), ...files];
+    }
   }
 
-  function handleDragOver(event) {
+  function handleDragOver(event: DragEvent) {
     event.preventDefault();
   }
 
   // Remove file from upload queue
-  function removeUploadFile(index) {
+  function removeUploadFile(index: number) {
     uploadFiles = uploadFiles.filter((_, i) => i !== index);
   }
 
@@ -127,9 +132,10 @@
 
   // Delete selected files
   async function deleteSelectedFiles() {
-    if (selectedFiles.size === 0) return;
+    const filesToDelete = selectedFiles.filter(v => v).length;
+    if (filesToDelete === 0) return;
 
-    if (!confirm(`Delete ${selectedFiles.size} file(s)? This action cannot be undone.`)) {
+    if (!confirm(`Delete ${filesToDelete} file(s)? This action cannot be undone.`)) {
       return;
     }
 
@@ -139,15 +145,21 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ids: Array.from(selectedFiles) })
+        body: JSON.stringify({
+          ids: [
+            ...selectedFiles
+              .entries()
+              .filter(v => v[1])
+              .map(e => e[0])
+          ]
+        })
       });
 
       const result = await response.json();
 
       if (result.success) {
         success = `Successfully deleted ${result.data.deletedCount} file(s)`;
-        selectedFiles.clear();
-        selectedFiles = new Set(); // Trigger reactivity
+        selectedFiles = [];
         await loadMediaFiles(); // Reload the media list
       } else {
         error = result.error || 'Failed to delete files';
@@ -158,13 +170,13 @@
   }
 
   // Preview file
-  function previewMedia(file) {
+  function previewMedia(file: MediaFile) {
     previewFile = file;
     showPreview = true;
   }
 
   // Start editing file
-  function startEditingFile(file) {
+  function startEditingFile(file: MediaFile) {
     editingFile = file;
     editingName = file.original_filename;
     editingFilename = file.filename;
@@ -210,11 +222,13 @@
   }
 
   // Copy markdown link to clipboard
-  async function copyMarkdownLink(file) {
-    const isImage = file.type.startsWith('image/');
+  async function copyMarkdownLink(file: MediaFile | null) {
+    if (!file) return;
+
+    const isImage = file.file_type.startsWith('image/');
     const markdownLink = isImage
-      ? `![${file.alt_text || file.name}](${file.url})`
-      : `[${file.name}](${file.url})`;
+      ? `![${file.alt_text || file.filename}](${file.file_url})`
+      : `[${file.filename}](${file.file_url})`;
 
     try {
       await navigator.clipboard.writeText(markdownLink);
@@ -232,19 +246,21 @@
   }
 
   // Copy direct URL to clipboard
-  async function copyDirectUrl(file) {
+  async function copyDirectUrl(file: MediaFile | null) {
+    if (!file) return;
+
     try {
-      await navigator.clipboard.writeText(file.url);
-      success = `URL copied to clipboard: ${file.url}`;
+      await navigator.clipboard.writeText(file.file_url);
+      success = `URL copied to clipboard: ${file.file_url}`;
     } catch (err) {
       // Fallback for browsers that don't support clipboard API
       const textArea = document.createElement('textarea');
-      textArea.value = file.url;
+      textArea.value = file.file_url;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      success = `URL copied to clipboard: ${file.url}`;
+      success = `URL copied to clipboard: ${file.file_url}`;
     }
   }
 
@@ -261,7 +277,7 @@
   }
 
   // Format file size
-  function formatFileSize(bytes) {
+  function formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -311,6 +327,12 @@
       on:drop={handleDrop}
       on:dragover={handleDragOver}
       data-testid="upload-area"
+      role="button"
+      tabindex="0"
+      on:click={() => fileInput.click()}
+      on:keydown={e => {
+        if (e.key === 'Enter') fileInput.click();
+      }}
     >
       <div class="upload-content">
         <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,6 +351,7 @@
           accept="image/*,video/*,.pdf,.doc,.docx"
           on:change={handleFileSelect}
           data-testid="file-input"
+          bind:this={fileInput}
         />
       </div>
     </div>
@@ -344,7 +367,11 @@
                 <span class="file-name">{file.name}</span>
                 <span class="file-size">{formatFileSize(file.size)}</span>
               </div>
-              <button class="remove-btn" on:click={() => removeUploadFile(index)}>
+              <button
+                class="remove-btn"
+                on:click={() => removeUploadFile(index)}
+                aria-label="Remove File"
+              >
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
@@ -423,13 +450,13 @@
         </select>
 
         <!-- Actions -->
-        {#if selectedFiles.size > 0}
+        {#if selectedFiles.filter(v => v).length > 0}
           <button
             class="btn-danger"
             on:click={deleteSelectedFiles}
             data-testid="delete-selected-btn"
           >
-            Delete Selected ({selectedFiles.size})
+            Delete Selected ({selectedFiles.filter(v => v).length})
           </button>
         {/if}
       </div>
@@ -441,34 +468,33 @@
         <div class="media-item" data-testid="media-item">
           <!-- Selection checkbox -->
           <label class="selection-checkbox">
-            <input
-              type="checkbox"
-              checked={selectedFiles.has(file.id)}
-              on:change={e => {
-                if (e.target.checked) {
-                  selectedFiles.add(file.id);
-                } else {
-                  selectedFiles.delete(file.id);
-                }
-                selectedFiles = new Set(selectedFiles);
-              }}
-            />
+            <input type="checkbox" bind:checked={selectedFiles[file.id]} />
           </label>
 
           <!-- File preview -->
-          <div class="file-preview" on:click={() => previewMedia(file)}>
-            {#if file.type.startsWith('image/')}
-              <img src={file.url} alt={file.name} loading="lazy" />
-            {:else if file.type.startsWith('video/')}
+          <div
+            class="file-preview"
+            on:click={() => previewMedia(file)}
+            on:keydown={e => {
+              if (e.key === 'Enter') previewMedia(file);
+            }}
+            tabindex="0"
+            role="button"
+          >
+            {#if file.file_type.startsWith('image')}
+              <img src={file.file_url} alt={file.filename} loading="lazy" />
+            {:else if file.file_type.startsWith('video')}
               <div class="video-thumbnail">
                 <svg class="play-icon" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                <span class="video-duration"
-                  >{Math.floor(file.duration / 60)}:{(file.duration % 60)
-                    .toString()
-                    .padStart(2, '0')}</span
-                >
+                {#if file.duration}
+                  <span class="video-duration"
+                    >{Math.floor(file.duration / 60)}:{(file.duration % 60)
+                      .toString()
+                      .padStart(2, '0')}</span
+                  >
+                {/if}
               </div>
             {:else}
               <div class="document-thumbnail">
@@ -486,16 +512,15 @@
 
           <!-- File info -->
           <div class="file-info">
-            <h4 class="file-name" title={file.name}>{file.name}</h4>
+            <h4 class="file-name" title={file.filename}>{file.filename}</h4>
             <div class="file-meta">
-              <span class="file-size">{formatFileSize(file.size)}</span>
-              {#if file.dimensions}
-                <span class="file-dimensions">{file.dimensions.width}×{file.dimensions.height}</span
-                >
+              <span class="file-size">{formatFileSize(file.file_size)}</span>
+              {#if file.width && file.height}
+                <span class="file-dimensions">{file.width}×{file.height}</span>
               {/if}
             </div>
             <div class="file-date">
-              {file.uploadDate.toLocaleDateString()}
+              {new Date(file.created_at).toLocaleDateString()}
             </div>
           </div>
 
@@ -551,7 +576,7 @@
                 />
               </svg>
             </button>
-            <a href={file.url} download={file.name} class="action-btn" title="Download">
+            <a href={file.file_url} download={file.filename} class="action-btn" title="Download">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -583,11 +608,28 @@
 
 <!-- Preview Modal -->
 {#if showPreview && previewFile}
-  <div class="modal-overlay" on:click={() => (showPreview = false)}>
-    <div class="preview-modal" on:click|stopPropagation>
+  <div
+    class="modal-overlay"
+    on:click={() => (showPreview = false)}
+    on:keydown={e => e.key === 'Escape' && (showPreview = false)}
+    role="none"
+    tabindex="-1"
+  >
+    <div
+      class="preview-modal"
+      on:click|stopPropagation
+      on:keydown={e => e.key === 'Escape' && (showPreview = false)}
+      role="dialog"
+      aria-modal="true"
+      tabindex="0"
+    >
       <div class="modal-header">
-        <h3>{previewFile.name}</h3>
-        <button class="close-btn" on:click={() => (showPreview = false)}>
+        <h3>{previewFile.filename}</h3>
+        <button
+          class="close-btn"
+          on:click={() => (showPreview = false)}
+          aria-label="Close Preview Modal"
+        >
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -600,11 +642,11 @@
       </div>
 
       <div class="modal-content">
-        {#if previewFile.type.startsWith('image/')}
-          <img src={previewFile.url} alt={previewFile.name} />
-        {:else if previewFile.type.startsWith('video/')}
+        {#if previewFile.file_type.startsWith('image')}
+          <img src={previewFile.file_url} alt={previewFile.filename} />
+        {:else if previewFile.file_type.startsWith('video')}
           <video controls>
-            <source src={previewFile.url} type={previewFile.type} />
+            <source src={previewFile.file_url} type={previewFile.file_type} />
             Your browser does not support the video tag.
           </video>
         {:else}
@@ -618,7 +660,7 @@
               />
             </svg>
             <p>Preview not available for this file type</p>
-            <a href={previewFile.url} download={previewFile.name} class="download-link">
+            <a href={previewFile.file_url} download={previewFile.filename} class="download-link">
               Download File
             </a>
           </div>
@@ -627,15 +669,15 @@
 
       <div class="modal-footer">
         <div class="file-details">
-          <p><strong>Size:</strong> {formatFileSize(previewFile.size)}</p>
-          <p><strong>Type:</strong> {previewFile.type}</p>
-          {#if previewFile.dimensions}
+          <p><strong>Size:</strong> {formatFileSize(previewFile.file_size)}</p>
+          <p><strong>Type:</strong> {previewFile.file_type}</p>
+          {#if previewFile.width && previewFile.height}
             <p>
               <strong>Dimensions:</strong>
-              {previewFile.dimensions.width}×{previewFile.dimensions.height}
+              {previewFile.width}×{previewFile.height}
             </p>
           {/if}
-          <p><strong>Uploaded:</strong> {previewFile.uploadDate.toLocaleDateString()}</p>
+          <p><strong>Uploaded:</strong> {new Date(previewFile.created_at).toLocaleDateString()}</p>
         </div>
       </div>
     </div>
@@ -644,11 +686,24 @@
 
 <!-- Edit Modal -->
 {#if editingFile}
-  <div class="modal-overlay" on:click={cancelEdit}>
-    <div class="edit-modal" on:click|stopPropagation>
+  <div
+    class="modal-overlay"
+    on:click={cancelEdit}
+    role="none"
+    tabindex="-1"
+    on:keydown={e => e.key === 'Escape' && cancelEdit()}
+  >
+    <div
+      class="edit-modal"
+      on:click|stopPropagation
+      role="dialog"
+      aria-modal="true"
+      tabindex="0"
+      on:keydown={e => e.key === 'Escape' && cancelEdit()}
+    >
       <div class="modal-header">
         <h3>Edit Media File</h3>
-        <button class="close-btn" on:click={cancelEdit}>
+        <button class="close-btn" on:click={cancelEdit} aria-label="Close Edit Modal">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -694,31 +749,35 @@
             />
           </div>
 
-          <div class="form-group">
-            <label>Current URL:</label>
-            <div class="url-display">
-              <code>{editingFile.url}</code>
-              <button class="copy-btn" on:click={() => copyDirectUrl(editingFile)}> Copy </button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Markdown Links:</label>
-            <div class="markdown-links">
-              <div class="link-option">
-                <span>Image:</span>
-                <code>![{editingAltText || editingName}]({editingFile.url})</code>
-                <button class="copy-btn" on:click={() => copyMarkdownLink(editingFile)}>
-                  Copy
-                </button>
-              </div>
-              <div class="link-option">
-                <span>Link:</span>
-                <code>[{editingName}]({editingFile.url})</code>
+          {#if editingFile}
+            <div class="form-group">
+              <h3>Current URL:</h3>
+              <div class="url-display">
+                <code>{editingFile.file_url}</code>
                 <button class="copy-btn" on:click={() => copyDirectUrl(editingFile)}> Copy </button>
               </div>
             </div>
-          </div>
+
+            <div class="form-group">
+              <h3>Markdown Links:</h3>
+              <div class="markdown-links">
+                <div class="link-option">
+                  <span>Image:</span>
+                  <code>![{editingAltText || editingName}]({editingFile.file_url})</code>
+                  <button class="copy-btn" on:click={() => copyMarkdownLink(editingFile)}>
+                    Copy
+                  </button>
+                </div>
+                <div class="link-option">
+                  <span>Link:</span>
+                  <code>[{editingName}]({editingFile.file_url})</code>
+                  <button class="copy-btn" on:click={() => copyDirectUrl(editingFile)}>
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
 

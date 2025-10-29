@@ -39,10 +39,10 @@ export interface BreadcrumbItem {
 
 export interface BlogPostSeo extends SeoConfig {
   slug: string;
-  excerpt?: string;
+  excerpt: string;
   readingTime?: number;
   wordCount?: number;
-  category?: string;
+  category: string;
   tags?: string[];
   publishedTime: string;
   modifiedTime?: string;

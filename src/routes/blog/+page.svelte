@@ -23,7 +23,7 @@
         blog =>
           blog.title.toLowerCase().includes(query) ||
           blog.content.toLowerCase().includes(query) ||
-          blog.excerpt?.toLowerCase().includes(query) ||
+          blog.excerpt.toLowerCase().includes(query) ||
           (blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(query)))
       );
     } else if (selectedTag) {
@@ -224,20 +224,6 @@
   /* Search input focus styles */
   input[type='search']:focus {
     outline: none;
-  }
-
-  /* Animation for loading spinner */
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .animate-spin {
-    animation: spin 1s linear infinite;
   }
 
   /* Responsive design adjustments */

@@ -1,23 +1,23 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
-  import { blogs } from '$lib/stores/blogs.js';
-  import { onMount } from 'svelte';
 
   // Form state
-  let formData = {
+  const formData = {
     title: '',
     slug: '',
+    category: '',
     excerpt: '',
     content: '',
-    tags: [],
+    tags: [] as string[],
     featured_image: '',
     status: 'draft',
+    published: false,
     published_at: ''
   };
 
   // UI state
   let isLoading = false;
-  let errors = {};
+  let errors: { [key: string]: string } = {};
   let currentTag = '';
 
   // Available categories
@@ -80,7 +80,7 @@
   ];
 
   // Generate slug from title
-  function generateSlugFromTitle(title) {
+  function generateSlugFromTitle(title: string): string {
     return (
       title
         .toLowerCase()
@@ -100,7 +100,7 @@
   }
 
   // Remove tag from the list
-  function removeTag(tag) {
+  function removeTag(tag: string) {
     formData.tags = formData.tags.filter(t => t !== tag);
   }
 
@@ -128,7 +128,7 @@
       errors.tags = 'At least one tag is required';
     }
 
-    if (formData.published && !formData.publishedAt) {
+    if (formData.published && !formData.published_at) {
       errors.publishedAt = 'Published date is required for published posts';
     }
 
@@ -136,7 +136,7 @@
   }
 
   // Handle form submission
-  async function handleSubmit(event) {
+  async function handleSubmit(event: Event) {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -191,7 +191,7 @@
   }
 
   // Handle Enter key in input fields
-  function handleKeyPress(event, action) {
+  function handleKeyPress(event: KeyboardEvent, action: () => void) {
     if (event.key === 'Enter') {
       event.preventDefault();
       action();
@@ -212,17 +212,6 @@
     }
     handleSubmit(new Event('submit'));
   }
-
-  onMount(() => {
-    // Auto-generate ID when title changes
-    const unsubscribe = setInterval(() => {
-      if (formData.title && !formData.id) {
-        formData.id = generateBlogId();
-      }
-    }, 500);
-
-    return () => clearInterval(unsubscribe);
-  });
 </script>
 
 <svelte:head>
@@ -626,14 +615,6 @@
     font-weight: 500;
     color: #374151;
     font-size: 0.875rem;
-  }
-
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: normal;
-    cursor: pointer;
   }
 
   input,

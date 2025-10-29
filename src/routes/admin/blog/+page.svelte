@@ -1,17 +1,18 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
+  import { type BlogPost } from '$lib/server/database.js';
 
   export let data;
 
-  let postList = [];
-  let filteredPosts = [];
+  let postList: BlogPost[] = [];
+  let filteredPosts: BlogPost[] = [];
   let searchTerm = '';
-  let statusFilter = 'all';
+  const statusFilter = 'all';
   let tagFilter = 'all';
   let sortBy = 'date';
 
   // Calculate reading time from content (rough estimate: 200 words per minute)
-  function calculateReadingTime(content) {
+  function calculateReadingTime(content: string): number {
     const wordsPerMinute = 200;
     const wordCount = content.split(/\s+/).length;
     return Math.ceil(wordCount / wordsPerMinute);
@@ -20,7 +21,7 @@
   onMount(() => {
     postList = data.posts.map(post => ({
       ...post,
-      readTimeMinutes: calculateReadingTime(post.content)
+      reading_time: calculateReadingTime(post.content)
     }));
     filterAndSortPosts();
   });
@@ -52,18 +53,22 @@
         filtered.sort((a, b) => (a.tags[0] || '').localeCompare(b.tags[0] || ''));
         break;
       case 'readTime':
-        filtered.sort((a, b) => a.readTimeMinutes - b.readTimeMinutes);
+        filtered.sort((a, b) => (a.reading_time || 100) - (b.reading_time || 100));
         break;
       case 'date':
       default:
-        filtered.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+        filtered.sort((a, b) =>
+          new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime() > 0
+            ? 1
+            : -1
+        );
         break;
     }
 
     filteredPosts = filtered;
   }
 
-  async function deletePost(postId) {
+  async function deletePost(postId: number) {
     if (confirm('Are you sure you want to delete this blog post?')) {
       try {
         const response = await fetch(`/api/blogs/${postId}`, {
@@ -77,14 +82,14 @@
         // Remove from local list on successful deletion
         postList = postList.filter(p => p.id !== postId);
         filterAndSortPosts();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error deleting blog post: ' + error.message);
       }
     }
   }
 
-  function getCategoryColor(tag) {
-    const colors = {
+  function getCategoryColor(tag: string) {
+    const colors: { [key: string]: string } = {
       SvelteKit: 'bg-blue-100 text-blue-800',
       CSS: 'bg-green-100 text-green-800',
       TypeScript: 'bg-purple-100 text-purple-800',
@@ -183,8 +188,8 @@
       {#each filteredPosts as post (post.id)}
         <div class="post-card" data-testid="blog-post-item">
           <div class="post-image">
-            {#if post.coverImageUrl}
-              <img src={post.coverImageUrl} alt={post.title} />
+            {#if post.featured_image}
+              <img src={post.featured_image} alt={post.title} />
             {:else}
               <div class="placeholder-image">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +224,7 @@
                 {/if}
               </div>
               <div class="meta-info">
-                <span class="read-time">{post.readTimeMinutes} min read</span>
+                <span class="read-time">{post.reading_time} min read</span>
                 <span class="post-date"
                   >{new Date(post.published_at || post.created_at).toLocaleDateString()}</span
                 >
@@ -494,6 +499,7 @@
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

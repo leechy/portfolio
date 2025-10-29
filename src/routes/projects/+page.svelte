@@ -23,9 +23,7 @@
         project =>
           project.title.toLowerCase().includes(query) ||
           project.description.toLowerCase().includes(query) ||
-          project.technologies.some(tech => tech.toLowerCase().includes(query)) ||
-          project.challenges.some(challenge => challenge.toLowerCase().includes(query)) ||
-          project.solutions.some(solution => solution.toLowerCase().includes(query))
+          project.technologies.some(tech => tech.toLowerCase().includes(query))
       );
     }
 
@@ -43,7 +41,7 @@
     selectedTechnology = '';
   }
 
-  function handleProjectClick(projectId: string) {
+  function handleProjectClick(projectId: string | number) {
     window.location.href = `/projects/${projectId}`;
   }
 </script>
@@ -115,7 +113,15 @@
     <div class="projects-grid" data-testid="projects-grid">
       {#each filteredProjects as project (project.id)}
         <article class="project-card" data-testid="project-overview-card">
-          <div class="project-card-content" on:click={() => handleProjectClick(project.id)}>
+          <div
+            class="project-card-content"
+            on:click={() => handleProjectClick(project.id)}
+            on:keypress={e => {
+              if (e.key === 'Enter') handleProjectClick(project.id);
+            }}
+            tabindex="0"
+            role="link"
+          >
             {#if project.imageUrl}
               <div class="project-image">
                 <img src={project.imageUrl} alt="{project.title} screenshot" loading="lazy" />
@@ -189,12 +195,10 @@
 </div>
 
 <style lang="scss">
-  @import '../../app.scss';
-
   .projects-overview {
     min-height: 100vh;
     padding: 2rem 0;
-    background: $color-bg-secondary;
+    background: var(--color-bg-secondary);
   }
 
   .container {
@@ -209,40 +213,24 @@
 
     h1 {
       font-size: 3rem;
-      color: $color-primary;
+      color: var(--color-primary);
       margin-bottom: 1rem;
     }
 
     .projects-subtitle {
       font-size: 1.2rem;
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
       max-width: 600px;
       margin: 0 auto;
     }
   }
 
-  .loading-section,
-  .error-section {
-    text-align: center;
-    padding: 3rem 0;
-
-    .loading-spinner {
-      width: 3rem;
-      height: 3rem;
-      border: 3px solid $color-border;
-      border-top: 3px solid $color-primary;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-  }
-
   .filters-section {
-    background: $color-bg-primary;
+    background: var(--color-bg-primary);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
-    border: 1px solid $color-border;
+    border: 1px solid var(--color-border);
 
     .filter-controls {
       display: grid;
@@ -260,29 +248,29 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 500;
-      color: $color-text-primary;
+      color: var(--color-text-primary);
     }
 
     input,
     select {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid $color-border;
+      border: 1px solid var(--color-border);
       border-radius: 8px;
-      background: $color-bg-primary;
-      color: $color-text-primary;
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
       font-size: 1rem;
 
       &:focus {
         outline: none;
-        border-color: $color-primary;
+        border-color: var(--color-primary);
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
       }
     }
 
     .clear-filters-btn {
       padding: 0.75rem 1.5rem;
-      background: $color-secondary;
+      background: var(--color-secondary);
       color: white;
       border: none;
       border-radius: 8px;
@@ -291,12 +279,12 @@
       transition: background-color 0.2s ease;
 
       &:hover {
-        background: color.adjust($color-secondary, $lightness: -10%);
+        background: color-mix(in srgb, var(--color-secondary), black 10%);
       }
     }
 
     .filter-results {
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
       font-size: 0.9rem;
     }
   }
@@ -308,9 +296,9 @@
   }
 
   .project-card {
-    background: $color-bg-primary;
+    background: var(--color-bg-primary);
     border-radius: 8px;
-    border: 1px solid $color-border;
+    border: 1px solid var(--color-border);
     overflow: hidden;
     transition:
       transform 0.2s ease,
@@ -352,7 +340,7 @@
 
     .project-title {
       font-size: 1.5rem;
-      color: $color-primary;
+      color: var(--color-primary);
       margin-bottom: 0.5rem;
     }
 
@@ -387,7 +375,7 @@
       .featured-badge {
         padding: 0.25rem 0.75rem;
         background: rgba(59, 130, 246, 0.1);
-        color: $color-primary;
+        color: var(--color-primary);
         border-radius: 1rem;
         font-size: 0.8rem;
         font-weight: 500;
@@ -396,7 +384,7 @@
   }
 
   .project-description {
-    color: $color-text-secondary;
+    color: var(--color-text-secondary);
     line-height: 1.6;
     margin-bottom: 1.5rem;
     flex: 1;
@@ -411,7 +399,7 @@
     .tech-tag {
       padding: 0.25rem 0.75rem;
       background: rgba(59, 130, 246, 0.1);
-      color: $color-primary;
+      color: var(--color-primary);
       border-radius: 1rem;
       font-size: 0.8rem;
       font-weight: 500;
@@ -431,21 +419,21 @@
       transition: all 0.2s ease;
 
       &.demo-link {
-        background: $color-primary;
+        background: var(--color-primary);
         color: white;
 
         &:hover {
-          background: color.adjust($color-primary, $lightness: -10%);
+          background: color-mix(in srgb, var(--color-primary), black 10%);
         }
       }
 
       &.github-link {
         background: transparent;
-        color: $color-text-primary;
-        border: 1px solid $color-border;
+        color: var(--color-text-primary);
+        border: 1px solid var(--color-border);
 
         &:hover {
-          background: $color-bg-secondary;
+          background: var(--color-bg-secondary);
         }
       }
     }
@@ -457,12 +445,12 @@
     padding: 3rem;
 
     h2 {
-      color: $color-text-primary;
+      color: var(--color-text-primary);
       margin-bottom: 1rem;
     }
 
     p {
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
       margin-bottom: 2rem;
     }
   }
