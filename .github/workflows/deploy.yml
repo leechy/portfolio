@@ -102,16 +102,23 @@ jobs:
           strip_components: 0
           overwrite: true
 
-      - name: Move files and restart app
+      - name: Setup permissions and move files
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
             set -e
             echo "🚀 Finalizing deployment..."
             
+            # Ensure portfolio user owns the application directory
+            if [ ! -w "/var/www/portfolio" ]; then
+              echo "� Setting up directory permissions (this may prompt for password once)..."
+              echo "Please run this command manually on the server if it fails:"
+              echo "sudo chown -R portfolio:portfolio /var/www/portfolio"
+              echo "sudo chmod -R 755 /var/www/portfolio"
+            fi
+            
             # Move deployed files to application directory
             echo "📁 Moving files to application directory..."
-            sudo cp -r /home/portfolio/deploy/* /var/www/portfolio/
-            sudo chown -R portfolio:portfolio /var/www/portfolio/
+            cp -r /home/portfolio/deploy/* /var/www/portfolio/
             
             # Navigate to app directory
             cd /var/www/portfolio
@@ -134,12 +141,12 @@ jobs:
             # Save PM2 configuration
             pm2 save
             
-            # Reload Nginx
-            echo "🌐 Reloading Nginx..."
-            sudo systemctl reload nginx
-            
             echo "✅ Deployment completed successfully!"
           ENDSSH
+
+      - name: Reload Nginx (requires sudo)
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'Reloading Nginx...'; sudo systemctl reload nginx || echo 'Nginx reload failed - may need manual intervention'"
 
       - name: Health Check
         run: |
