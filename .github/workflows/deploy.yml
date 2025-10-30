@@ -98,20 +98,30 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           source: "build/*,package.json,ecosystem.config.js"
-          target: "/var/www/portfolio"
+          target: "/home/${{ secrets.SERVER_USER }}/deploy"
           strip_components: 0
           overwrite: true
 
-      - name: Install production dependencies and restart app
+      - name: Move files and restart app
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
             set -e
-            echo "� Finalizing deployment..."
+            echo "🚀 Finalizing deployment..."
+            
+            # Move deployed files to application directory
+            echo "📁 Moving files to application directory..."
+            sudo cp -r /home/portfolio/deploy/* /var/www/portfolio/
+            sudo chown -R portfolio:portfolio /var/www/portfolio/
+            
+            # Navigate to app directory
             cd /var/www/portfolio
             
             # Install only production dependencies (much faster than full install)
             echo "📦 Installing production dependencies..."
             npm ci --production --silent
+            
+            # Clean up deploy directory
+            rm -rf /home/portfolio/deploy
             
             # Restart PM2 process
             echo "🔄 Restarting application..."
