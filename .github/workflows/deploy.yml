@@ -59,6 +59,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Validate build for deployment
+        run: |
+          if [ ! -d "build" ]; then
+            echo "❌ Build directory not found!"
+            exit 1
+          fi
+          if [ ! -f "build/index.js" ]; then
+            echo "❌ Build output missing!"
+            exit 1  
+          fi
+          echo "✅ Build ready for deployment!"
+
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -97,7 +121,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "build/*,package.json,ecosystem.config.js"
+          source: "build,package.json,ecosystem.config.js"
           target: "/home/${{ secrets.SERVER_USER }}/deploy"
           strip_components: 0
           overwrite: true
@@ -108,12 +132,31 @@ jobs:
             set -e
             echo "🚀 Finalizing deployment..."
             
+            # Debug: Check what was deployed
+            echo "🔍 Checking deployed files..."
+            if [ -d "/home/portfolio/deploy" ]; then
+              echo "Contents of /home/portfolio/deploy:"
+              ls -la /home/portfolio/deploy/
+              echo "Files structure:"
+              find /home/portfolio/deploy -type f | head -20
+            else
+              echo "❌ Deploy directory not found at /home/portfolio/deploy"
+              exit 1
+            fi
+            
             # Ensure portfolio user owns the application directory
             if [ ! -w "/var/www/portfolio" ]; then
-              echo "� Setting up directory permissions (this may prompt for password once)..."
-              echo "Please run this command manually on the server if it fails:"
-              echo "sudo chown -R portfolio:portfolio /var/www/portfolio"
-              echo "sudo chmod -R 755 /var/www/portfolio"
+              echo "⚠️ /var/www/portfolio not writable by portfolio user"
+              echo "Please run this on the server: sudo chown -R portfolio:portfolio /var/www/portfolio"
+              exit 1
+            fi
+            
+            # Check if build directory exists in deployed files
+            if [ ! -d "/home/portfolio/deploy/build" ]; then
+              echo "❌ Build directory missing in deployment!"
+              echo "Available directories:"
+              ls -la /home/portfolio/deploy/
+              exit 1
             fi
             
             # Move deployed files to application directory
@@ -123,9 +166,21 @@ jobs:
             # Navigate to app directory
             cd /var/www/portfolio
             
+            # Verify files were copied correctly
+            echo "📋 Verifying copied files..."
+            if [ ! -f "package.json" ]; then
+              echo "❌ package.json missing after copy"
+              exit 1
+            fi
+            if [ ! -d "build" ]; then
+              echo "❌ build directory missing after copy"
+              exit 1
+            fi
+            echo "✅ All required files present"
+            
             # Install only production dependencies (much faster than full install)
             echo "📦 Installing production dependencies..."
-            npm ci --production --silent
+            npm ci --production
             
             # Clean up deploy directory
             rm -rf /home/portfolio/deploy
