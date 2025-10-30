@@ -73,47 +73,52 @@ jobs:
           echo "Testing SSH connection..."
           ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=yes ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
 
-      - name: Deploy to server
+      - name: Backup database on server
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
             set -e
-            
-            echo "🚀 Starting deployment..."
-            
-            # Navigate to application directory
+            echo "� Backing up database..."
             cd /var/www/portfolio
             
             # Create backup of current database
             if [ -f "data/portfolio.db" ]; then
-              echo "💾 Backing up database..."
               cp data/portfolio.db data/portfolio-backup-$(date +%Y%m%d-%H%M%S).db
-              
               # Keep only last 5 backups
               ls -t data/portfolio-backup-*.db 2>/dev/null | tail -n +6 | xargs -r rm
             fi
             
-            # Pull latest changes
-            echo "📥 Pulling latest changes from main branch..."
-            git fetch origin
-            git reset --hard origin/main
+            # Ensure required directories exist
+            mkdir -p data logs
+          ENDSSH
+
+      - name: Deploy built application to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: "build/*,package.json,ecosystem.config.js"
+          target: "/var/www/portfolio"
+          strip_components: 0
+          overwrite: true
+
+      - name: Install production dependencies and restart app
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+            set -e
+            echo "� Finalizing deployment..."
+            cd /var/www/portfolio
             
-            # Install dependencies
-            echo "📦 Installing dependencies..."
-            npm ci --production
+            # Install only production dependencies (much faster than full install)
+            echo "📦 Installing production dependencies..."
+            npm ci --production --silent
             
-            # Build the application
-            echo "🔨 Building application..."
-            npm run build
-            
-            # Ensure data directory exists
-            mkdir -p data
-            
-            # Start or reload PM2 process
+            # Restart PM2 process
             echo "🔄 Restarting application..."
             if pm2 describe portfolio-app > /dev/null 2>&1; then
-              pm2 reload portfolio-app
+              pm2 reload portfolio-app --wait-ready
             else
-              pm2 start ecosystem.config.js
+              pm2 start ecosystem.config.js --wait-ready
             fi
             
             # Save PM2 configuration
