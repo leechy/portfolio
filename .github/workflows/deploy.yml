@@ -121,7 +121,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "build,package.json,package-lock.json,ecosystem.config.js"
+          source: "build,package.json,package-lock.json,ecosystem.config.cjs"
           target: "/home/${{ secrets.SERVER_USER }}/deploy"
           strip_components: 0
           overwrite: true
@@ -176,6 +176,10 @@ jobs:
               echo "❌ build directory missing after copy"
               exit 1
             fi
+            if [ ! -f "ecosystem.config.cjs" ]; then
+              echo "❌ ecosystem.config.cjs missing after copy"
+              exit 1
+            fi
             echo "✅ All required files present"
             
             # Install only production dependencies (much faster than full install)
@@ -190,7 +194,7 @@ jobs:
             if pm2 describe portfolio-app > /dev/null 2>&1; then
               pm2 reload portfolio-app --wait-ready
             else
-              pm2 start ecosystem.config.js --wait-ready
+              pm2 start ecosystem.config.cjs --wait-ready
             fi
             
             # Save PM2 configuration
