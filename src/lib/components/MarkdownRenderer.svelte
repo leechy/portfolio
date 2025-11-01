@@ -46,7 +46,7 @@
 <style>
   :global(.markdown-content) {
     line-height: 1.75;
-    color: #374151;
+    color: var(--color-text-primary);
   }
 
   :global(.markdown-content h1),

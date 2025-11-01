@@ -6,8 +6,8 @@
 // =============================================================================
 
 // Color Palette (Dark Theme)
-$color-primary: #70a4f9 !default; // Cyan accent
-$color-primary-soft: #64748b !default; // Soft gray accent
+$color-primary: #74a7f9 !default; // Cyan accent
+$color-primary-soft: #aec4e3 !default; // Soft gray accent
 $color-secondary: #f06d39 !default; // Coral accent
 $color-tertiary: #6366f1 !default; // Purple accent
 $color-bg-primary: #070b12 !default; // Deep black background
@@ -130,8 +130,8 @@ html {
 
 body {
   font-family: $font-family-primary;
-  background-color: $color-bg-primary;
-  color: $color-text-primary;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -149,30 +149,30 @@ h5,
 h6 {
   font-weight: 600;
   line-height: 1.2;
-  margin-bottom: $spacing-md;
+  margin-bottom: var(--spacing-md);
 }
 
 h1 {
-  font-size: $font-size-5xl;
+  font-size: var(--font-size-5xl);
 }
 h2 {
-  font-size: $font-size-4xl;
+  font-size: var(--font-size-4xl);
 }
 h3 {
-  font-size: $font-size-3xl;
+  font-size: var(--font-size-3xl);
 }
 h4 {
-  font-size: $font-size-2xl;
+  font-size: var(--font-size-2xl);
 }
 h5 {
-  font-size: $font-size-xl;
+  font-size: var(--font-size-xl);
 }
 h6 {
-  font-size: $font-size-lg;
+  font-size: var(--font-size-lg);
 }
 
 p {
-  margin-bottom: $spacing-md;
+  margin-bottom: var(--spacing-md);
 
   &:last-child {
     margin-bottom: 0;
@@ -180,19 +180,20 @@ p {
 }
 
 a {
-  color: $color-primary;
+  color: var(--color-primary);
   text-decoration: none;
-  transition: color $transition-fast;
+  transition: color var(--transition-fast);
 
   &:hover {
-    color: lighten($color-primary, 10%);
+    color: color-mix(to srgb, var(--color-primary), #ffffff 20%);
+    text-decoration: underline;
   }
 }
 
 code {
   font-family: $font-family-mono;
-  background-color: $color-bg-secondary;
-  padding: $spacing-xs $spacing-sm;
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: 4px;
   font-size: 0.9em;
 }
@@ -204,15 +205,15 @@ code {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 $spacing-lg;
+  padding: 0 var(--spacing-lg);
 
   @media (min-width: $breakpoint-lg) {
-    padding: 0 $spacing-xl;
+    padding: 0 var(--spacing-xl);
   }
 }
 
 .section {
-  padding: $spacing-3xl 0;
+  padding: var(--spacing-3xl) 0;
 
   @media (min-width: $breakpoint-md) {
     padding: 4rem 0;
@@ -234,29 +235,29 @@ code {
 }
 
 .text-primary {
-  color: $color-primary;
+  color: var(--color-primary);
 }
 .text-secondary {
-  color: $color-secondary;
+  color: var(--color-secondary);
 }
 .text-muted {
-  color: $color-text-muted;
+  color: var(--color-text-muted);
 }
 
 .mb-0 {
   margin-bottom: 0;
 }
 .mb-sm {
-  margin-bottom: $spacing-sm;
+  margin-bottom: var(--spacing-sm);
 }
 .mb-md {
-  margin-bottom: $spacing-md;
+  margin-bottom: var(--spacing-md);
 }
 .mb-lg {
-  margin-bottom: $spacing-lg;
+  margin-bottom: var(--spacing-lg);
 }
 .mb-xl {
-  margin-bottom: $spacing-xl;
+  margin-bottom: var(--spacing-xl);
 }
 
 .mt-0 {
@@ -281,17 +282,17 @@ code {
 
 // Cards
 .card {
-  background-color: $color-bg-secondary;
-  border: 1px solid $color-border;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  padding: $spacing-lg;
+  padding: var(--spacing-lg);
   transition:
     transform $transition-base,
     box-shadow $transition-base;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: $shadow-lg;
+    box-shadow: var(--shadow-lg);
   }
 }
 
@@ -299,20 +300,20 @@ code {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-sm $spacing-lg;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
   border-radius: 6px;
   font-family: inherit;
-  font-size: $font-size-base;
+  font-size: var(--font-size-base);
   font-weight: 500;
   cursor: pointer;
-  transition: all $transition-fast;
+  transition: all var(--transition-fast);
   text-decoration: none;
 
   &.btn-primary {
-    background-color: $color-primary;
-    color: $color-bg-primary;
+    background-color: var(--color-primary);
+    color: var(--color-bg-primary);
 
     &:hover {
       // background-color: lighten($color-primary, 10%);
@@ -342,20 +343,20 @@ code {
   }
 
   h1 {
-    font-size: $font-size-4xl;
+    font-size: var(--font-size-4xl);
   }
   h2 {
-    font-size: $font-size-3xl;
+    font-size: var(--font-size-3xl);
   }
   h3 {
-    font-size: $font-size-2xl;
+    font-size: var(--font-size-2xl);
   }
 
   .container {
-    padding: 0 $spacing-md;
+    padding: 0 var(--spacing-md);
   }
 
   .section {
-    padding: $spacing-2xl 0;
+    padding: var(--spacing-2xl) 0;
   }
 }

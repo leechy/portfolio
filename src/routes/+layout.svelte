@@ -26,6 +26,8 @@
   <footer class="footer">
     <Footer />
   </footer>
+
+  <div class="glare"></div>
 </div>
 
 <style lang="scss">
@@ -59,5 +61,17 @@
   .footer {
     border-top: 1px solid var(--color-border);
     background-color: var(--color-bg-secondary);
+  }
+
+  .glare {
+    position: fixed;
+    z-index: 1050;
+    top: -10%;
+    right: -10%;
+    left: 45%;
+    bottom: -10%;
+    background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+    transform: rotate(5deg);
+    pointer-events: none;
   }
 </style>

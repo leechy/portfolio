@@ -46,11 +46,11 @@
       <!-- Logo/Brand -->
       {#if $page.url.pathname === '/'}
         <span class="logo logo-active">
-          <span class="logo-text">Index of /</span>
+          <span class="logo-text">&lt;Leechy&gt;</span>
         </span>
       {:else}
         <a href="/" class="logo" onclick={() => handleNavigation('/')}>
-          <span class="logo-text">Index of /</span>
+          <span class="logo-text">&lt;Leechy&gt;</span>
         </a>
       {/if}
 

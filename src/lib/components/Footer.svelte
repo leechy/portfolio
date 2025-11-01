@@ -51,8 +51,8 @@
           <span class="logo-text">Andrey Lechev</span>
         </h3>
         <p class="footer-description">
-          Full-stack developer who loves building beautiful, high-quality, and user-friendly web and
-          mobile (and desktop?) applications.
+          Developer who loves building beautiful, high-quality, and user-friendly web and mobile
+          (and desktop) applications.
         </p>
 
         <!-- Social Links -->
@@ -93,7 +93,7 @@
     <div class="footer-bottom">
       <div class="footer-bottom-content">
         <p class="copyright">
-          © {currentYear} Leechy. All rights reserved.
+          © {currentYear} &lt;/Leechy&gt;. All rights reserved.
         </p>
         <div class="footer-bottom-links">
           <a href="/privacy" class="bottom-link">Privacy Policy</a>
