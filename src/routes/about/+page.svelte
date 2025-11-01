@@ -74,6 +74,18 @@
           description:
             'KYC/AML platform for financial institutions in Luxembourg. Developed a white-label client application using Angular and Java Spring Boot on the backend.',
           link: 'https://www.i-hub.com'
+        },
+        {
+          name: 'Alken Fund',
+          description:
+            'Website for Alken Asset Management, a Luxembourg-based investment fund manager. Built with Next.js and Strapi.',
+          link: 'https://www.alken-fund.com'
+        },
+        {
+          name: 'Inreg Portal',
+          description:
+            'Market analysis and advisory platform for investors. Now owned by Acolin. Vue.js and Firebase backend.',
+          link: 'https://portal.inreg.eu'
         }
       ]
     },
@@ -240,7 +252,7 @@
                   {#if (experience.projects?.length || 0) > 0}
                     <div class="projects">
                       <h5>
-                        {#if experience.projects.length === 1}
+                        {#if (experience.projects?.length || 0) === 1}
                           Project:
                         {:else}
                           Key Projects:
