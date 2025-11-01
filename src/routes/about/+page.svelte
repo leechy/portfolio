@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import MarkdownRenderer from '$lib/components/MarkdownRenderer.svelte';
 
   // Sample data - you can update this with your actual information
   const personalInfo = {
@@ -7,17 +8,20 @@
     title: 'Software Architect, Developer, and Team Lead',
     location: 'Olm, Luxembourg',
     email: 'andrey@lechev.me',
-    bio: "I'm a passionate full-stack developer with over [X] years of experience creating innovative web applications and software solutions. I specialize in modern JavaScript frameworks, backend development, and building scalable systems that deliver exceptional user experiences.",
+    bio: "I'm a passionate full-stack developer with over 25 years of experience creating innovative web applications and software solutions. I specialize in modern JavaScript frameworks, backend development, and building scalable systems that deliver exceptional user experiences.",
     skills: [
-      'JavaScript/TypeScript',
+      'TypeScript/JavaScript',
       'React/Angular/Svelte',
       'Node.js',
-      'Python & PHP',
+      'Nest.js/Express/Koa',
       'SQL/NoSQL Databases',
-      'Team Lead and Mentoring',
       'UI/UX Design',
       'Agile Development',
-      'GCP/AWS'
+      'CI/CD Pipelines',
+      'GCP/AWS',
+      'Python/Django',
+      'PHP/WordPress',
+      'Team Lead and Mentoring'
     ]
   };
 
@@ -28,25 +32,24 @@
       company: 'Byborg',
       duration: '2025',
       location: 'Luxembourg',
-      description:
-        'Leading development of large-scale web applications using modern technologies. Mentoring junior developers and implementing best practices for code quality and performance.',
-      technologies: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'Docker'],
+      description: `
+* Contributed to the JasminCam project, a streaming application built with React, TypeScript, Redux Saga, WebRTC, and WebSockets.
+* Refactored significant portions of the legacy JavaScript codebase to TypeScript, enhancing code quality and maintainability.
+* Implemented new features and resolved bugs while ensuring a consistent user experience by collaborating with the design team.
+* Managed the deployment process and synchronised releases across different divisions of the LiveJasmin project.
+      `,
+      technologies: ['React', 'Redux Saga', 'TypeScript', 'WebRTC', 'WebSockets'],
       projects: [
         {
-          name: 'Enterprise Dashboard',
-          description: 'Built a comprehensive analytics dashboard serving 10,000+ users',
-          link: '#'
-        },
-        {
-          name: 'API Gateway System',
-          description: 'Designed and implemented microservices architecture',
-          link: '#'
+          name: 'JasminCam',
+          description: 'A live streaming platform for adult content creators and viewers.',
+          link: 'https://cam.jasmin.com'
         }
       ]
     },
     {
       id: 2,
-      position: 'Senior Fullstack Developer',
+      position: 'Senior Developer and Application Architect',
       company: 'Reborn / Movify',
       duration: '2018 – 2025',
       location: 'Luxembourg',
@@ -55,14 +58,22 @@
       technologies: ['Vue.js', 'JavaScript', 'SCSS', 'WordPress', 'PHP'],
       projects: [
         {
-          name: 'E-commerce Platform',
-          description: 'Custom online store with advanced filtering and payment integration',
-          link: '#'
+          name: 'KanbanTool',
+          description:
+            'Internal staffing system based on Bullhorn CRM, build with React.js, Redux Saga, and Firebase.',
+          link: 'https://movify-kanban.web.app'
         },
         {
-          name: 'Corporate Website',
-          description: 'Multi-language responsive website with CMS integration',
-          link: '#'
+          name: 'Echo.lu',
+          description:
+            'Culture Events Portal for Luxembourg. Developed entire platform with Stencil.js, and Firebase.',
+          link: 'https://echo.lu'
+        },
+        {
+          name: 'i-Hub',
+          description:
+            'KYC/AML platform for financial institutions in Luxembourg. Developed a white-label client application using Angular and Java Spring Boot on the backend.',
+          link: 'https://www.i-hub.com'
         }
       ]
     },
@@ -72,18 +83,29 @@
       company: 'Innova Co.',
       duration: '2011 – 2017',
       location: 'Moscow / Luxembourg',
-      description:
-        'Started my career building web applications and learning modern development practices. Contributed to various client projects and internal tools.',
-      technologies: ['HTML/CSS', 'JavaScript', 'PHP', 'MySQL', 'Bootstrap'],
+      description: `* Led a team of up to 9 frontend developers on 4Game Platform and Ayyo Movies' Web and Smart TV App.
+* Developed a component-based architecture using PHP's Twig templates and Backbone.js — an SSR with client-side hydration - [Chercitecture](https://github.com/InnovaCo/che).
+* 
+`,
+      technologies: [
+        'HTML',
+        'CSS / LESS',
+        'CoffeeScript',
+        'Backbone.js',
+        'PHP',
+        'Twig',
+        'Chercitecture',
+        'React'
+      ],
       projects: [
         {
-          name: 'Client Portfolio Sites',
+          name: '4game.com',
           description: 'Multiple responsive websites for small businesses',
           link: '#'
         },
         {
-          name: 'Inventory Management System',
-          description: 'Custom web application for warehouse management',
+          name: 'AYYO',
+          description: 'Smart TV video streaming application.',
           link: '#'
         }
       ]
@@ -204,7 +226,7 @@
 
               {#if activeExperience === experience.id}
                 <div class="experience-details">
-                  <p class="description">{experience.description}</p>
+                  <MarkdownRenderer content={experience.description} />
 
                   <div class="technologies">
                     <h5>Technologies Used:</h5>
@@ -215,27 +237,35 @@
                     </div>
                   </div>
 
-                  <div class="projects">
-                    <h5>Key Projects:</h5>
-                    {#each experience.projects as project}
-                      <div class="project-item">
-                        <div class="project-info">
-                          <strong>{project.name}</strong>
-                          <p>{project.description}</p>
-                        </div>
-                        {#if project.link !== '#'}
-                          <a
-                            href={project.link}
-                            class="project-link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View Project
-                          </a>
+                  {#if (experience.projects?.length || 0) > 0}
+                    <div class="projects">
+                      <h5>
+                        {#if experience.projects.length === 1}
+                          Project:
+                        {:else}
+                          Key Projects:
                         {/if}
-                      </div>
-                    {/each}
-                  </div>
+                      </h5>
+                      {#each experience.projects as project}
+                        <div class="project-item">
+                          <div class="project-info">
+                            <strong>{project.name}</strong>
+                            <p>{project.description}</p>
+                          </div>
+                          {#if project.link !== '#'}
+                            <a
+                              href={project.link}
+                              class="project-link"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {project.link.replace(/^https?:\/\//, '')}
+                            </a>
+                          {/if}
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
                 </div>
               {/if}
             </div>
@@ -463,6 +493,10 @@
     &:hover {
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
+
+    .active & {
+      background: color-mix(in srgb, var(--color-primary), transparent 90%);
+    }
   }
 
   .experience-header {
@@ -553,15 +587,16 @@
       .project-item {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        padding: 1rem;
+        gap: var(--spacing-xl);
+        align-items: center;
+        padding: var(--spacing-md);
         background: color-mix(in srgb, var(--color-primary), transparent 95%);
         border-radius: 8px;
         margin-bottom: 1rem;
 
         @media (max-width: $breakpoint-md) {
           flex-direction: column;
-          gap: 1rem;
+          gap: var(--spacing-md);
         }
 
         .project-info {

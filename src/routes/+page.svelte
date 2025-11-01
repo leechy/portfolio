@@ -31,7 +31,7 @@
     <div class="container">
       <div class="hero-content" class:animate={mounted}>
         <h1 class="hero-title">
-          <span class="name-highlight">Leechy</span>
+          Andrey Lechev <span class="name-highlight">• Leechy</span>
 
           <!--
           will update the shape of your buttons for free.
@@ -40,16 +40,16 @@
           -->
         </h1>
         <p class="hero-subtitle">
-          For more than 25 years, I've been crafting experiences that bring joy and solve users'
-          problems.
+          For more than 25 years, I've been crafting experiences that bring joy to the users and
+          solve my clients' problems.
         </p>
         <p class="hero-description">
-          And I've tried many times to start writing about the stuff I do. This time, I have no
-          other option but to just start writing.
+          There've been a few attempts to summarize what I do, and to share some of my thoughts
+          about the technologies and practices I use. You are watching at the latest one.
         </p>
         <div class="hero-actions">
           <a href="/projects" class="btn btn-primary">View My Work</a>
-          <a href="/contact" class="btn btn-secondary">Get In Touch</a>
+          <a href="/about" class="btn btn-secondary">More About Me</a>
         </div>
       </div>
     </div>
@@ -214,8 +214,10 @@
   }
 
   .name-highlight {
+    font-size: smaller;
     color: var(--color-secondary);
     position: relative;
+    top: -0.1rem;
   }
 
   .hero-subtitle {
