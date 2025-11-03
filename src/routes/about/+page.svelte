@@ -86,6 +86,33 @@
           description:
             'Market analysis and advisory platform for investors. Now owned by Acolin. Vue.js and Firebase backend.',
           link: 'https://portal.inreg.eu'
+        },
+        {
+          name: 'Esch 2022 — European Capital of Culture',
+          description:
+            'System for submitting and discussing applications for participation in the Esch 2022 Festival. Ionic/React and Firebase backend.',
+          link: 'https://projects.esch2022.lu'
+        },
+        {
+          name: 'A2B+',
+          description:
+            "Mobile app tracking user's speed and movement to calculate the carbon footprint. Ionic/React and Capacitor application for iOS and Android.",
+          link: 'https://www.a2bplus.com'
+        },
+        {
+          name: 'BIL',
+          description: '',
+          link: 'https://www.bil.com'
+        },
+        {
+          name: 'POST Control Center',
+          description: '',
+          link: 'https://www.controlcenter.lu'
+        },
+        {
+          name: 'APEMH',
+          description: '',
+          link: '#'
         }
       ]
     },
@@ -134,7 +161,14 @@
       position: 'SERP Interface Manager',
       company: 'Yandex',
       duration: '2006 – 2008',
-      location: 'Moscow'
+      location: 'Moscow',
+      technologies: [
+        'Product Management',
+        'Statistics',
+        'UI/UX Design',
+        'A/B Testing',
+        'Eye Tracking'
+      ]
     },
     {
       id: 6,
@@ -426,14 +460,14 @@
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-md);
     max-width: 1024px;
-    margin: 0;
+    margin: 0 auto;
   }
 
   .skill-tag {
-    color: var(--color-text-primary);
+    background: color-mix(in srgb, var(--color-tertiary), transparent 85%);
+    color: var(--color-tertiary);
     padding: var(--spacing-sm) var(--spacing-md);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 24px;
     text-align: center;
     font-weight: 600;
   }
@@ -443,9 +477,9 @@
     padding: 4rem 0;
 
     h2 {
-      text-align: center;
-      margin-bottom: 3rem;
-      font-size: 2.5rem;
+      margin-bottom: var(--spacing-2xl);
+      font-size: var(--font-size-4xl);
+      font-weight: 600;
       color: var(--color-text-primary);
     }
   }
@@ -533,7 +567,7 @@
 
     h4 {
       font-size: 1.1rem;
-      color: var(--color-primary);
+      color: var(--color-secondary);
       margin-bottom: var(--spacing-sm);
       font-weight: 600;
     }
