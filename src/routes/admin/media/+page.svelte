@@ -646,6 +646,7 @@
           <img src={previewFile.file_url} alt={previewFile.filename} />
         {:else if previewFile.file_type.startsWith('video')}
           <video controls>
+            <track kind="captions" src={previewFile.captions_url} srcLang="en" label="English" />
             <source src={previewFile.file_url} type={previewFile.file_type} />
             Your browser does not support the video tag.
           </video>

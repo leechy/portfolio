@@ -364,7 +364,7 @@
     gap: 3rem;
     align-items: center;
 
-    @media (max-width: $breakpoint-md) {
+    @media (max-width: variables.$breakpoint-md) {
       grid-template-columns: 1fr;
       gap: 2rem;
       text-align: center;
@@ -378,7 +378,7 @@
       color: var(--color-text-primary);
       margin-bottom: var(--spacing-sm);
 
-      @media (max-width: $breakpoint-md) {
+      @media (max-width: variables.$breakpoint-md) {
         font-size: var(--font-size-4xl);
       }
     }
@@ -498,7 +498,7 @@
       width: 2px;
       background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
 
-      @media (max-width: $breakpoint-md) {
+      @media (max-width: variables.$breakpoint-md) {
         left: 15px;
       }
     }
@@ -509,7 +509,7 @@
     margin-bottom: 2rem;
     padding-left: 4rem;
 
-    @media (max-width: $breakpoint-md) {
+    @media (max-width: variables.$breakpoint-md) {
       padding-left: 2.5rem;
     }
   }
@@ -524,7 +524,7 @@
     border-radius: 50%;
     border: 3px solid var(--color-bg-primary);
 
-    @media (max-width: $breakpoint-md) {
+    @media (max-width: variables.$breakpoint-md) {
       left: -11px;
     }
   }
@@ -634,7 +634,7 @@
         border-radius: 8px;
         margin-bottom: 1rem;
 
-        @media (max-width: $breakpoint-md) {
+        @media (max-width: variables.$breakpoint-md) {
           flex-direction: column;
           gap: var(--spacing-md);
         }
@@ -697,7 +697,7 @@
       gap: 1rem;
       justify-content: center;
 
-      @media (max-width: $breakpoint-md) {
+      @media (max-width: variables.$breakpoint-md) {
         flex-direction: column;
         align-items: center;
       }

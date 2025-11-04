@@ -84,13 +84,6 @@ $spacing-3xl: 4rem !default; // 64px
   --spacing-2xl: #{$spacing-2xl};
   --spacing-3xl: #{$spacing-3xl};
 }
-
-// Breakpoints
-$breakpoint-sm: 640px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 1024px;
-$breakpoint-xl: 1280px;
-
 // Animation
 $transition-fast: 0.15s ease;
 $transition-base: 0.25s ease;
@@ -207,7 +200,7 @@ code {
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
 
-  @media (min-width: $breakpoint-lg) {
+  @media (min-width: variables.$breakpoint-lg) {
     padding: 0 var(--spacing-xl);
   }
 }
@@ -215,7 +208,7 @@ code {
 .section {
   padding: var(--spacing-3xl) 0;
 
-  @media (min-width: $breakpoint-md) {
+  @media (min-width: variables.$breakpoint-md) {
     padding: 4rem 0;
   }
 }
@@ -316,19 +309,18 @@ code {
     color: var(--color-bg-primary);
 
     &:hover {
-      // background-color: lighten($color-primary, 10%);
-      background-color: color.adjust($color-primary, $lightness: 10%);
+      background-color: color-mix(to srgb, var(--color-primary), white 10%);
     }
   }
 
   &.btn-secondary {
     background-color: transparent;
-    color: $color-primary;
-    border: 1px solid $color-primary;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
 
     &:hover {
-      background-color: $color-primary;
-      color: $color-bg-primary;
+      background-color: var(--color-primary);
+      color: var(--color-bg-primary);
     }
   }
 }
@@ -337,7 +329,7 @@ code {
 // Responsive Design
 // =============================================================================
 
-@media (max-width: $breakpoint-md) {
+@media (max-width: variables.$breakpoint-md) {
   html {
     font-size: 14px;
   }

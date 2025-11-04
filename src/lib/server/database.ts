@@ -739,6 +739,7 @@ export interface MediaFile {
   file_type: string;
   file_size: number;
   mime_type: string;
+  captions_url?: string;
   width?: number;
   height?: number;
   duration?: number;

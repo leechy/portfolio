@@ -113,7 +113,7 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-2xl);
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: variables.$breakpoint-md) {
       grid-template-columns: 1.5fr 1fr;
       gap: var(--spacing-3xl);
     }
@@ -176,7 +176,7 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-xl);
 
-    @media (min-width: $breakpoint-sm) {
+    @media (min-width: variables.$breakpoint-sm) {
       grid-template-columns: repeat(2, 1fr);
     }
   }
@@ -222,7 +222,7 @@
     align-items: center;
     text-align: center;
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: variables.$breakpoint-md) {
       flex-direction: row;
       justify-content: space-between;
       text-align: left;
@@ -241,7 +241,7 @@
     flex-wrap: wrap;
     justify-content: center;
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: variables.$breakpoint-md) {
       justify-content: flex-end;
     }
   }

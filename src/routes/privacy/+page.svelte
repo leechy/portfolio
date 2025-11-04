@@ -222,7 +222,7 @@
       margin-bottom: var(--font-size-md);
       font-weight: 700;
 
-      @media (max-width: $breakpoint-md) {
+      @media (max-width: variables.$breakpoint-md) {
         font-size: var(--font-size-4xl);
       }
     }
@@ -335,7 +335,7 @@
     }
   }
 
-  @media (max-width: $breakpoint-md) {
+  @media (max-width: variables.$breakpoint-md) {
     .privacy-page {
       padding: var(--spacing-md) 0 var(--spacing-2xl);
     }
