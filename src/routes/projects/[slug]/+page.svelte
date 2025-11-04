@@ -188,7 +188,7 @@
     .back-button {
       background: transparent;
       border: none;
-      color: $color-primary;
+      color: var(--color-primary);
       cursor: pointer;
       font-size: 1rem;
       text-decoration: none;
@@ -199,7 +199,7 @@
       transition: color 0.2s ease;
 
       &:hover {
-        color: color.adjust($color-primary, $lightness: -10%);
+        color: color-mix(in srgb, var(--color-primary), transparent 50%);
       }
     }
   }
@@ -209,7 +209,7 @@
 
     .project-title {
       font-size: 3rem;
-      color: $color-primary;
+      color: var(--color-primary);
       margin-bottom: 1rem;
       line-height: 1.2;
 
@@ -250,7 +250,7 @@
       .featured-badge {
         padding: 0.5rem 1rem;
         background: rgba(59, 130, 246, 0.1);
-        color: $color-primary;
+        color: var(--color-primary);
         border-radius: 2rem;
         font-size: 0.9rem;
         font-weight: 500;
@@ -260,7 +260,7 @@
     .project-description {
       font-size: 1.2rem;
       line-height: 1.6;
-      color: $color-text-secondary;
+      color: var(--color-text-secondary);
     }
   }
 
@@ -284,23 +284,23 @@
       gap: 0.5rem;
 
       &.demo-link {
-        background: $color-primary;
+        background: var(--color-primary);
         color: white;
 
         &:hover {
-          background: color.adjust($color-primary, $lightness: -10%);
+          background: color-mix(in srgb, var(--color-primary), transparent 50%);
           transform: translateY(-2px);
         }
       }
 
       &.github-link {
         background: transparent;
-        color: $color-text-primary;
-        border: 2px solid $color-border;
+        color: var(--color-text-primary);
+        border: 2px solid var(--color-border);
 
         &:hover {
-          background: $color-bg-secondary;
-          border-color: $color-primary;
+          background: var(--color-bg-secondary);
+          border-color: var(--color-primary);
         }
       }
     }
@@ -322,9 +322,9 @@
 
       h2 {
         font-size: 1.8rem;
-        color: $color-primary;
+        color: var(--color-primary);
         margin-bottom: 1.5rem;
-        border-bottom: 2px solid $color-border;
+        border-bottom: 2px solid var(--color-border);
         padding-bottom: 0.5rem;
       }
     }
@@ -340,7 +340,7 @@
     .tech-tag {
       padding: 0.5rem 1rem;
       background: rgba(59, 130, 246, 0.1);
-      color: $color-primary;
+      color: var(--color-primary);
       border-radius: 2rem;
       font-weight: 500;
       border: 1px solid rgba(59, 130, 246, 0.2);
@@ -350,13 +350,13 @@
   .content-section {
     .content-text {
       line-height: 1.8;
-      color: $color-text-primary;
+      color: var(--color-text-primary);
       font-size: 1.1rem;
 
       :global(h1),
       :global(h2),
       :global(h3) {
-        color: $color-primary;
+        color: var(--color-primary);
         margin-top: 2rem;
         margin-bottom: 1rem;
       }
@@ -386,14 +386,14 @@
 
   .project-sidebar {
     section {
-      background: $color-bg-secondary;
+      background: var(--color-bg-secondary);
       padding: 1.5rem;
       border-radius: 8px;
-      border: 1px solid $color-border;
+      border: 1px solid var(--color-border);
       margin-bottom: 2rem;
 
       h3 {
-        color: $color-primary;
+        color: var(--color-primary);
         margin-bottom: 1rem;
         font-size: 1.2rem;
       }
@@ -407,18 +407,18 @@
         justify-content: space-between;
         align-items: center;
         padding: 0.5rem 0;
-        border-bottom: 1px solid $color-border;
+        border-bottom: 1px solid var(--color-border);
 
         &:last-child {
           border-bottom: none;
         }
 
         strong {
-          color: $color-text-primary;
+          color: var(--color-text-primary);
         }
 
         time {
-          color: $color-text-secondary;
+          color: var(--color-text-secondary);
         }
       }
     }
@@ -434,8 +434,8 @@
     .related-project-card {
       .related-project-button {
         width: 100%;
-        background: $color-bg-primary;
-        border: 1px solid $color-border;
+        background: var(--color-bg-primary);
+        border: 1px solid var(--color-border);
         border-radius: 8px;
         padding: 1rem;
         cursor: pointer;
@@ -443,18 +443,18 @@
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: $color-primary;
-          background: $color-bg-secondary;
+          border-color: var(--color-primary);
+          background: var(--color-bg-secondary);
         }
 
         h4 {
-          color: $color-primary;
+          color: var(--color-primary);
           margin-bottom: 0.5rem;
           font-size: 1rem;
         }
 
         p {
-          color: $color-text-secondary;
+          color: var(--color-text-secondary);
           font-size: 0.9rem;
           line-height: 1.4;
           margin-bottom: 0.75rem;
@@ -468,7 +468,7 @@
           .mini-tech-tag {
             padding: 0.25rem 0.5rem;
             background: rgba(59, 130, 246, 0.1);
-            color: $color-primary;
+            color: var(--color-primary);
             border-radius: 1rem;
             font-size: 0.7rem;
           }

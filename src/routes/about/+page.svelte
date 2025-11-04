@@ -598,12 +598,6 @@
     padding: 0 var(--spacing-lg) var(--spacing-md);
     animation: slideDown 0.3s ease;
 
-    .description {
-      margin: var(--spacing-md) 0;
-      line-height: 1.6;
-      color: var(--color-text-primary);
-    }
-
     h5 {
       color: var(--color-text-primary);
       margin-bottom: 1rem;
