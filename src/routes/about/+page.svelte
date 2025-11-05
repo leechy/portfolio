@@ -162,12 +162,35 @@
       company: 'Yandex',
       duration: '2006 – 2008',
       location: 'Moscow',
+      description: `* Responsible for the user interface and experience of Yandex's Search Engine Results Pages (SERP).
+* Implemented and managed the first A/B tests in any Yandex product, leading to significant improvements in user engagement and ads performance.
+* Played a key role in developing specialized search results (wizards) for Maps, Blogs, Market, News, and more, working closely with product and engineering teams.
+* Conducted the first eye-tracking studies at Yandex to optimize the Home Page (Morda) SERP layout and ad placements, fixing and improving financial metrics.
+`,
       technologies: [
         'Product Management',
         'Statistics',
         'UI/UX Design',
         'A/B Testing',
         'Eye Tracking'
+      ],
+      projects: [
+        {
+          name: 'Search Engine Results Pages (SERP)',
+          description:
+            'Managing the interface and user experience of the most visited web page in Russia.',
+          link: 'https://ya.ru/search'
+        },
+        {
+          name: 'Search bar suggestions',
+          description: 'Autocomplete suggestions for the search bar.',
+          link: 'https://ya.ru'
+        },
+        {
+          name: 'Yandex Vertical Searches (a.k.a. Wizards)',
+          description: 'Specialized search results for weather, maps, translations, and more.',
+          link: 'https://ya.ru/search?text=weather'
+        }
       ]
     },
     {
@@ -175,7 +198,8 @@
       position: 'Senior Fullstack Developer',
       company: 'Inquatrum',
       duration: '2006',
-      location: 'Moscow'
+      location: 'Moscow',
+      technologies: ['HTML', 'CSS', 'JavaScript', 'Parser', 'PHP', 'MySQL', 'SharePoint']
     },
     {
       id: 7,
